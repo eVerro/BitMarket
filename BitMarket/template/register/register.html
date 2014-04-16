@@ -1,0 +1,13 @@
+{% extends "master/index.html" %}
+
+{% block content %}
+<form method="post" action="/user/register/">                     
+	<label>Login:</label><input name="user" type="text"><br/>            
+	<label>Haslo:</label> <input name="password" type="password"><br/>                      
+	<label>Potwierdz haslo:</label>  <input type="password" name="password2"  value="" /><br/> 
+	<label>Email:</label> <input type="email" name="email" value="" /><br/>
+	<label>Imie:</label> <input name="name" type="text"><br/>            
+	<label>Nazwisko:</label> <input name="name2" type="text"><br/>      
+	<input type="submit" value="Rejestruj sie" id="some_name"/> 
+</form>
+{% endblock %}
