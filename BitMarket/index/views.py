@@ -30,7 +30,7 @@ def login(request):
                             request.session['bad_login'] = 1
                             return render_to_response('aboutus/aboutus.html')
                         
-def rejestracja(request):
+def register(request):
             if request.method == 'POST':
                     if request.POST['password'] == request.POST['password2']:
                             # Rejestracja

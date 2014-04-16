@@ -14,7 +14,7 @@ urlpatterns = patterns('',
     (r'^user/login/$','BitMarket.index.views.login'),
     (r'^user/logout/$', 'BitMarket.index.views.logout_view'),
     (r'^user/registerpage/$','BitMarket.index.views.register_view'),
-    (r'^user/register/$', 'BitMarket.index.views.rejestracja'),
+    (r'^user/register/$', 'BitMarket.index.views.register'),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
