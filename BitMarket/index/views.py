@@ -56,3 +56,6 @@ def register(request):
 def logout_view(request):
     logout(request)
     return redirect("/")
+
+def ajaxTest(request):
+    return render_to_response('ajaxTest/ajax.html')

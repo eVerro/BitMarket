@@ -1,0 +1,23 @@
+{% load dajaxice_templatetags %}
+
+<html>
+  	<head>
+    	<title>My test ajax template</title>
+    	{% dajaxice_js_import %}
+  	</head>
+  	<script type="text/javascript">
+  		function my_js_callback(data){
+    		text =document.getElementById("text");
+    		text.innerHTML = data.message;
+			}
+  		
+  	</script>
+    <body>
+    	<input type="button" value="TEST" style="width: 50px;" onclick="Dajaxice.BitMarket.index.sayhello(my_js_callback);" /><br/>
+    	<div>
+    		<p id="text">Test1</p>
+    		
+    	</div>
+    	
+    </body>
+</html>
