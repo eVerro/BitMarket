@@ -14,10 +14,28 @@ def index(request):
 def aboutus(request):
         local = locals()
         return render_to_response('aboutus/aboutus.html', {'local': local})
+    
+    
+def market(request):
+        local = locals()
+        return render_to_response('market/market.html', {'local': local})
+    
 
-
+def contact(request):
+        local = locals()
+        return render_to_response('contact/contact.html', {'local': local})
+    
+    
 def register_view(request):
     return render_to_response('register/register.html')
+
+
+def plnc_view(request):
+    return render_to_response('plnc/plnc.html')
+
+
+def flt_view(request):
+    return render_to_response('flt/flt.html')
 
 
 def login(request):

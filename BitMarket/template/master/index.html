@@ -22,7 +22,7 @@
 			    	<span id="passPole"> <input name="password" type="password"></span>                        
 			        <span id="przycisk"> <input type="submit"  value="login" /> </span>                    
 			    </form>
-			    <a href="/user/registerpage/">Rejestracja</a>
+			   <font size=3> <a href="/user/registerpage/">Rejestracja</a> </font>
 		{% endif %}
 		
 	
@@ -30,14 +30,17 @@
     
     <div id="header">
     	
-    	<h1><a href="/">BitMarket</a></h1>
+    	<h1><a href="/">BitMarket</a>{% block header%}
+	{% endblock %}</h1>
+    	
         <ul>
    	    	<li><p><a href="/aboutus">About Us</a></p></li>
-           	<li><p><a href="#">Market</a></p></li>
-           	<li><p><a href="#">Contact</a></p></li>
+           	<li><p><a href="/market">Market</a></p></li>
+           	<li><p><a href="/contact">Contact</a></p></li>
         </ul>
     </div>
-	
+    		
+
     <div id="main2">
         	<div id="news">
         		<h2>{{ local.request.user.username }}</h2>
@@ -57,8 +60,8 @@
                 </p>
                 	{% block sidebar %}
             		<ul>
-                    	<li><a href="#"><p>PLNC/GLD</p></a></li>
-                        <li><a href="#"><p>FLT/GLD</p></a></li>
+                    	<li><a href="/user/plnc/"><p>PLNC/GLD</p></a></li>
+                        <li><a href="/user/flt/"><p>FLT/GLD</p></a></li>
                     </ul>
                     {% endblock %}
 	</div>
