@@ -3,7 +3,11 @@ from django.contrib.auth.models import auth
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from django.shortcuts import render_to_response, redirect
+from django.http import HttpResponse
+from django.template import loader, RequestContext
 from BitMarket.index.models import UserProfile
+from wallet.models import UserWallet
+
 
 
 def index(request):
@@ -37,7 +41,21 @@ def plnc_view(request):
 def flt_view(request):
     return render_to_response('flt/flt.html')
 
+def user(request):
+    return render_to_response('user/user.html')
 
+def user2(request):
+    template = loader.get_template('user/user.html')
+    if user is not None and user.is_active:
+        auth.login(request, user)
+        user_wallet = UserWallet.objects.get(user==user)
+        context = RequestContext(request, {
+        'wallet': user_wallet,
+        })
+        return HttpResponse(template.render(context))
+    else:
+        request.session['bad_login'] = 1
+        return render_to_response('aboutus/aboutus.html')
 def login(request):
             if request.method == 'POST':
                     username = request.POST['username']
