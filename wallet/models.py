@@ -1,138 +1,103 @@
 # -*- coding: UTF-8 -*-
 from django.db import models
-from django.contrib.auth.models import User as UserData
+from BitMarket.index.models import UserProfile as User
 from django.contrib import admin
 from decimal import Decimal
 import datetime
 
 
-class User(UserData):
+class UserProxy(User):
     """
     Klasa rozszerzająca klasę User
-    rozszerza o metody tworzenia zleceń, kupowania zleceń 
+    rozszerza o metody tworzenia zleceń, kupowania zleceń
     i pobierania/depozytowania pieniędzy
+    user - klucz obcy do tabeli UserData
     """
-    user = models.ForeignKey(UserData, unique=True, related_name="users")
 
     def __unicode__(self):
         return '%s' % (self.user.name)
 
     class Meta:
-        ordering = []
+        proxy = True
 
-    def newCommission(self, sourceAmount, destinationAmount, walletSource, walletDestination):
+    def newCommission(self, source_amount, destination_amount, wallet_source, wallet_destination, dead_line):
         """
-        @param String : sourceAmount
-        @param String : destinationAmount
-        @param UserWallet : walletSource
-        @param UserWallet : walletDestination
-        tworzy nowe zlecenie, kwota sourceAmount będzie pobrana z portfelu walletSource, a w razie
-        kupna zlecenia przelewa kwote destinationAmount na portfel walletDestination
-        wywołuje metody z walletSource:  newSaleOffer(commission);    użycie metody jest zapisane w historii
-        wywołuje metody z walletDestination: newPurchaseOffer(commission);    użycie metody jest zapisane w historii
+        @param String : source_amount
+        @param String : destination_amount
+        @param UserWallet : wallet_source
+        @param UserWallet : wallet_destination
+        @param datetime : dead_line
+        tworzy nowe zlecenie, kwota source_amount będzie pobrana z portfelu wallet_source, a w razie
+        kupna zlecenia przelewa kwote destination_amount na portfel wallet_destination
+        wywołuje metody z wallet_destination: newPurchaseOffer(commission);    użycie metody jest zapisane w historii
         """
         # sprawdzenie danych wejściowych
         # czy portfele należą do osoby wywołującej funkcje
-        if(walletSource.user is not self):
+        if(wallet_source.user is not self):
             raise Exception('Portfel source jest przypisany do innego użytkownika.')
-        if(walletDestination.user is not self):
+        if(wallet_destination.user is not self):
             raise Exception('Portfel destination jest przypisany do innego użytkownika.')
         # czy podane są właściwe
-        if(Decimal(sourceAmount) < 0):
-            raise Exception('sourceAmount jest poniżej zera.')
-        if(Decimal(destinationAmount) < 0):
-            raise Exception('destinationAmount jest poniżej zera.')
-        if(Decimal(sourceAmount) > Decimal(walletSource.account_balance)):
-            raise Exception('sourceAmount jest powyżej stanu portfela.')
-        commission = Commission(sourceAmount=sourceAmount, destinationAmount=destinationAmount, walletSource=walletSource, walletDestination=walletDestination)
+        if(Decimal(source_amount) < 0):
+            raise Exception('source_amount jest poniżej zera.')
+        if(Decimal(destination_amount) < 0):
+            raise Exception('destination_amount jest poniżej zera.')
+        if(Decimal(source_amount) > Decimal(wallet_source.account_balance)):
+            raise Exception('source_amount jest powyżej stanu portfela.')
+        if(dead_line - datetime.datetime.now()).total_seconds() < 0:
+            raise Exception('Podana data jest z przeszłości.')
+        commission = Commission(source_amount=source_amount, destination_amount=destination_amount, wallet_source=wallet_source, wallet_destination=wallet_destination, time_limit=dead_line)
         commission.save()
-        walletSource.newPurchaseOffer(commission)
-        walletDestination.newSaleOffer(commission)
-        # zapisanie do bazy danych
-        walletSource.save()
-        walletDestination.save()
+        wallet_source.newPurchaseOffer(commission)
         return 0
 
-    def purchase(self, purchaser, purchasedCommission):
+    def purchase(self, purchaser, purchased_commission):
         """
-        @param Commission : purchasedCommission
+        @param Commission : purchased_commission
         zakup zlecenia
-        wywołuje w odpowiednim portfelu metode purchase i sale w portfelu użytkownika, który kupił
+        wywołuje w odpowiednim portfelu metode purchase w portfelu użytkownika, który kupił
         oraz wywołuje sale w portfelu użytkownika, który sprzedał
         """
         # pobranie odpowiednich portfeli kupca
-        purchaserWalletSource = UserWallet.objects.filter(user=purchaser, cryptocurrency=purchasedCommission.destinationWallet.cryptocurrancy)
-        purchaserWalletDestination = UserWallet.objects.filter(user=purchaser, cryptocurrency=purchasedCommission.sourceWallet.cryptocurrancy)
+        purchaserwallet_source = UserWallet.objects.filter(user=purchaser, cryptocurrency=purchased_commission.destination_wallet.cryptocurrancy)
+        purchaserwallet_destination = UserWallet.objects.filter(user=purchaser, cryptocurrency=purchased_commission.source_wallet.cryptocurrancy)
         # sprawdzenie poprawności portfeli
-        if(not purchaserWalletSource):
-            raise Exception("Nie istnieje odpowiedni portfel u kupca: %s" % (purchasedCommission.destinationWallet.cryptocurrancy))
-        if(not purchaserWalletDestination):
-            raise Exception("Nie istnieje odpowiedni portfel u kupca: %s" % (purchasedCommission.sourceWallet.cryptocurrancy))
+        if(not purchaserwallet_source):
+            raise Exception("Nie istnieje odpowiedni portfel u kupca: %s" % (purchased_commission.destination_wallet.cryptocurrancy))
+        if(not purchaserwallet_destination):
+            raise Exception("Nie istnieje odpowiedni portfel u kupca: %s" % (purchased_commission.source_wallet.cryptocurrancy))
         # wywołanie metod do kupna i sprzedaży u kupującego
-        purchaserWalletDestination.purchase(purchasedCommission)
+        purchaserwallet_destination.purchaseSell(purchased_commission)
+        purchaserwallet_destination.purchase(purchased_commission)
         # wywołanie metody do sprzedaży u wystawiającego ofertę
-        purchasedCommission.walletSource.purchase(purchasedCommission)
-        purchasedCommission.walletSource.sale(purchasedCommission)
-        
+        purchased_commission.wallet_source.sale(purchased_commission)
+
         return 0
 
-    def withdraw(self, walletSource, walletAddress, amount):
+    def withdraw(self, wallet, wallet_address, amount):
         """
-        @param UserWallet : walletSource
-        @param String : walletAddress
+        @param UserWallet : wallet
+        @param String : wallet_address
         @param String : amount
-        pobiera kwotę amount z konta i wysyłą ją na adres walletAddress
+        pobiera kwotę amount z konta i wysyłą ją na adres wallet_address
         zapisuje użycie metody w historii
         """
+        wallet.withdraw(wallet_address=wallet_address,amount=amount)
+        withdraw_history = DepositHistory(wallet_address=wallet_address,cryptocurrency=wallet.cryptocurrency,amount=amount,deposit=False)
+        withdraw_history.save()
         return 0
 
-    def deposit(self, walletSource, walletAddress, amount):
+    def deposit(self, wallet, wallet_address, amount):
         """
-        @param UserWallet : walletSource
-        @param String : walletAddress
+        @param UserWallet : wallet
+        @param String : wallet_address
         @param String : amount
-        WAŻNE : UZUPEŁNIĆ
         zapisuje użycie metody w historii
         """
+        wallet.deposit(wallet_address=wallet_address,amount=amount)
+        deposit_history = DepositHistory(wallet_address=wallet_address,cryptocurrency=wallet.cryptocurrency,amount=amount,deposit=True)
+        deposit_history.save()
         return 0
-
-
-class Commission(models.Model):
-    """
-    Klasa reprezentująca zlecenie.
-    Posiada pola takie jak:
-    sourceWallet - portfel fundujący zlecenie
-    destinationWallet - portfel, na który zostanie przelana kwota po kupnie zlecenia
-    sourceAmount - kwota pobrana już wcześniej z sourceWallet
-    destinationAmount - kwota przelana po zrealizowaniu zlecenia na konto destinationWallet 
-    """
-    sourceWallet = models.ForeignKey("UserWallet", related_name='sourceWallets')
-    destinationWallet = models.ForeignKey("UserWallet", related_name='destinationWallets')
-    sourceAmount = models.CharField(max_length="32", blank=False)
-    destinationAmount = models.CharField(max_length="32", blank=False)
-
-    class Meta:
-        ordering = []
-
-    def __unicode__(self):
-        return 'Z portfela %s na portfel %s' % (self.sourceWallet, self.destinationWallet)
-
-
-class History(models.Model):
-    """
-    Klasa reprezentująca historię zleceń portfeli.
-    Zapisywane są w niej wszystkie operacje UserWallet
-    Tz. newPurchaseOffer, newSaleOffer, purchase, sale
-    """
-    function = models.CharField(max_length="32", blank=False)
-    commission = models.ForeignKey("Commission")
-    executedTime = models.DateTimeField()
-
-    class Meta:
-        ordering = []
-
-    def __unicode__(self):
-        return 'Zrobionop %s. Powiązane z zleceniem %s. Data: %s' % (self.function, self.commission, self.executedTime)
 
 
 class Cryptocurrency(models.Model):
@@ -148,6 +113,84 @@ class Cryptocurrency(models.Model):
         return '%s' % (self.name)
 
 
+class Commission(models.Model):
+    """
+    Klasa reprezentująca zlecenie.
+    Posiada pola takie jak:
+    source_wallet - portfel fundujący zlecenie
+    destination_wallet - portfel, na który zostanie przelana kwota po kupnie zlecenia
+    source_amount - kwota pobrana już wcześniej z source_wallet
+    destination_amount - kwota przelana po zrealizowaniu zlecenia na konto destination_wallet
+    """
+    source_wallet = models.ForeignKey("UserWallet", related_name='source_wallets')
+    destination_wallet = models.ForeignKey("UserWallet", related_name='destination_wallets')
+    source_amount = models.DecimalField(max_digits=32, decimal_places=16, blank=False)
+    destination_amount = models.DecimalField(max_digits=32, decimal_places=16, blank=False)
+    time_limit = models.DateTimeField()
+
+    class Meta:
+        ordering = []
+
+    def __unicode__(self):
+        return 'Z portfela %s na portfel %s' % (self.source_wallet, self.destination_wallet)
+
+
+class History(models.Model):
+    """
+    User seller
+    User purchaser
+    Cryptocurrency cryptocurrency_sold
+    Cryptocurrency cryptocurrency_bought
+    int commission_id
+    """
+    seller = models.ForeignKey(User, related_name='sellers', unique=False)
+    purchaser = models.ForeignKey(User, related_name='purchasers', unique=False, blank=True)
+    cryptocurrency_sold = models.ForeignKey(Cryptocurrency, related_name='cryptocurrency_solds', unique=False, blank=False)
+    cryptocurrency_bought = models.ForeignKey(Cryptocurrency, related_name='cryptocurrency_boughts', unique=False, blank=False)
+    amount_sold = models.DecimalField(max_digits=32, decimal_places=16, blank=False)
+    amount_bought = models.DecimalField(max_digits=32, decimal_places=16, blank=False)
+    commission_id = models.IntegerField()
+
+
+class CommissionHistory(models.Model):
+    """
+    Klasa histori działań użytkownika na giełdzie.
+    Tz. tworzenie nowych zleceń, anulowanie, kupno.
+    Pole action:
+    0 - Stworzenie:
+    1 - Kupno:
+    2 - Sprzedanie:
+    3 - Anulowanie:
+    4 - Przeterminowane:
+    Data executed_time
+    int action
+    """
+    history = models.ForeignKey(History, unique=True)
+    action = models.IntegerField()
+    executed_time = models.DateTimeField()
+
+    class Meta:
+        ordering = []
+
+    def __unicode__(self):
+        return 'Historia zlecenia numer %d' % (self.history.commission_id)
+
+
+class DepositHistory(models.Model):
+    """
+    Klasa histori przelewów użytkownika na giełdę, bądź z giełdy
+    na zewnetrzne konta.
+    Data executed_time
+    Cryptocurrency cryptocurrency
+    String wallet_address
+    """
+    wallet_address = models.CharField(max_length="64", blank=False, unique=False)
+    cryptocurrency = models.ForeignKey(Cryptocurrency, unique=True)
+    amount = models.DecimalField(max_digits=32, decimal_places=16, blank=False)
+    executed_time = models.DateTimeField()
+    deposit = models.BooleanField()
+
+
 class UserWallet(models.Model):
     """
     Klasa podstawowa definiująca porfel użytkownika,
@@ -156,10 +199,10 @@ class UserWallet(models.Model):
     udostępiania metody do tworzenia zleceń, kupowania i pobierania pieniędzy
     """
     user = models.ForeignKey(User, unique=True)
-    account_balance = models.CharField(max_length="32", blank=False)
+    account_balance = models.DecimalField(max_digits=32, decimal_places=16, blank=False)
     cryptocurrency = models.ForeignKey(Cryptocurrency)
     commissions = models.ManyToManyField("Commission", related_name="commissions")
-
+    
     def __unicode__(self):
         return '%s' % (self.cryptocurrency.name)
 
@@ -172,78 +215,80 @@ class UserWallet(models.Model):
         """
         # sprawdzenie danych wejściowych
         # czy portfele należą do użytkownika, który wywołał funkcje
-        if(commission.walletSource.user is not self.user):
+        if(commission.wallet_source.user is not self.user):
             raise Exception('Portfel source jest przypisany do innego użytkownika.')
-        if(commission.walletDestination.user is not self.user):
+        if(commission.wallet_destination.user is not self.user):
             raise Exception('Portfel destination jest przypisany do innego użytkownika.')
         # czy podane kwoty są poprawne
-        if(Decimal(commission.sourceAmount) < 0):
-            raise Exception('sourceAmount jest poniżej zera.')
-        if(Decimal(commission.destinationAmount) < 0):
-            raise Exception('destinationAmount jest poniżej zera.')
-        if(Decimal(commission.sourceAmount) > Decimal(self.account_balance)):
-            raise Exception('sourceAmount jest powyżej stanu portfela.')
-        self.account_balance = Decimal(self.account_balance) - Decimal(commission.sourceAmount)
-        self.account_balance = "" + self.account_balance
+        if((commission.source_amount) < 0):
+            raise Exception('source_amount jest poniżej zera.')
+        if((commission.destination_amount) < 0):
+            raise Exception('destination_amount jest poniżej zera.')
+        if((commission.source_amount) > (self.account_balance)):
+            raise Exception('source_amount jest powyżej stanu portfela.')
+        # pobranie kwoty z konta
+        self.account_balance = self.account_balance - commission.source_amount
+        # zapis do bazy danych
         self.commissions.add(commission)
         self.full_clean(exclude=None, validate_unique=True)
+        self.save()
         # dodanei wpisu do historii
-        historyOffer = History(function="newPurchaseOffer", commission=commission, executedTime=datetime.datetime.now())
-        historyOffer.save()
+        history = History(seller=self.user, commission=commission, cryptocurrency_sold=self.cryptocurrency, cryptocurrency_bought=commission.wallet_destination.cryptocurrency,
+                           amount_sold=commission.source_amount, amount_bought=commission.destination_amount)
+        history.save()
+        purachse_history = CommissionHistory(history=history, action=0, executed_time=datetime.datetime.now())
+        purachse_history.save()
         return 0
 
-    def newSaleOffer(self, commission):
+    def purchase(self, purchased_offer):
         """
-        @param Commission : commission
-        dodaje do bazy danych wpis o ofercie sprzedaży
+        @param Commission : purchased_offer
+        dodaje do konta kwotę z zatwierdzonej oferty
         zapisuje użycie metody w historii
         """
-        if(commission.walletSource.user is not self.user):
-            raise Exception('Portfel source jest przypisany do innego użytkownika.')
-        if(commission.walletDestination.user is not self.user):
-            raise Exception('Portfel destination jest przypisany do innego użytkownika.')
-        if(commission.sourceAmount < 0):
-            raise Exception('sourceAmount jest poniżej zera.')
-        if(commission.destinationAmount < 0):
-            raise Exception('destinationAmount jest poniżej zera.')
-        self.commissions.add(commission)
-        # dodanei wpisu do historii
-        historyOffer = History(function="newPurchaseOffer", commission=commission, executedTime=datetime.datetime.now())
-        historyOffer.save()
-        return 0
-
-    def purchase(self, purchasedOffer):
-        """
-        @param Commission : purchasedOffer
-        dodaje/odejmuje do/z konta kwotę z zatwierdzonej oferty
-        zapisuje użycie metody w historii
-        """
-        if(purchasedOffer.walletDestination.cryptocurrency is self.cryptocurrency):
-            self.account_balance = Decimal(self.account_balance) - Decimal(purchasedOffer.destinationAmount)
+        if(purchased_offer.wallet_source.cryptocurrency is self.cryptocurrency):
+            self.account_balance = (self.account_balance) + (purchased_offer.destination_amount) 
         else:
             raise Exception("Błąd w metodzie purchase")
+        # pobranie histori
+        history = History.objects.filter(commission_id=purchased_offer.id)
         # dodanei wpisu do historii
-        historyOffer = History(function="newPurchaseOffer", commission=purchasedOffer, executedTime=datetime.datetime.now())
-        historyOffer.save()
+        purachse_history = CommissionHistory(history=history, action=1, executed_time=datetime.datetime.now())
+        purachse_history.save()
         return 0
 
-    def sale(self, saledOffer):
+    def purchaseSell(self, purchased_offer):
         """
-        @param Commission : saledOffer
+        @param Commission : purchased_offer
+        odejmuje z konta kwotę z zatwierdzonej oferty
+        """
+        if(purchased_offer.wallet_destination.cryptocurrency is self.cryptocurrency):
+            self.account_balance = (self.account_balance) - (purchased_offer.destination_amount) 
+        else:
+            raise Exception("Błąd w metodzie purchase")
+        return 0
+
+    def sale(self, saled_offer):
+        """
+        @param Commission : saled_offer
         dodaje do konta kwotę z sprzedanej oferty
         zapisuje użycie metody w historii
         """
         # zakladajacy zlecenie
-        if(saledOffer.walletDestination is self):
-            self.account_balance = Decimal(self.account_balance) + Decimal(saledOffer.destinationAmount)
+        if(saled_offer.wallet_destination is self):
+            self.account_balance = Decimal(self.account_balance) + Decimal(saled_offer.destination_amount)
         # przyjmujacy zlecenie
-        elif(saledOffer.walletSource.cryptocurrency is self.cryptocurrency):
-            self.account_balance = Decimal(self.account_balance) + Decimal(saledOffer.sourceAmount)
+        elif(saled_offer.wallet_source.cryptocurrency is self.cryptocurrency):
+            self.account_balance = Decimal(self.account_balance) + Decimal(saled_offer.source_amount)
         else:
             raise Exception("Błąd w metodzie sale")
+        # pobranie histori i uaktualnienie wpisu
+        history = History.objects.filter(commission_id=saled_offer.id)
+        history.purchaser = self.user
+        history.save()
         # dodanei wpisu do historii
-        historyOffer = History(function="newPurchaseOffer", commission=saledOffer, executedTime=datetime.datetime.now())
-        historyOffer.save()
+        sale_history = CommissionHistory(history=history, action=2, executed_time=datetime.datetime.now())
+        sale_history.save()
         return 0
 
 #    class Meta:
@@ -267,20 +312,20 @@ class PLNWallet(UserWallet):
     class Meta:
         proxy = True
 
-    def withdraw(self, amount, walletAddress):
+    def withdraw(self, amount, wallet_address):
         """
-        @param String : amount
-        @param String : walletAddress
-        pobiera kwotę amount z konta i wysyłą ją na adres walletAddress
+        @param Decimal : amount
+        @param String : wallet_address
+        pobiera kwotę amount z konta i wysyłą ją na adres wallet_address
         zapisuje użycie metody w historii
         """
         return 0
 
-    def deposit(self, amount, walletAddress):
+    def deposit(self, amount, wallet_address):
         """
-        @param String : amount
-        @param String : walletAddress
-        składanie depozytu o kwocie amount z konta walletAddress,
+        @param Decimal : amount
+        @param String : wallet_address
+        składanie depozytu o kwocie amount z konta wallet_address,
         WAŻNE : UZUPEŁNIĆ
         zapisuje użycie metody w historii
         """
@@ -301,19 +346,19 @@ class LiteWallet(UserWallet):
     class Meta:
         proxy = True
 
-    def withdraw(self, amount, walletAddress):
+    def withdraw(self, amount, wallet_address):
         """
-        @param String : amount
-        @param String : walletAddress
-        pobiera kwotę amount z konta i wysyłą ją na adres walletAddress
+        @param Decimal : amount
+        @param String : wallet_address
+        pobiera kwotę amount z konta i wysyłą ją na adres wallet_address
         zapisuje użycie metody w historii
         """
         return 0
 
-    def deposit(self, amount, walletAddress):
+    def deposit(self, amount, wallet_address):
         """
-        @param String : amount
-        @param String : walletAddress
+        @param Decimal : amount
+        @param String : wallet_address
         WAŻNE : UZUPEŁNIĆ
         zapisuje użycie metody w historii
         """
@@ -323,7 +368,8 @@ class LiteWallet(UserWallet):
 admin.site.register(User)
 admin.site.register(Commission)
 admin.site.register(History)
+admin.site.register(CommissionHistory)
+admin.site.register(DepositHistory)
 admin.site.register(Cryptocurrency)
 admin.site.register(LiteWallet)
 admin.site.register(PLNWallet)
-
