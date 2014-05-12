@@ -1,6 +1,12 @@
 {% extends "master/index.html" %}
 
+{% block header%}
+<div class="registerHeader"></div>
+{% endblock %}
+
 {% block content %}
+
+<div id="rejestracja">
 <form method="post" action="/user/register/">                     
 	<label>Login:</label><input name="user" type="text"><br/>            
 	<label>Haslo:</label> <input name="password" type="password"><br/>                      
@@ -10,4 +16,5 @@
 	<label>Nazwisko:</label> <input name="name2" type="text"><br/>      
 	<input type="submit" value="Rejestruj sie" id="some_name"/> 
 </form>
+</div>
 {% endblock %}
