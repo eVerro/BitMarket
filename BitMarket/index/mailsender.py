@@ -8,7 +8,7 @@ class MailSender:
         """
         apikey jest to klucz, który jest wykorzystywany do wysyłania maili.
         """
-        m = Mandrill(apikey)
+        self.m = Mandrill(apikey)
     
     def sendConfirmationOfRegistration(self, user):
         """
@@ -30,7 +30,7 @@ class MailSender:
              'to': [{'email': user.email,
                      'name': user.username,
                      'type': 'to'}]}
-            result = self.m.messages.send_template(template_name='confirmation mail', template_content=template_content, message=message, async=False)
+            self.result = self.m.messages.send_template(template_name='confirmation mail', template_content=template_content, message=message, async=False)
         except mandrill.Error, e:
             print 'A mandrill error occurred: %s - %s' % (e.__class__, e)
             raise
