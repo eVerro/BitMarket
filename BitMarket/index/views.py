@@ -35,27 +35,22 @@ def register_view(request):
 
 
 def plnc_view(request):
-    return render_to_response('plnc/plnc.html')
+    local = locals()
+    return render_to_response('plnc/plnc.html', {'local': local})
 
 
 def flt_view(request):
-    return render_to_response('flt/flt.html')
+    local = locals()
+    return render_to_response('flt/flt.html', {'local': local})
 
 def user(request):
-    return render_to_response('user/user.html')
+    local = locals()
+    return render_to_response('user/user.html', {'local': local})
 
 def user2(request):
-    template = loader.get_template('user/user.html')
-    if user is not None and user.is_active:
-        auth.login(request, user)
-        user_wallet = UserWallet.objects.get(user==user)
-        context = RequestContext(request, {
-        'wallet': user_wallet,
-        })
-        return HttpResponse(template.render(context))
-    else:
-        request.session['bad_login'] = 1
-        return render_to_response('aboutus/aboutus.html')
+    local = locals()
+    UserWallet = UserWallet.objects.all()
+    return render_to_response('user/user.html', {'local': local}, {'UserWallet': UserWallet})
 def login(request):
             if request.method == 'POST':
                     username = request.POST['username']
