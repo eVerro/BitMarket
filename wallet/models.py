@@ -1,9 +1,13 @@
 # -*- coding: UTF-8 -*-
 from django.db import models
-from BitMarket.index.models import UserProfile as User
 from django.contrib import admin
-from decimal import Decimal
+from django.utils.timezone import utc
+
 import datetime
+from decimal import Decimal
+
+from BitMarket.index.models import UserProfile as User
+import wallet
 
 
 class UserProxy(User):
@@ -17,6 +21,17 @@ class UserProxy(User):
     def __unicode__(self):
         return '%s' % (self.user.name)
 
+    """
+    Podczas tworzenia nowego użytkownika są tworzone od razu dla niego nowe portfele.
+    """
+    def __init__(self, *args, **kwargs):
+        super(UserProxy, self).__init__(*args, **kwargs)
+        self.save()
+        cryptocurrency = Cryptocurrency.objects.all()
+        for c in cryptocurrency:
+            wallet = UserWallet(user=self,account_balance=0,cryptocurrency=c)
+            wallet.save()
+            
     class Meta:
         proxy = True
 
@@ -31,6 +46,7 @@ class UserProxy(User):
         kupna zlecenia przelewa kwote destination_amount na portfel wallet_destination
         wywołuje metody z wallet_destination: newPurchaseOffer(commission);    użycie metody jest zapisane w historii
         """
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
         # sprawdzenie danych wejściowych
         # czy portfele należą do osoby wywołującej funkcje
         if(wallet_source.user is not self):
@@ -44,7 +60,7 @@ class UserProxy(User):
             raise Exception('destination_amount jest poniżej zera.')
         if(Decimal(source_amount) > Decimal(wallet_source.account_balance)):
             raise Exception('source_amount jest powyżej stanu portfela.')
-        if(dead_line - datetime.datetime.now()).total_seconds() < 0:
+        if((dead_line - now).total_seconds()) < 0:
             raise Exception('Podana data jest z przeszłości.')
         commission = Commission(source_amount=source_amount, destination_amount=destination_amount, wallet_source=wallet_source, wallet_destination=wallet_destination, time_limit=dead_line)
         commission.save()
@@ -105,7 +121,18 @@ class Cryptocurrency(models.Model):
     Klasa przechowująca nazwy możliwych do stworzenia portfeli
     """
     name = models.CharField(max_length="32", blank=False, unique=True)
-
+    
+    """
+    Inicjalizacja nowej waluty polega na tym, że każdemu użytkownikowi jest tworzony portfel z tą własnie nową walutą.
+    """
+    def __init__(self, *args, **kwargs):
+        super(Cryptocurrency, self).__init__(*args, **kwargs)
+        self.save()
+        users = User.objects.all()
+        for user in users:
+            wallet = UserWallet(user=user,account_balance=0,cryptocurrency=self)
+            wallet.save()
+    
     class Meta:
         ordering = ['name']
 
@@ -201,7 +228,6 @@ class UserWallet(models.Model):
     user = models.ForeignKey(User, unique=True)
     account_balance = models.DecimalField(max_digits=32, decimal_places=16, blank=False)
     cryptocurrency = models.ForeignKey(Cryptocurrency)
-    commissions = models.ManyToManyField("Commission", related_name="commissions")
     
     def __unicode__(self):
         return '%s' % (self.cryptocurrency.name)
@@ -236,7 +262,8 @@ class UserWallet(models.Model):
         history = History(seller=self.user, commission=commission, cryptocurrency_sold=self.cryptocurrency, cryptocurrency_bought=commission.wallet_destination.cryptocurrency,
                            amount_sold=commission.source_amount, amount_bought=commission.destination_amount)
         history.save()
-        purachse_history = CommissionHistory(history=history, action=0, executed_time=datetime.datetime.now())
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        purachse_history = CommissionHistory(history=history, action=0, executed_time=now)
         purachse_history.save()
         return 0
 
@@ -253,7 +280,8 @@ class UserWallet(models.Model):
         # pobranie histori
         history = History.objects.filter(commission_id=purchased_offer.id)
         # dodanei wpisu do historii
-        purachse_history = CommissionHistory(history=history, action=1, executed_time=datetime.datetime.now())
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        purachse_history = CommissionHistory(history=history, action=1, executed_time=now)
         purachse_history.save()
         return 0
 

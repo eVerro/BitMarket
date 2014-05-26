@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 from django.conf.urls import patterns, include, url
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from dajaxice.core import dajaxice_autodiscover, dajaxice_config# tutaj ciagle wykrywa blad, nie wiem czemu, ale powinno dzialac
@@ -28,5 +29,11 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+    
+    # Testowanie wysyłąnia maila
+    (r'^sendsms/', 'BitMarket.index.views.sendSms'),
+    
+    # Testowanie wysyłąnia smsa
+    (r'^sendmail/', 'BitMarket.index.views.sendMail'),
 )
 urlpatterns += staticfiles_urlpatterns()#bylo w tutorialu do ajaxa

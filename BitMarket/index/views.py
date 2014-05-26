@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 # Create your views here.
 from django.contrib.auth.models import auth
 from django.contrib.auth.models import User
@@ -7,7 +8,9 @@ from django.http import HttpResponse
 from django.template import loader, RequestContext
 from BitMarket.index.models import UserProfile
 from wallet.models import UserWallet
-
+from BitMarket.index.smsapi import Smsapi
+import hashlib
+from BitMarket.index.mailsender import MailSender
 
 
 def index(request):
@@ -94,3 +97,45 @@ def logout_view(request):
 
 def ajaxTest(request):
     return render_to_response('ajaxTest/ajax.html')
+
+def sendMail(request):
+        """
+        Metoda wysyłająca maila w celu poinformowania o stworzeniu konta
+        """
+        sender = MailSender("xx")
+        try:
+            # Odkomentuj aby sprawdzić wysyłąnei testowwego maila
+            response = sender.test()
+            # Odkomentuj aby przy wysyłaniu brać dane zalogowanego użytkownika maila
+            #user = request.user
+            #response = sender.sendmail(user)
+        except Exception:
+            response = sender.createTemplateConfirmationOfRegistration()
+            print "%s" % (response)
+            # Odkomentuj aby sprawdzić wysyłąnei testowwego maila
+            response = sender.test()
+            # Odkomentuj aby przy wysyłaniu brać dane zalogowanego użytkownika maila
+            #user = request.user
+            #response = sender.sendmail(user)
+        print "%s" % (response)
+        return render_to_response('master/index.html', {'local': locals()})
+
+def sendSms(request):
+        """
+        Metoda wysyłająca smsa w celu potwierdzenia stworzenia zlecenia
+        """
+        local = locals()
+        hashs = hashlib.md5()
+        hashs.update("xx")
+        hashs = hashs.hexdigest()
+        
+        smsapi = Smsapi(username="chrystian.kislo@gmail.com", password=hashs)
+        # Odkomentuj poniższą linikę, aby testować wysyłanie na konkretnych danych.
+        response = smsapi.test()
+        # Odkomentuj poniższe liniki, aby przy wysyłąniu wiadomości pobierać informacje od zalogowanego użytkownika
+        #user = request.user
+        #response = smsapi.sendConfirmationOfCommission(user)
+        
+        print "%s" % (hashs)
+        print "%s" % (response.content)
+        return render_to_response('master/index.html', {'local': local})

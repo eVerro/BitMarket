@@ -1,0 +1,15 @@
+# Tutaj będą dane inicjalizacyjne do szybkiego resetowania bazy danych, bądź testowania.
+
+# Przykład
+
+# "model": "wallet.Klasa", np. "wallet.UserProxy"
+#	"pk": 1, numer id (chyba od 1)
+#   "fields": 
+#	{
+#   	"string": "Wybory pierwsze", przykładowe pole string
+#       "boolean": true, boolean
+#       "list obiektow": [1,2], lista obiektów np. użytkowników, liczby to id użytkowników. Występuje w relacjach many to many.
+#       "int": 2, int
+#       "datatime": "2011-09-01T13:20:30+03:00" datatime YYYY-MM-DD(T)GG:MM:SS+GG:MM(te drugie gg i mm jest dodawane, przydaje się, przy różnych strefach czasowych).
+#   }
+# }
