@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 from mandrill import Mandrill
 import mandrill
 from django.contrib.auth.models import User
@@ -22,7 +23,7 @@ class MailSender:
              'bcc_address': 'message.bcc_address@example.com',
              'from_email': 'mailtestsender4@gmail.com',
              'from_name': 'BitCoin',
-             'global_merge_vars': [{'content': 'xx', 'name': 'xx'}],
+             'global_merge_vars': [{'content': user.username, 'name': 'username'}],
              'important': True,
              'merge': True,
              'subject': 'Bitcoin: Confirm you registration',
@@ -30,12 +31,13 @@ class MailSender:
              'to': [{'email': user.email,
                      'name': user.username,
                      'type': 'to'}]}
-            self.result = self.m.messages.send_template(template_name='confirmation mail', template_content=template_content, message=message, async=False)
+            result = self.m.messages.send_template(template_name='confirmation mail', template_content=template_content, message=message, async=False)
         except mandrill.Error, e:
             print 'A mandrill error occurred: %s - %s' % (e.__class__, e)
             raise
+        return result
 
-    def createTemplateConfirmationOfRegistration(self, user):
+    def createTemplateConfirmationOfRegistration(self):
         """
         Wysyła template do usera z prośbą o rejestracje.
         """
@@ -45,7 +47,33 @@ class MailSender:
             \
             Pozdrawiamy: Drużyna BitMarket"
         
-        self.m.templates.add(self, name='confirmation mail', from_email=r"testmailsender4@gmail.com", 
-                        from_name=r"Bit Market", subject="Confirmation", code="", text=context, publish=True, labels=["confirmation", "registration"]);
+        result = self.m.templates.add(name='confirmation mail', from_email=r"testmailsender4@gmail.com",from_name=r"Bit Market", 
+                             subject="Confirmation", code="", text=context, publish=True, labels=["confirmation", "registration"]);
+        return result
         
+    def test(self):
+        """
+        Wysyła testowego template na mail testmailsender4@gmail.com.
+        """
+        try:
+            user = User();
+            template_content = [{'content': 'Tutaj powinno wstawić TO', 'name': 'username'}]
+            message = {
+             'auto_html': True,
+             'bcc_address': 'testmailsender4@gmail.com',
+             'from_email': 'testmailsender4@gmail.com',
+             'from_name': 'BitCoin',
+             'global_merge_vars': [{'content': 'xx', 'name': 'xx'}],
+             'important': True,
+             'merge': True,
+             'subject': 'Test: Wysyłam se testa',
+             'tags': ['test1','test2','test3'],
+             'to': [{'email': 'testmailsender4@gmail.com',
+                     'name': 'Testnamebocoinnegonibydać',
+                     'type': 'to'}]}
+            result = self.m.messages.send_template(template_name='confirmation mail', template_content=template_content, message=message, async=False)
+        except mandrill.Error, e:
+            print 'A mandrill error occurred: %s - %s' % (e.__class__, e)
+            raise
+        return result
         

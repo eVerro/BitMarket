@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 from django.contrib.auth.models import User
 import requests
 
@@ -9,8 +10,7 @@ class Smsapi:
         """
         self.u = username
         self.p = password
-        self.domain_name
-        self.url = '- https://ssl.smsapi.pl/sms.do'
+        self.url = 'https://ssl.smsapi.pl/sms.do'
         
     def sendConfirmationOfCommission(self, user):
         message = "Potwierdzenie stowrzenia zleceinia przez uzytkownika %s" % (user.username)
@@ -26,5 +26,17 @@ class Smsapi:
         params['password'] = self.p
         params['from'] = self.domain_name
         
+        # Zakomentuj poniższą linikę aby przyłączyć wysyłanie smsów z trybu testowego na rzeczywisty.
+        params['test'] = 1
+        
+        response = requests.get(url=self.url,params=params)
+        return response
+    
+    def test(self):
+        params = {'to': "507606346", 'message': "Test"}
+        params['username'] = self.u
+        params['password'] = self.p
+        params['from'] = ""
+        params['test'] = 1
         response = requests.get(url=self.url,params=params)
         return response
