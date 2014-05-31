@@ -19,14 +19,14 @@ class UserProxy(User):
     """
 
     def __unicode__(self):
-        return '%s' % (self.user.name)
+        return '%s' % (self.user.username)
 
     """
     Podczas tworzenia nowego użytkownika są tworzone od razu dla niego nowe portfele.
     """
-    def __init__(self, *args, **kwargs):
-        super(UserProxy, self).__init__(*args, **kwargs)
-        self.save()
+        
+    def save(self):
+        super(UserProxy, self).save()
         cryptocurrency = Cryptocurrency.objects.all()
         for c in cryptocurrency:
             wallet = UserWallet(user=self,account_balance=0,cryptocurrency=c)
@@ -125,14 +125,14 @@ class Cryptocurrency(models.Model):
     """
     Inicjalizacja nowej waluty polega na tym, że każdemu użytkownikowi jest tworzony portfel z tą własnie nową walutą.
     """
-    def __init__(self, *args, **kwargs):
-        super(Cryptocurrency, self).__init__(*args, **kwargs)
-        self.save()
+        
+    def save(self):
+        super(Cryptocurrency, self).save()
         users = User.objects.all()
         for user in users:
             wallet = UserWallet(user=user,account_balance=0,cryptocurrency=self)
             wallet.save()
-    
+            
     class Meta:
         ordering = ['name']
 
@@ -192,7 +192,7 @@ class CommissionHistory(models.Model):
     Data executed_time
     int action
     """
-    history = models.ForeignKey(History, unique=True)
+    history = models.ForeignKey(History, unique=False)
     action = models.IntegerField()
     executed_time = models.DateTimeField()
 
@@ -212,7 +212,7 @@ class DepositHistory(models.Model):
     String wallet_address
     """
     wallet_address = models.CharField(max_length="64", blank=False, unique=False)
-    cryptocurrency = models.ForeignKey(Cryptocurrency, unique=True)
+    cryptocurrency = models.ForeignKey(Cryptocurrency, unique=False)
     amount = models.DecimalField(max_digits=32, decimal_places=16, blank=False)
     executed_time = models.DateTimeField()
     deposit = models.BooleanField()
@@ -225,12 +225,12 @@ class UserWallet(models.Model):
     ktore udostępniają metody do wpłaty i pobrania pieniędzy z portfela
     udostępiania metody do tworzenia zleceń, kupowania i pobierania pieniędzy
     """
-    user = models.ForeignKey(User, unique=True)
+    user = models.ForeignKey(User, unique=False)
     account_balance = models.DecimalField(max_digits=32, decimal_places=16, blank=False)
-    cryptocurrency = models.ForeignKey(Cryptocurrency)
+    cryptocurrency = models.ForeignKey(Cryptocurrency, unique=False)
     
     def __unicode__(self):
-        return '%s' % (self.cryptocurrency.name)
+        return 'Portfel %s użytkownika %s' % (self.cryptocurrency.name, self.user.user.username)
 
     def newPurchaseOffer(self, commission):
         """
@@ -394,10 +394,10 @@ class LiteWallet(UserWallet):
 
 
 admin.site.register(User)
+admin.site.register(UserProxy)
 admin.site.register(Commission)
 admin.site.register(History)
 admin.site.register(CommissionHistory)
 admin.site.register(DepositHistory)
 admin.site.register(Cryptocurrency)
-admin.site.register(LiteWallet)
-admin.site.register(PLNWallet)
+admin.site.register(UserWallet)
