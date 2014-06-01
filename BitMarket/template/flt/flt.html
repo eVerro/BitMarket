@@ -58,4 +58,18 @@
 		  </tr>
 		</table>
 	</div>
+	<div id="pln">
+	{% if local.request.user.is_authenticated %}
+	<font size=3>zlecenie</font>
+	<br>
+	<br>
+		<form method="post" action="/user/register/">                     
+		<label>Ilość:</label><br><input name="quantity" type="text"><br/>            
+		<label>Wartość:</label><br><input name="price" type="text"><br/> 
+		<label>Typ:</label><input type="radio" name="typ" value="kupno" checked="checked" />Kupno
+		<input type="radio" name="typ" value="sprzedaz" />Sprzedaż<br>                        
+		<input type="submit" value="Złóż zlecenie" id="some_name"/> 
+		</form>
+	{%endif%}
+	</div>
 {% endblock %}

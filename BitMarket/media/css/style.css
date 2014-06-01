@@ -28,6 +28,10 @@ a img { border: none;}
 	color: #7A8090;
 	
 }
+#top p{
+	color: #FFFFFF;
+	
+}
 /* HEADER czyli logo i menu */
 #header {
 	width: 960px;
@@ -103,6 +107,17 @@ a img { border: none;}
 	height: 220px;
 	margin-top: 5px;
 	background-color: #1d202a;
+}
+
+#pln{
+	margin-left: auto;
+	margin-bottom: 5px;
+	margin-right: auto;
+	border-radius: 10px; 
+	width: 200px;
+	height: auto;
+	margin-top: 5px;
+	text-align: center;
 }
 
 #plnc {
@@ -243,6 +258,7 @@ a img { border: none;}
 	overflow: hidden;
 	margin-right: 25px;
 	margin-left: 10px;
+	float: none;
 }
 
 #main2 #news p {
