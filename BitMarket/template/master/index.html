@@ -14,22 +14,21 @@
 <body>
 
     <div id="top">
+    	<div id="top_witaj">
     	{% if local.request.user.is_authenticated %}
-			    <p class="witaj">Witaj, <strong class="czerwony">
-			    	{{ local.request.user.username }}</strong>.</p>
-			    <form method="post" action="/user/logout/">
-			    	<span id="przycisk2"><input type="submit" value="logout" /></span>
-			    </form>
-			   	<a class="panel" href="/admin">Panel</a>
+			    <p id="witaj">Witaj, <b id="username">{{ local.request.user.username }}</b>.</p>
+			    <p id="wylogowanie_link"><a href="/user/logout/">Wyloguj</a></p>
+			   	<p id="panel_admina"><a class="panel" href="/admin">Panel</a></p>
 		{% else %}
-			    <form method="post" action="/user/login/">                     
+				<p id="logowanie_formularz">
+			    <form method="post" action="/user/login/" id="logowanie_form">                     
 			    	<span id="logowaniePole"> <input name="username" type="text"> </span>               
 			    	<span id="passPole"> <input name="password" type="password"></span>                        
-			        <span id="przycisk"> <input type="submit"  value="login" /> </span>                    
-			    </form>
-			   <font size=3> <a href="/user/registerpage/">Rejestracja</a> </font>
+			    </form></p>
+			    <p id="logowanie_link"><a href="/user/login/" onclick="document.getElementById('logowanie_form').submit(); return false;">Logowanie</a></p>
+			   <p id="rejestracja_link"><a href="/user/registerpage/">Rejestracja</a></p>
 		{% endif %}
-		
+		</div>
 	
 		</div>
     
