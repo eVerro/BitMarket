@@ -7,6 +7,7 @@ from django.shortcuts import render_to_response, redirect
 from django.http import HttpResponse
 from django.template import loader, RequestContext
 from BitMarket.index.models import UserProfile
+from BitMarket.index.models import Newss
 from wallet.models import UserWallet
 from BitMarket.index.smsapi import Smsapi
 import hashlib
@@ -14,9 +15,10 @@ from BitMarket.index.mailsender import MailSender
 
 
 def index(request):
+        latest_news_list = Newss.objects.all().order_by('-pub_date')
         local = locals()
-        return render_to_response('master/index.html', {'local': local})
-
+        return render_to_response('master/index.html', {'local': local,'latest_news_list': latest_news_list})
+        #return render_to_response('master/index.html', {'local': local})
 
 def aboutus(request):
         local = locals()
