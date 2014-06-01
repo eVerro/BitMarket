@@ -22,6 +22,7 @@ a img { border: none;}
 	background-color: #1b1c1d;
 	width: 100%;
 	height: 50px;
+	position: relative;
 }
 
 #top a{
@@ -30,7 +31,66 @@ a img { border: none;}
 }
 #top p{
 	color: #FFFFFF;
-	
+}
+#top #top_witaj {
+	position: absolute;
+	margin-left: 180px;
+	margin-top: 10px;
+	float: left;
+}
+
+#top #top_witaj #logowanie_formularz{
+}
+
+
+#top #top_witaj #logowanie_link{
+	float: left;
+	margin-top: -33px;
+	margin-left: 300px;
+}
+
+#top #top_witaj #rejestracja_link{
+	float: left;
+	margin-top: -33px;
+	margin-left: -33px;
+}
+
+#top #top_witaj a{
+	display: block;
+	padding: 11px 26px 10px; 
+	color: #7a8090; 
+	font: bold 1.5em tahoma, verdana, arial, sans-serif;
+	text-decoration: none;
+}
+
+
+
+#top #top_witaj a:hover{
+	color: #ffffff;
+}
+
+#top #top_witaj #witaj{
+	float: left;
+}
+
+#top #top_witaj #wylogowanie_link{
+	float: left;
+	margin-top: -12px;
+
+}
+#top #top_witaj #panel_admina{
+	float: left;
+	margin-top: -12px;
+	margin-left: -30px;
+}
+
+#top #top_witaj #witaj{
+	color: #7a8090; 
+	font: bold 1.5em tahoma, verdana, arial, sans-serif;
+	text-decoration: none;
+}
+#top #top_witaj #witaj #username{
+	color: #ffffff;
 }
 /* HEADER czyli logo i menu */
 #header {
