@@ -5,15 +5,32 @@
 {% endblock %}
 
 {% block content %}
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#login_err').hide();
+	});
+
+	function show_login_err(){
+		$('#login_err').show();
+	}
+
+	function login_valid(){
+		login = $('input[name="user"]').val();
+		Dajaxice.BitMarket.index.login_valid(Dajax.process,{
+			'login' : login
+		});
+	}
+	
+</script>
 
 <div id="rejestracja">
 <form method="post" action="/user/register/">                     
-	<label>Login:</label><input name="user" type="text"><br/>            
-	<label>Haslo:</label> <input name="password" type="password"><br/>                      
-	<label>Potwierdz haslo:</label>  <input type="password" name="password2"  value="" /><br/> 
-	<label>Email:</label> <input type="email" name="email" value="" /><br/>
-	<label>Imie:</label> <input name="name" type="text"><br/>            
-	<label>Nazwisko:</label> <input name="name2" type="text"><br/>      
+	<label>Login:</label><input name="user" onchange="login_valid();" type="text"><label id="login_err">NIepoprawny login</label><br/><br/>            
+	<label>Haslo:</label> <input name="password" type="password"><br/><br/>                      
+	<label>Potwierdz haslo:</label>  <input type="password" name="password2"  value="" /><br/><br/> 
+	<label>Email:</label> <input type="email" name="email" value="" /><br/><br/>
+	<label>Imie:</label> <input name="name" type="text"><br/><br/>
+	<label>Nazwisko:</label> <input name="name2" type="text"><br/><br/>      
 	<input type="submit" value="Rejestruj sie" id="some_name"/> 
 </form>
 </div>

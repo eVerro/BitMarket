@@ -97,7 +97,8 @@ def logout_view(request):
 
 
 def ajaxTest(request):
-    return render_to_response('ajaxTest/ajax.html')
+    local = locals()
+    return render_to_response('ajaxTest/ajax.html', {'local': locals()})
 
 def sendMail(request):
         """
