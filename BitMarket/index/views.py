@@ -52,8 +52,9 @@ def user(request):
 
 def user2(request):
     local = locals()
-    UserWallet = UserWallet.objects.all()
-    return render_to_response('user/user.html', {'local': local}, {'UserWallet': UserWallet})
+    profile = UserProfile.objects.all()
+    response=profile
+    return render_to_response('user/user.html', {'profile': profile, 'local': local})    
 def login(request):
             if request.method == 'POST':
                     username = request.POST['username']

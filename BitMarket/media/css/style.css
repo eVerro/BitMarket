@@ -8,7 +8,7 @@ html, body, ul, li { margin: 0; padding: 0;}
 h1, h2, ul, li, p { margin: 0; padding: 0; font-size: 1em; line-height: 1.5em;}
 
 /* ustawienia globalne */
-body { font: 0.625em/1.5em tahoma, verdana, arial, sans-serif; background-color: #282d3a; }
+body { font: 0.625em/1.5em tahoma, verdana, arial, sans-serif; background-color: #282d3a;}
 
 /* szerokość strony */
 .content { width: 960px;}
@@ -16,6 +16,8 @@ body { font: 0.625em/1.5em tahoma, verdana, arial, sans-serif; background-color:
 /* resetowanie ramek obrazków */
 a img { border: none;}
 /* TOP strony - czarny pasek gorny */
+
+
 #top {
 	background-color: #1b1c1d;
 	width: 100%;
@@ -93,8 +95,6 @@ a img { border: none;}
 	background: url(../images/logowanie.jpg) top right no-repeat;
 }
 #rejestracja{
-	
-	
 	margin-left: 5px;
 	margin-bottom: 5px;
 	margin-right: 5px;
@@ -103,6 +103,74 @@ a img { border: none;}
 	height: 220px;
 	margin-top: 5px;
 	background-color: #1d202a;
+}
+
+#plnc {
+	width: 100%;
+	font-size: 12pt;
+	text-align: center;
+	margin-left: auto;
+	margin-top: 5px;
+	margin-right: auto
+}
+
+#plnclewa{
+	width: 42%;
+	font-size   : 12pt;
+	float : left; 
+	margin-left: 4%;
+	margin-bottom: 4%;
+	margin-right: 2%; 
+	margin-top: 4%;
+}
+#plnclewa table {
+	float: right;
+	margin-left: 10px;
+	margin-bottom: 10px;
+	margin-right: 10px; 
+	margin-top: 10px;
+    border-collapse : collapse;
+    border          : solid 2px black;
+}
+#plncprawa table {
+	float: left;
+	margin-left: 10px;
+	margin-bottom: 10px;
+	margin-right: 10px; 
+	margin-top: 10px;
+    border-collapse : collapse;
+    border          : solid 2px black;
+}
+#plnclewa td, #plncprawa td {
+    border  : solid 1px black;
+    padding : 5px;
+}
+#plnclewa th, #plncprawa th {
+    border      : solid 1px black;
+    color       : white;
+    background  : black;
+    font-weight : bolder;
+    font-size   : 12pt;
+    padding     : 15px;
+}
+
+#plnclewa th.tytul, #plncprawa th.tytul {
+	border      : solid 1px black;
+    color       : black;
+    background  : white;
+    font-weight : bolder;
+    font-size   : 12pt;
+    padding     : 15px;
+}
+
+#plncprawa{
+	width: 42%;
+	float: right;
+	font-size   : 12pt; 
+	margin-left: 2%;
+	margin-bottom: 4%;
+	margin-right: 4%; 
+	margin-top: 4%;
 }
 
 #rejestracja label{
