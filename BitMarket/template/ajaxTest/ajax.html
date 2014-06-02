@@ -11,32 +11,11 @@
 	</div>
 	<div id = "pln_gld_div">
 		<div id="plnclewa">
-			<table>
-			  <tr>
-			    <th colspan="2" class="tytul">kupno</th>
-			  </tr>	
-			  <tr>
-			    <th>Ilość</th>
-			    <th>Wartość</th>
-			  </tr>
-			  <form id="pln_gld">
-
-			  </form>
-			</table>
+			
+			
 		</div>
 		<div id="plncprawa">
-			<table>
-			  <tr>
-			    <th colspan="2" class="tytul">sprzedaż</th>
-			  </tr>	
-			  <tr>
-			    <th>Ilość</th>
-			    <th>Wartość</th>
-			  </tr>
-			  <form id="gld_pln">
-
-			  </form>
-			</table>
+			
 		</div>
 	</div>
 	{% if local.request.user.is_authenticated %}
@@ -51,6 +30,5 @@
 			<input type="submit" value="Złóż zlecenie" id="some_name"/> 
 		</form>
 	</div>
-	{%endif%}
-
+	{%endif%} 
 {% endblock %}
