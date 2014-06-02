@@ -15,15 +15,15 @@ class MailSender:
         """
         Wysyła template do usera z prośbą o rejestracje.
         """
+        print "%s %s hahahahhaha" % (user.username, user.code)
         try:
-            user = User();
-            template_content = [{'content': 'content', 'name': 'name'}]
+            template_content = [{'content': 'content', 'name': 'USERNAME'}]
             message = {
-             'auto_html': False,
+             'auto_html': True,
              'bcc_address': 'message.bcc_address@example.com',
              'from_email': 'mailtestsender4@gmail.com',
              'from_name': 'BitCoin',
-             'global_merge_vars': [{'username': user.username, 'code': user.code}],
+             'global_merge_vars': [{'name': 'USERNAME', 'content': user.username},{'name': 'code', 'content': user.code}],
              'important': True,
              'merge': True,
              'subject': 'Potwierdzenie rejestracji na stronie BitMarket',

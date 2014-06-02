@@ -24,7 +24,7 @@ class UserNotConfirmed(User):
     def __unicode__(self):
         return 'Nie potwierdzony %s' % (self.username)
     
-    def confim(self):
+    def confirm(self):
         user = UserProfile(self)
         user.url = self.url
         user.company = self.company
