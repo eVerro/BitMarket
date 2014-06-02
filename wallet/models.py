@@ -353,7 +353,7 @@ class UserWallet(models.Model):
             code+=str(random.randint(0,9))
 
         sender = Smsapi("", "")
-        sender.sendConfirmationOfWithdraw(number=self.user.phone_number,code=code)
+        sender.sendConfirmationOfWithdraw(number=self.user.phone_number,code=code,id=deposit_history.id)
 
         hashs = hashlib.md5()
         hashs.update(code)
