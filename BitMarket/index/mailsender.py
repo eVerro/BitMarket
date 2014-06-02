@@ -19,14 +19,14 @@ class MailSender:
             user = User();
             template_content = [{'content': 'content', 'name': 'name'}]
             message = {
-             'auto_html': True,
+             'auto_html': False,
              'bcc_address': 'message.bcc_address@example.com',
              'from_email': 'mailtestsender4@gmail.com',
              'from_name': 'BitCoin',
-             'global_merge_vars': [{'content': user.username, 'name': 'username'}],
+             'global_merge_vars': [{'username': user.username, 'code': user.code}],
              'important': True,
              'merge': True,
-             'subject': 'Bitcoin: Confirm you registration',
+             'subject': 'Potwierdzenie rejestracji na stronie BitMarket',
              'tags': ['registration'],
              'to': [{'email': user.email,
                      'name': user.username,
@@ -42,13 +42,13 @@ class MailSender:
         Wysyła template do usera z prośbą o rejestracje.
         """
         context = r"Witaj /*|username|/*\
-            Dziękujemy za zarejestrowanie się na naszej stronie BitMarket.\
-            Życzymy Tobie udanych i szykich transakcj za pomocą naszego nowoczesnego systemu.\
-            \
+            Ten mail został wysłany w celu weryfikacji Twojego konta mailowego. \
+            Proszę potwierdź swój mail klikając na link pod spodem, bądź wklejając go do paska url. \
+            http://127.0.0.1:8000/registrationconfirm//*code/*\
             Pozdrawiamy: Drużyna BitMarket"
         
         result = self.m.templates.add(name='confirmation mail', from_email=r"testmailsender4@gmail.com",from_name=r"Bit Market", 
-                             subject="Confirmation", code="", text=context, publish=True, labels=["confirmation", "registration"]);
+                             subject="Confirmation", code="test test test", text=context, publish=True, labels=["confirmation", "registration"]);
         return result
         
     def test(self):
@@ -59,7 +59,7 @@ class MailSender:
             user = User();
             template_content = [{'content': 'Tutaj powinno wstawić TO', 'name': 'username'}]
             message = {
-             'auto_html': True,
+             'auto_html': False,
              'bcc_address': 'testmailsender4@gmail.com',
              'from_email': 'testmailsender4@gmail.com',
              'from_name': 'BitCoin',
