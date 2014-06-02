@@ -49,6 +49,10 @@ coverage.xml
 *.log
 *.pot
 
+# pYTHON stuff:
+*.pyc
+*.db
+
 # Sphinx documentation
 docs/_build/
 
