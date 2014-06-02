@@ -1,7 +1,28 @@
 {% extends "master/index.html" %}
 
 {% block content %}
-	{% for p in profile %}
-		<font size=2>{{p.user}}</font>
-	{% endfor %}      
+	{% if local.request.user.is_authenticated %}
+	gdfrgdf
+		{% if local.profile.user == local.request.user %}
+			<div id="plnc">
+				<font size=4>Konto użytkownika {{local.profile.user}}</font>
+			</div>
+			<div id="plnclewa">
+				<table>	
+					 <tr>
+					   <th>Atrybut</th>
+					   <th>Wartość</th>
+					 </tr>
+					 <tr>
+					   <td>Stan konta</td>
+					   <td>660</td>
+					 </tr>
+					 <tr>
+					  <td>Ilość zleceń oczekujacych </td>
+					  <td>3</td>
+					 </tr>
+				</table>
+			</div>
+		{% endif %}     
+	{% endif %} 
 {% endblock %}

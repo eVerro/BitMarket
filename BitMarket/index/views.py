@@ -9,6 +9,8 @@ from BitMarket.index.models import Newss
 from BitMarket.index.smsapi import Smsapi
 import hashlib
 from BitMarket.index.mailsender import MailSender
+from wallet.models import UserProxy
+
 
 
 def index(request):
@@ -46,14 +48,11 @@ def flt_view(request):
     return render_to_response('flt/flt.html', {'local': local})
 
 def user(request):
+    profile = UserProxy.objects.get(user=request.user)
+    #wallet = UserWallet.objects.get(user=profile.user)
     local = locals()
     return render_to_response('user/user.html', {'local': local})
 
-def user2(request):
-    local = locals()
-    profile = UserProfile.objects.all()
-    response=profile
-    return render_to_response('user/user.html', {'profile': profile, 'local': local})    
 def login(request):
             if request.method == 'POST':
                     username = request.POST['username']

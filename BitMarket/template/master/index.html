@@ -13,7 +13,7 @@
     	{% if local.request.user.is_authenticated %}
 			    <p id="witaj">Witaj, <b id="username">{{ local.request.user.username }}</b>.</p>
 			    <p id="wylogowanie_link"><a href="/user/logout/">Wyloguj</a></p>
-			   	<p id="panel_admina"><a class="panel" href="/admin">Panel</a></p>
+			   	<p id="panel_admina"><a class="panel" href="/user/user">Moje konto</a></p>
 		{% else %}
 				<p id="logowanie_formularz">
 			    <form method="post" action="/user/login/" id="logowanie_form">                     
