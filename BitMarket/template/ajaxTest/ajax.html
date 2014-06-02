@@ -1,23 +1,56 @@
-{% load dajaxice_templatetags %}
+{% extends "master/index.html" %}
+{% block content %}
+<script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/autorefresh.js" ></script>
+<script type="text/javascript"> 
+	$(document).ready(
+		AutoRefreshWallet('PLN', 'GLD')
+	);	
+</script>
+	<div id="plnc">
+		Zlecenia pary walutowej plnc/gld
+	</div>
+	<div id = "pln_gld_div">
+		<div id="plnclewa">
+			<table>
+			  <tr>
+			    <th colspan="2" class="tytul">kupno</th>
+			  </tr>	
+			  <tr>
+			    <th>Ilość</th>
+			    <th>Wartość</th>
+			  </tr>
+			  <form id="pln_gld">
 
-<html>
-  	<head>
-    	<title>My test ajax template</title>
-    	{% dajaxice_js_import %}
-  	</head>
-  	<script type="text/javascript">
-  		function my_js_callback(data){
-    		text =document.getElementById("text");
-    		text.innerHTML = data.message;
-			}
-  		
-  	</script>
-    <body>
-    	<input type="button" value="TEST" style="width: 50px;" onclick="Dajaxice.BitMarket.index.sayhello(my_js_callback);" /><br/>
-    	<div>
-    		<p id="text">Test1</p>
-    		
-    	</div>
-    	
-    </body>
-</html>
+			  </form>
+			</table>
+		</div>
+		<div id="plncprawa">
+			<table>
+			  <tr>
+			    <th colspan="2" class="tytul">sprzedaż</th>
+			  </tr>	
+			  <tr>
+			    <th>Ilość</th>
+			    <th>Wartość</th>
+			  </tr>
+			  <form id="gld_pln">
+
+			  </form>
+			</table>
+		</div>
+	</div>
+	{% if local.request.user.is_authenticated %}
+	<div id="pln">
+
+		<font size="3">zlecenie</font>
+		<form method="post" action="/user/register/">                     
+			<label>Ilość:</label><br><input name="quantity" type="text"><br/>            
+			<label>Wartość:</label><br><input name="price" type="text"><br/> 
+			<label>Typ:</label><input type="radio" name="typ" value="kupno" checked="checked" />Kupno
+			<input type="radio" name="typ" value="sprzedaz" />Sprzedaż<br>                        
+			<input type="submit" value="Złóż zlecenie" id="some_name"/> 
+		</form>
+	</div>
+	{%endif%}
+
+{% endblock %}
