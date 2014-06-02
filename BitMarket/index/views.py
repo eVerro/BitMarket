@@ -4,19 +4,18 @@ from django.contrib.auth.models import auth
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from django.shortcuts import render_to_response, redirect
-from django.http import HttpResponse
-from django.template import loader, RequestContext
 from BitMarket.index.models import UserProfile
-from wallet.models import UserWallet
+from BitMarket.index.models import Newss
 from BitMarket.index.smsapi import Smsapi
 import hashlib
 from BitMarket.index.mailsender import MailSender
 
 
 def index(request):
+        latest_news_list = Newss.objects.all().order_by('-pub_date')
         local = locals()
-        return render_to_response('master/index.html', {'local': local})
-
+        return render_to_response('master/index.html', {'local': local,'latest_news_list': latest_news_list})
+        #return render_to_response('master/index.html', {'local': local})
 
 def aboutus(request):
         local = locals()
@@ -38,27 +37,23 @@ def register_view(request):
 
 
 def plnc_view(request):
-    return render_to_response('plnc/plnc.html')
+    local = locals()
+    return render_to_response('plnc/plnc.html', {'local': local})
 
 
 def flt_view(request):
-    return render_to_response('flt/flt.html')
+    local = locals()
+    return render_to_response('flt/flt.html', {'local': local})
 
 def user(request):
-    return render_to_response('user/user.html')
+    local = locals()
+    return render_to_response('user/user.html', {'local': local})
 
 def user2(request):
-    template = loader.get_template('user/user.html')
-    if user is not None and user.is_active:
-        auth.login(request, user)
-        user_wallet = UserWallet.objects.get(user==user)
-        context = RequestContext(request, {
-        'wallet': user_wallet,
-        })
-        return HttpResponse(template.render(context))
-    else:
-        request.session['bad_login'] = 1
-        return render_to_response('aboutus/aboutus.html')
+    local = locals()
+    profile = UserProfile.objects.all()
+    response=profile
+    return render_to_response('user/user.html', {'profile': profile, 'local': local})    
 def login(request):
             if request.method == 'POST':
                     username = request.POST['username']
@@ -101,7 +96,8 @@ def logout_view(request):
 
 
 def ajaxTest(request):
-    return render_to_response('ajaxTest/ajax.html')
+    local = locals()
+    return render_to_response('ajaxTest/ajax.html', {'local': locals()})
 
 def sendMail(request):
         """

@@ -1,12 +1,7 @@
 {% extends "master/index.html" %}
 
 {% block content %}
-               
-	<font size=2>Twoje konto</font>
-	<br/>
-	{% for wallet in wallet %}
-		<font size=2> {{wallet.user}}</font>/font>
-		<br/>
-		<font size=2>Wartość: {{wallet.account_balance}}</font>/font>
-	{% endfor %}
+	{% for p in profile %}
+		<font size=2>{{p.user}}</font>
+	{% endfor %}      
 {% endblock %}

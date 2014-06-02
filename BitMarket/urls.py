@@ -25,6 +25,7 @@ urlpatterns = patterns('',
     (r'^user/confirm/$', 'BitMarket.index.register.register'),
     (r'^user/confirm/(?P<code>\d+)/$','BitMarket.index.register.checkConfirmLink'),
     (r'^registrationconfirm/(?P<code>\d+)/$','BitMarket.index.register.checkConfirmLink'),
+    (r'^user/user/$','BitMarket.index.views.user2'),
     (r'^ajax/ajaxTest/$','BitMarket.index.views.ajaxTest'),
     (dajaxice_config.dajaxice_url, include('dajaxice.urls')),
     # Uncomment the admin/doc line below to enable admin documentation:

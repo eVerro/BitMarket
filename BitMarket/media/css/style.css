@@ -8,7 +8,7 @@ html, body, ul, li { margin: 0; padding: 0;}
 h1, h2, ul, li, p { margin: 0; padding: 0; font-size: 1em; line-height: 1.5em;}
 
 /* ustawienia globalne */
-body { font: 0.625em/1.5em tahoma, verdana, arial, sans-serif; background-color: #282d3a; }
+body { font: 0.625em/1.5em tahoma, verdana, arial, sans-serif; background-color: #282d3a;}
 
 /* szerokość strony */
 .content { width: 960px;}
@@ -16,15 +16,81 @@ body { font: 0.625em/1.5em tahoma, verdana, arial, sans-serif; background-color:
 /* resetowanie ramek obrazków */
 a img { border: none;}
 /* TOP strony - czarny pasek gorny */
+
+
 #top {
 	background-color: #1b1c1d;
 	width: 100%;
 	height: 50px;
+	position: relative;
 }
 
 #top a{
 	color: #7A8090;
 	
+}
+#top p{
+	color: #FFFFFF;
+}
+#top #top_witaj {
+	position: absolute;
+	margin-left: 180px;
+	margin-top: 10px;
+	float: left;
+}
+
+#top #top_witaj #logowanie_formularz{
+}
+
+
+#top #top_witaj #logowanie_link{
+	float: left;
+	margin-top: -33px;
+	margin-left: 300px;
+}
+
+#top #top_witaj #rejestracja_link{
+	float: left;
+	margin-top: -33px;
+	margin-left: -33px;
+}
+
+#top #top_witaj a{
+	display: block;
+	padding: 11px 26px 10px; 
+	color: #7a8090; 
+	font: bold 1.5em tahoma, verdana, arial, sans-serif;
+	text-decoration: none;
+}
+
+
+
+#top #top_witaj a:hover{
+	color: #ffffff;
+}
+
+#top #top_witaj #witaj{
+	float: left;
+}
+
+#top #top_witaj #wylogowanie_link{
+	float: left;
+	margin-top: -12px;
+
+}
+#top #top_witaj #panel_admina{
+	float: left;
+	margin-top: -12px;
+	margin-left: -30px;
+}
+
+#top #top_witaj #witaj{
+	color: #7a8090; 
+	font: bold 1.5em tahoma, verdana, arial, sans-serif;
+	text-decoration: none;
+}
+#top #top_witaj #witaj #username{
+	color: #ffffff;
 }
 /* HEADER czyli logo i menu */
 #header {
@@ -93,8 +159,6 @@ a img { border: none;}
 	background: url(../images/logowanie.jpg) top right no-repeat;
 }
 #rejestracja{
-	
-	
 	margin-left: 5px;
 	margin-bottom: 5px;
 	margin-right: 5px;
@@ -103,6 +167,85 @@ a img { border: none;}
 	height: 220px;
 	margin-top: 5px;
 	background-color: #1d202a;
+}
+
+#pln{
+	margin-left: auto;
+	margin-bottom: 5px;
+	margin-right: auto;
+	border-radius: 10px; 
+	width: 200px;
+	height: auto;
+	margin-top: 5px;
+	text-align: center;
+}
+
+#plnc {
+	width: 100%;
+	font-size: 12pt;
+	text-align: center;
+	margin-left: auto;
+	margin-top: 5px;
+	margin-right: auto
+}
+
+#plnclewa{
+	width: 42%;
+	font-size   : 12pt;
+	float : left; 
+	margin-left: 4%;
+	margin-bottom: 4%;
+	margin-right: 2%; 
+	margin-top: 4%;
+}
+#plnclewa table {
+	float: right;
+	margin-left: 10px;
+	margin-bottom: 10px;
+	margin-right: 10px; 
+	margin-top: 10px;
+    border-collapse : collapse;
+    border          : solid 2px black;
+}
+#plncprawa table {
+	float: left;
+	margin-left: 10px;
+	margin-bottom: 10px;
+	margin-right: 10px; 
+	margin-top: 10px;
+    border-collapse : collapse;
+    border          : solid 2px black;
+}
+#plnclewa td, #plncprawa td {
+    border  : solid 1px black;
+    padding : 5px;
+}
+#plnclewa th, #plncprawa th {
+    border      : solid 1px black;
+    color       : white;
+    background  : black;
+    font-weight : bolder;
+    font-size   : 12pt;
+    padding     : 15px;
+}
+
+#plnclewa th.tytul, #plncprawa th.tytul {
+	border      : solid 1px black;
+    color       : black;
+    background  : white;
+    font-weight : bolder;
+    font-size   : 12pt;
+    padding     : 15px;
+}
+
+#plncprawa{
+	width: 42%;
+	float: right;
+	font-size   : 12pt; 
+	margin-left: 2%;
+	margin-bottom: 4%;
+	margin-right: 4%; 
+	margin-top: 4%;
 }
 
 #rejestracja label{
@@ -175,6 +318,7 @@ a img { border: none;}
 	overflow: hidden;
 	margin-right: 25px;
 	margin-left: 10px;
+	float: none;
 }
 
 #main2 #news p {
