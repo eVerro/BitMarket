@@ -4,6 +4,8 @@ from BitMarket.index.models import UserNotConfirmed
 from django.shortcuts import render_to_response, redirect
 from test.test_compiler import s
 import random
+from wallet.models import UserProxy
+import hashlib
 
 
 
@@ -11,10 +13,12 @@ def register(request):
             if request.method == 'POST':
                     if request.POST['password'] == request.POST['password2']:
                             # Rejestracja
-                            user = UserNotConfirmed.objects.create_user(username=request.POST['user'], email=request.POST['email'], password=request.POST['password'], code = generateConfirmCode())
+                            hashs = hashlib.md5()
+                            hashs.update(request.POST['password'])
+                            password = hashs.hexdigest()
+                            user = UserNotConfirmed(username=request.POST['user'], email=request.POST['email'], password=password, code = generateConfirmCode(), phone_number = request.POST['phone'])
                             user.first_name = request.POST['name']
                             user.last_name = request.POST['name2']
-                            user.phone_number = request.POST['phone']
                             
                             user.save()
                             
@@ -43,11 +47,7 @@ def sendConfirmMail(user):
     Metoda wysyłająca maila z kodem aktywującym konto
     """
     sender = MailSender("F3oFPMyvxI2JQyEpIydqFw")
-    try:
-        response = sender.sendConfirmationOfRegistration(user)
-    except Exception:
-        response = sender.createTemplateConfirmationOfRegistration()
-        response = sender.sendConfirmationOfRegistration(user)
+    response = sender.sendConfirmationOfRegistration(user)
     print "%s" % (response)
     return 0
 
@@ -57,7 +57,14 @@ def checkConfirmLink(request, code):
     """
     user = UserNotConfirmed.objects.filter(code=code)
     if user is not None:
-        user[0].confirm()
+        user=user[0]
+        new_user = UserProxy(username=user.username,password=user.password,phone_number=user.phone_number)
+        new_user.first_name=user.first_name
+        new_user.last_name=user.last_name
+        new_user.email=user.email
+        new_user.phone_number=user.phone_number
+        new_user.save()
+        user.delete()
     else:
         raise Exception()
     return render_to_response('master/index.html', {'local': locals()})

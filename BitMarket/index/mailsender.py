@@ -37,20 +37,6 @@ class MailSender:
             raise
         return result
 
-    def createTemplateConfirmationOfRegistration(self):
-        """
-        Wysyła template do usera z prośbą o rejestracje.
-        """
-        context = r"Witaj /*|username|/*\
-            Ten mail został wysłany w celu weryfikacji Twojego konta mailowego. \
-            Proszę potwierdź swój mail klikając na link pod spodem, bądź wklejając go do paska url. \
-            http://127.0.0.1:8000/registrationconfirm//*code/*\
-            Pozdrawiamy: Drużyna BitMarket"
-        
-        result = self.m.templates.add(name='confirmation mail', from_email=r"testmailsender4@gmail.com",from_name=r"Bit Market", 
-                             subject="Confirmation", code="test test test", text=context, publish=True, labels=["confirmation", "registration"]);
-        return result
-        
     def test(self):
         """
         Wysyła testowego template na mail testmailsender4@gmail.com.

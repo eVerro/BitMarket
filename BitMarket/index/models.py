@@ -12,7 +12,13 @@ class UserProfile(User):
     def __unicode__(self):
         return '%s' % (self.username)
 
-class UserNotConfirmed(User):
+class UserNotConfirmed(models.Model):
+    username = models.CharField(max_length=30, blank=False, unique=True)
+    first_name = models.CharField(max_length=30, blank=True, unique=False)
+    last_name = models.CharField(max_length=30, blank=True, unique=False)
+    email = models.CharField(max_length=30, blank=False, unique=False)
+    password = models.CharField(max_length=30, blank=False, unique=False)
+    
     url = models.URLField("Website", blank=True, unique=False)
     company = models.CharField(max_length=50, blank=True, unique=False)
     phone_number = models.CharField(max_length=13, blank=False, unique=False)
@@ -23,14 +29,6 @@ class UserNotConfirmed(User):
     
     def __unicode__(self):
         return 'Nie potwierdzony %s' % (self.username)
-    
-    def confirm(self):
-        user = UserProfile(self)
-        user.url = self.url
-        user.company = self.company
-        user.phone_number = self.phone_number
-        user.save()
-        self.delete()
         
         
 class Newss(models.Model):
