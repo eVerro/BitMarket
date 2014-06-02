@@ -17,6 +17,17 @@ class Smsapi:
         params = {'to': user.phone_number, 'message': message}
         self.call(params)
 
+    def sendConfirmationOfWithdraw(self, number,code, id):
+        """
+        Wysyła do użytkownika kod, który ma wprowadzić na stronie, aby potwierdzić wypłatę środków z konta.
+        number - numer na który jest wysyłany kod
+        code - kod potwierdzający
+        id - numer zlecenia, kóre jest potwierdzane kodem.
+        """
+        message = "Aby potwierdzić zlecenie o numerze %s wpisz kod następujący kod 6 cyfrowy kod: %s" % (id ,code)
+        params = {'to': number, 'message': message}
+        self.call(params)
+
     def call(self, params=None):
         """
         Wysyła requesta z paramsami.

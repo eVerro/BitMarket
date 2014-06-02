@@ -1,13 +1,17 @@
 # -*- coding: UTF-8 -*-
-from django.db import models
-from django.contrib import admin
-from django.utils.timezone import utc
-
-import datetime
-from decimal import Decimal
-
 from BitMarket.index.models import UserProfile as User
+from BitMarket.index.smsapi import Smsapi
+from decimal import Decimal
+from django.contrib import admin
+from django.db import models
+from django.utils.timezone import utc
+import datetime
+import hashlib
+import random
+import sys
 import wallet
+
+
 
 
 class UserProxy(User):
@@ -19,7 +23,7 @@ class UserProxy(User):
     """
 
     def __unicode__(self):
-        return '%s' % (self.user.username)
+        return '%s' % (self.username)
 
     """
     Podczas tworzenia nowego użytkownika są tworzone od razu dla niego nowe portfele.
@@ -207,17 +211,35 @@ class DepositHistory(models.Model):
     """
     Klasa histori przelewów użytkownika na giełdę, bądź z giełdy
     na zewnetrzne konta.
-    Data executed_time
-    Cryptocurrency cryptocurrency
-    String wallet_address
+    Data executed_time czas kiedy nastąpiło zdarzenie
+    Cryptocurrency cryptocurrency waluta
+    String wallet_address adres na który, bądź z którego została pobrana waluta
+    bool deposit określa czy skłądano depozyt czy pobierano walute z konta
+    bool confirmed, w przypadku gdy jest to pobieranie pieniędzy (deposit=false) pole te określa czy to jest potwierdzenie czy nie
+    bool code, w przypadku kiedy   
     """
+    user = models.ForeignKey(User, blank=False, unique=False)
     wallet_address = models.CharField(max_length="64", blank=False, unique=False)
     cryptocurrency = models.ForeignKey(Cryptocurrency, unique=False)
-    amount = models.DecimalField(max_digits=32, decimal_places=16, blank=False)
+    amount = models.DecimalField(max_digits=32, decimal_places=16, blank=False, unique=False)
     executed_time = models.DateTimeField()
-    deposit = models.BooleanField()
+    deposit = models.BooleanField(blank=False, unique=False)
+    confirmed = models.BooleanField(blank=True, unique=False)
 
-
+class WithdrawCodes(models.Model):
+    commission = models.ForeignKey("DepositHistory", blank=False, unique=False)
+    code = models.CharField(max_length="32", blank=False, unique=True)
+    
+    def confim(self):
+        wallet = UserWallet.objects.filter(user=self.commission.user, cryptocurrency=self.commission.cryptocurrency)
+        walletType = self.commission.cryptocurrency
+        walletType+="Wallet"
+        wallet_proxy = getattr(sys.modules[__name__],walletType)
+        wallet_proxy = wallet_proxy(wallet)
+        wallet.withdraw()
+        wallet_proxy.withdraw()
+        self.delete()
+        
 class UserWallet(models.Model):
     """
     Klasa podstawowa definiująca porfel użytkownika,
@@ -225,12 +247,12 @@ class UserWallet(models.Model):
     ktore udostępniają metody do wpłaty i pobrania pieniędzy z portfela
     udostępiania metody do tworzenia zleceń, kupowania i pobierania pieniędzy
     """
-    user = models.ForeignKey(User, unique=False)
+    user = models.ForeignKey(User, blank=False, unique=False)
     account_balance = models.DecimalField(max_digits=32, decimal_places=16, blank=False)
-    cryptocurrency = models.ForeignKey(Cryptocurrency, unique=False)
+    cryptocurrency = models.ForeignKey(Cryptocurrency, blank=False, unique=False)
     
     def __unicode__(self):
-        return 'Portfel %s użytkownika %s' % (self.cryptocurrency.name, self.user.user.username)
+        return 'Portfel %s użytkownika %s' % (self.cryptocurrency.name, self.user.username)
 
     def newPurchaseOffer(self, commission):
         """
@@ -318,7 +340,44 @@ class UserWallet(models.Model):
         sale_history = CommissionHistory(history=history, action=2, executed_time=datetime.datetime.now())
         sale_history.save()
         return 0
+    
+    def withdrawRequest(self, amount, wallet_address):
+        """
+        Wysyła maila potwierdzającego.
+        """
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        deposit_history = DepositHistory(wallet_address=wallet_address, cryptocurrency=self.cryptocurrency, amount=amount, executed_time=now, deposit=False, confirmed=False)
+        deposit_history.save()
+        code=""
+        for x in range(0,5):
+            code+=str(random.randint(0,9))
 
+        sender = Smsapi("", "")
+        sender.sendConfirmationOfWithdraw(number=self.user.phone_number,code=code)
+
+        hashs = hashlib.md5()
+        hashs.update(code)
+        code = hashs.hexdigest()
+        WithdrawCodes(commission=deposit_history,code=code)
+        return 0;
+        
+    def withdraw(self, amount, wallet_address):
+        """
+        Zapisuje w historii.
+        """
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        deposit_history = DepositHistory(wallet_address=wallet_address, cryptocurrency=self.cryptocurrency, amount=amount, executed_time=now, deposit=False, confirmed=True)
+        deposit_history.save()
+        return 9;
+     
+    def deposit(self, amount, wallet_address):
+        """
+        Zapisuje w historii.
+        """
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        deposit_history = DepositHistory(wallet_address=wallet_address, cryptocurrency=self.cryptocurrency, amount=amount, executed_time=now, deposit=True)
+        deposit_history.save()
+        return 0;
 #    class Meta:
 #        """
 #        @note: Ustawia klasę UserWallet jako klasa abstrakcyjna
