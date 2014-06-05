@@ -110,6 +110,10 @@ class UserProxy(User):
         if(self.id is not commission.destination_wallet.user.id):
             raise Exception('Użytkownik próbuje anulować nieswoje zlecenie.')
         
+        commission.source_wallet.account_balance = UserWallet.objects.filter(user=self, cryptocurrency=commission.source_wallet.cryptocurrency)[0].account_balance
+        commission.source_wallet.account_balance = commission.source_wallet.account_balance + commission.source_amount
+        commission.source_wallet.save()
+        
         # pobranie histori i uaktualnienie wpisu
         history = History.objects.filter(commission_id=commission.id)
         history = history[0]
@@ -222,9 +226,9 @@ class History(models.Model):
     def __unicode__(self):
         if(self.purchaser is None):
             if(self.commission_id is None):
-                return 'Historia niezrealizowanego zlecenia %s wymiany %s %s na %s %s. Nr powiązanego zlecenia %s.' % (self.seller, self.cryptocurrency_sold, self.amount_sold, self.cryptocurrency_bought, self.amount_bought, self.commission_id)
+                return 'Historia niezrealizowanego zlecenia %s wymiany %s %s na %s %s.' % (self.seller, self.cryptocurrency_sold.name, self.amount_sold, self.cryptocurrency_bought.name, self.amount_bought)
             return 'Historia zlecenia %s wymiany %s %s na %s %s. Nr powiązanego zlecenia %s.' % (self.seller, self.cryptocurrency_sold, self.amount_sold, self.cryptocurrency_bought, self.amount_bought, self.commission_id)
-        return 'Historia między kupującym %s, a sprzedającym %s wymiany %s %s na %s %s.' % (self.seller, self.purchaser, self.cryptocurrency_sold.id, self.amount_sold, self.cryptocurrency_bought, self.amount_bought)
+        return 'Historia między kupującym %s, a sprzedającym %s wymiany %s %s na %s %s.' % (self.seller, self.purchaser, self.cryptocurrency_sold.name, self.amount_sold, self.cryptocurrency_bought.name, self.amount_bought)
 
         
 class CommissionHistory(models.Model):
@@ -343,7 +347,7 @@ class UserWallet(models.Model):
         if((commission.destination_amount) < 0):
             raise Exception('destination_amount jest poniżej zera.')
         if((commission.source_amount) > (self.account_balance)):
-            raise Exception('source_amount jest powyżej stanu portfela.')
+            raise Exception('Brak środkó na koncie. Posiadasz %s, a chcesz stworzyć za' % (self.account_balance, commission.source_amount))
         # pobranie kwoty z konta
         self.account_balance = UserWallet.objects.filter(id=self.id)[0].account_balance
         self.account_balance = self.account_balance - commission.source_amount
