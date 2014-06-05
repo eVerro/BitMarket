@@ -25,8 +25,8 @@ function AutoRefreshWallet (left_currency, right_currency){
 	function refreshCheck() {
 	    var focus = window.onfocus;
 	    if (last_user_action >= refresh_rate && document.readyState == "complete"){
-	        Dajaxice.BitMarket.index.createTable(Dajax.process,{'source':source, 'destination':destination}); 
-	        reset();
+	        Dajaxice.BitMarket.index.createTable(Dajax.process,{'left_currency':left_currency, 'right_currency':right_currency}); 
+			reset();
 	    }
 	
 	}
