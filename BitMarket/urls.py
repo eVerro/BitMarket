@@ -44,5 +44,7 @@ urlpatterns = patterns('',
     (r'^wi/(?P<code>\d+)/', 'BitMarket.index.views.testWithdraw'),
     # def deposit(self, wallet, wallet_address, amount):
     (r'^de/', 'BitMarket.index.views.testDeposit'),
+    # def cancelCommission(self, commission):
+    (r'^cc/', 'BitMarket.index.views.testCancelCommission'),
 )
 urlpatterns += staticfiles_urlpatterns()#bylo w tutorialu do ajaxa
