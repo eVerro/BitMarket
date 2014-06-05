@@ -1,15 +1,15 @@
 # -*- coding: UTF-8 -*-
 # Create your views here.
-from django.contrib.auth.models import auth
-from django.contrib.auth.models import User
-from django.contrib.auth import logout
-from django.shortcuts import render_to_response, redirect
-from BitMarket.index.models import UserProfile
-from BitMarket.index.models import Newss
-from BitMarket.index.smsapi import Smsapi
-import hashlib
 from BitMarket.index.mailsender import MailSender
-from wallet.models import UserProxy
+from BitMarket.index.models import Newss, UserProfile
+from BitMarket.index.smsapi import Smsapi
+from django.contrib.auth import logout
+from django.contrib.auth.models import User, auth
+from django.shortcuts import render_to_response, redirect
+from django.utils.timezone import utc
+from wallet.models import UserProxy, UserWallet, Commission, WithdrawCodes
+import datetime
+import hashlib
 
 
 
@@ -98,44 +98,44 @@ def ajaxTest(request):
     local = locals()
     return render_to_response('ajaxTest/ajax.html', {'local': locals()})
 
-def sendMail(request):
-        """
-        Metoda wysyłająca maila w celu poinformowania o stworzeniu konta
-        """
-        sender = MailSender("xx")
-        try:
-            # Odkomentuj aby sprawdzić wysyłąnei testowwego maila
-            response = sender.test()
-            # Odkomentuj aby przy wysyłaniu brać dane zalogowanego użytkownika maila
-            #user = request.user
-            #response = sender.sendmail(user)
-        except Exception:
-            response = sender.createTemplateConfirmationOfRegistration()
-            print "%s" % (response)
-            # Odkomentuj aby sprawdzić wysyłąnei testowwego maila
-            response = sender.test()
-            # Odkomentuj aby przy wysyłaniu brać dane zalogowanego użytkownika maila
-            #user = request.user
-            #response = sender.sendmail(user)
-        print "%s" % (response)
-        return render_to_response('master/index.html', {'local': locals()})
-
-def sendSms(request):
-        """
-        Metoda wysyłająca smsa w celu potwierdzenia stworzenia zlecenia
-        """
-        local = locals()
-        hashs = hashlib.md5()
-        hashs.update("xx")
-        hashs = hashs.hexdigest()
+# def newCommission(self, source_amount, destination_amount, wallet_source, wallet_destination, dead_line):
+def testNewCommission(request):
+    user = UserProxy.objects.get(id=request.user.id)
+    wallets = UserWallet.objects.filter(user=user)
+    now = datetime.datetime(2016, 3, 3, 1, 30) # datetime.datetime.utcnow().replace(tzinfo=utc)
+    now = now.replace(tzinfo=utc)
+    # now += 1
+    print wallets.count()
+    user.newCommission(source_amount=10, destination_amount=20, source_wallet=wallets[0], destination_wallet=wallets[1], dead_line=now)
+    return render_to_response('master/index.html', {'local': locals()})
+# def purchase(self, purchaser, purchased_commission):
+def testPurchase(request):
+    user = UserProxy.objects.get(id=request.user.id)
+    coms  = Commission.objects.all()
+    coms  = coms[0]
+    user.purchase(purchased_commission=coms)
+    return render_to_response('master/index.html', {'local': locals()})
+# def withdraw(self, wallet, wallet_address, amount):
+def testWithdrawRequest(request):
+    user = UserProxy.objects.get(id=request.user.id)
+    wallets = UserWallet.objects.filter(user=user)
+    user.withdraw(wallet=wallets[0], wallet_address="test_address", amount=10)
+    return render_to_response('master/index.html', {'local': locals()})
+# def confim(self, user, code):
+def testWithdraw(request, code):
+    user = UserProxy.objects.get(id=request.user.id)
+    wallets = UserWallet.objects.filter(user=user)
+    
+    hashs = hashlib.md5()
+    hashs.update(code)
+    code = hashs.hexdigest()
         
-        smsapi = Smsapi(username="chrystian.kislo@gmail.com", password=hashs)
-        # Odkomentuj poniższą linikę, aby testować wysyłanie na konkretnych danych.
-        response = smsapi.test()
-        # Odkomentuj poniższe liniki, aby przy wysyłąniu wiadomości pobierać informacje od zalogowanego użytkownika
-        #user = request.user
-        #response = smsapi.sendConfirmationOfCommission(user)
-        
-        print "%s" % (hashs)
-        print "%s" % (response.content)
-        return render_to_response('master/index.html', {'local': local})
+    confirm = WithdrawCodes.objects.filter(code=code)
+    confirm[0].confirm(user=user, code=code)
+    return render_to_response('master/index.html', {'local': locals()})
+# def deposit(self, wallet, wallet_address, amount):
+def testDeposit(request):
+    user = UserProxy.objects.get(id=request.user.id)
+    wallets = UserWallet.objects.filter(user=user)
+    user.deposit(wallet=wallets[0], wallet_address="test_address", amount=10)
+    return render_to_response('master/index.html', {'local': locals()})

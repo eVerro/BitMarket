@@ -33,10 +33,16 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     
-    # Testowanie wysyłąnia maila
-    (r'^sendsms/', 'BitMarket.index.views.sendSms'),
-    
-    # Testowanie wysyłąnia smsa
-    (r'^sendmail/', 'BitMarket.index.views.sendMail'),
+    # Testowanie modelu
+    # def newCommission(self, source_amount, destination_amount, wallet_source, wallet_destination, dead_line):
+    (r'^nc/', 'BitMarket.index.views.testNewCommission'),
+    # def purchase(self, purchased_commission):
+    (r'^pu/', 'BitMarket.index.views.testPurchase'),
+    # def withdraw(self, wallet, wallet_address, amount):
+    (r'^wir/', 'BitMarket.index.views.testWithdrawRequest'),
+    # def confim(self, user, code):
+    (r'^wi/(?P<code>\d+)/', 'BitMarket.index.views.testWithdraw'),
+    # def deposit(self, wallet, wallet_address, amount):
+    (r'^de/', 'BitMarket.index.views.testDeposit'),
 )
 urlpatterns += staticfiles_urlpatterns()#bylo w tutorialu do ajaxa

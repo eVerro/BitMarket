@@ -1,0 +1,18 @@
+{% extends "master/index.html" %}
+
+{% block header%}
+<div class="registerHeader"></div>
+{% endblock %}
+
+{% block content %}
+
+<div>
+	{% if ok == True  %}
+		Link potwierdzający został wysłany na Twój mail podany przy rejestracji.
+		Będziesz mógł się zalogować po jego wciśnięciu. 
+	{% endif %}
+	{% if ok == False  %}
+		Coś się nie udało i to na pewno Twoja wina!!!
+	{% endif %}
+</div>
+{% endblock %}

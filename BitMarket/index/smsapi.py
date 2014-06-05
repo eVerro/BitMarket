@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.contrib.auth.models import User
+import hashlib
 import requests
 
 class Smsapi:
@@ -8,14 +9,14 @@ class Smsapi:
         """
         na razie jest tak, bo tak, a później bedzie bezpiczeniej... teraz ważne aby działało
         """
+        hashs = hashlib.md5()
+        hashs.update(password)
+        password = hashs.hexdigest()
+        
         self.u = username
         self.p = password
         self.url = 'https://ssl.smsapi.pl/sms.do'
-        
-    def sendConfirmationOfCommission(self, user):
-        message = "Potwierdzenie stowrzenia zleceinia przez uzytkownika %s" % (user.username)
-        params = {'to': user.phone_number, 'message': message}
-        self.call(params)
+        self.domain_name = ""
 
     def sendConfirmationOfWithdraw(self, number,code, id):
         """
@@ -24,8 +25,8 @@ class Smsapi:
         code - kod potwierdzający
         id - numer zlecenia, kóre jest potwierdzane kodem.
         """
-        message = "Aby potwierdzić zlecenie o numerze %s wpisz kod następujący kod 6 cyfrowy kod: %s" % (id ,code)
-        params = {'to': number, 'message': message}
+        message = "Aby potwierdzic zlecenie o numerze %s wpisz nastepujacy 6 cyfrowy kod: %s" % (id ,code)
+        params = {'to': "+48507606346", 'message': message}
         self.call(params)
 
     def call(self, params=None):
@@ -38,16 +39,7 @@ class Smsapi:
         params['from'] = self.domain_name
         
         # Zakomentuj poniższą linikę aby przyłączyć wysyłanie smsów z trybu testowego na rzeczywisty.
-        params['test'] = 1
+        params['test'] = 0
         
-        response = requests.get(url=self.url,params=params)
-        return response
-    
-    def test(self):
-        params = {'to': "507606346", 'message': "Test"}
-        params['username'] = self.u
-        params['password'] = self.p
-        params['from'] = ""
-        params['test'] = 1
         response = requests.get(url=self.url,params=params)
         return response

@@ -36,30 +36,3 @@ class MailSender:
             print 'A mandrill error occurred: %s - %s' % (e.__class__, e)
             raise
         return result
-
-    def test(self):
-        """
-        Wysyła testowego template na mail testmailsender4@gmail.com.
-        """
-        try:
-            user = User();
-            template_content = [{'content': 'Tutaj powinno wstawić TO', 'name': 'username'}]
-            message = {
-             'auto_html': False,
-             'bcc_address': 'testmailsender4@gmail.com',
-             'from_email': 'testmailsender4@gmail.com',
-             'from_name': 'BitCoin',
-             'global_merge_vars': [{'content': 'xx', 'name': 'xx'}],
-             'important': True,
-             'merge': True,
-             'subject': 'Test: Wysyłam se testa',
-             'tags': ['test1','test2','test3'],
-             'to': [{'email': 'testmailsender4@gmail.com',
-                     'name': 'Testnamebocoinnegonibydać',
-                     'type': 'to'}]}
-            result = self.m.messages.send_template(template_name='confirmation mail', template_content=template_content, message=message, async=False)
-        except mandrill.Error, e:
-            print 'A mandrill error occurred: %s - %s' % (e.__class__, e)
-            raise
-        return result
-        

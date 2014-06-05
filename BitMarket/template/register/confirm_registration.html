@@ -1,0 +1,17 @@
+{% extends "master/index.html" %}
+
+{% block header%}
+<div class="registerHeader"></div>
+{% endblock %}
+
+{% block content %}
+
+<div>
+	{% if confirm == True  %}
+		Gratulacje {{user.username}}, udało się Tobie potwierdzić swoje konto mail. Teraz możesz się zalogować.
+	{% endif %}
+	{% if confirm == False  %}
+		Wysłany kod w linku jest niepoprawny.
+	{% endif %}
+</div>
+{% endblock %}

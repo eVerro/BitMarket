@@ -26,8 +26,8 @@ def register(request):
                             sendConfirmMail(user)
                             
                             #Redirect
-                            return render_to_response('master/index.html', {'local': locals()})
-            return render_to_response('master/index.html', {'local': locals()})
+                            return render_to_response('register/after_registration.html', {'local': locals(), 'ok': True})
+            return render_to_response('register/after_registration.html', {'local': locals(), 'ok': False})
         
 def generateConfirmCode():
     """
@@ -66,5 +66,5 @@ def checkConfirmLink(request, code):
         new_user.save()
         user.delete()
     else:
-        raise Exception()
-    return render_to_response('master/index.html', {'local': locals()})
+        return render_to_response('register/confirm_registration.html', {'local': locals(), 'confirm' : False})
+    return render_to_response('register/confirm_registration.html', {'local': locals(), 'confirm' : True, 'user' : user})
