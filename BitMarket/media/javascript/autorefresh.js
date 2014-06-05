@@ -1,5 +1,5 @@
-function AutoRefreshWallet (source, destination){    
-	Dajaxice.BitMarket.index.createTable(Dajax.process,{'source':source, 'destination':destination}); 
+function AutoRefreshWallet (left_currency, right_currency){    
+	Dajaxice.BitMarket.index.createTable(Dajax.process,{'left_currency':left_currency, 'right_currency':right_currency}); 
 	var refresh_rate = 5; 
 	var last_user_action = 0;
 	var has_focus = false;

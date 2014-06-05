@@ -11,52 +11,51 @@ def randomize(request):
     return dajax.json()
 
 @dajaxice_register
-def createTable(request, source, destination):
+def createTable(request, left_currency, right_currency):
     dajax = Dajax()
-    pln_gld='<table>'
-    pln_gld+='<th>PLN</th><th>GLD</th></tr><tr>'
+    right_table='<table>'
+    right_table+='<thread><th>Cena('+str(left_currency)+')</th><th>'+str(left_currency)+'</th><th>'+str(right_currency)+'</th>'
+    if request.user.is_authenticated():
+        right_table+='<th>#</th>'
+    right_table+='</tr></thread>'
     for comm in Commission.objects.all():
-        if comm.source_wallet.cryptocurrency.name == str(source)  and comm.destination_wallet.cryptocurrency.name == str(destination):
-            
-            pln_gld+='<td>' 
-            pln_gld+=str(comm.source_amount) 
-            pln_gld+='</td><td>'
-            pln_gld+=str(comm.destination_amount) 
-            pln_gld+='</td>'
+        if comm.source_wallet.cryptocurrency.name == str(left_currency)  and comm.destination_wallet.cryptocurrency.name == str(right_currency):
+            right_table+='<tr">'
+            right_table+='<td>'
+            right_table+=str(float(comm.source_amount)/float(comm.destination_amount))
+            right_table+='</td>'
+            right_table+='<td>'
+            right_table+=str(comm.source_amount) 
+            right_table+='</td><td>'
+            right_table+=str(comm.destination_amount) 
+            right_table+='</td>'
             if request.user.is_authenticated():
-                pln_gld+='<td><input type="submit" value="Kup"/></td>'
-            pln_gld+='</tr>'
-    pln_gld+='</table>'
+                right_table+='<td><a>Kup</a></td>'
+            right_table+='</tr>'
+    right_table+='</table>'
     
-    dajax.assign('#plnclewa', 'innerHTML', pln_gld)
-    gld_pln='<table>'
-    gld_pln+='<th>GLD</th><th>PLN</th></tr><tr>'
+    dajax.assign('#right_table', 'innerHTML', right_table)
+    left_table='<table>'
+    left_table+='<thread><th>Cena('+str(right_currency)+')</th><th>'+str(right_currency)+'</th><th>'+str(left_currency)+'</th>'
+    if request.user.is_authenticated():
+        left_table+='<th>#</th>'
+    left_table+='</tr></thread>'
     for comm in Commission.objects.all():
-        if comm.destination_wallet.cryptocurrency.name == str(source)  and comm.source_wallet.cryptocurrency.name == str(destination):
-            gld_pln+='<td>' 
-            gld_pln+=str(comm.source_amount) 
-            gld_pln+='</td><td>'
-            gld_pln+=str(comm.destination_amount) 
-            gld_pln+='</td>'
+        if comm.destination_wallet.cryptocurrency.name == str(left_currency)  and comm.source_wallet.cryptocurrency.name == str(right_currency):
+            left_table+='<td>'
+            left_table+=str(float(comm.source_amount)/float(comm.destination_amount))
+            left_table+='</td>'
+            left_table+='<td>' 
+            left_table+=str(comm.source_amount) 
+            left_table+='</td><td>'
+            left_table+=str(comm.destination_amount) 
+            left_table+='</td>'
             if request.user.is_authenticated():
-                gld_pln+='<td><input type="submit" value="Kup"/></td>'
-            gld_pln+='</tr>'
-    dajax.assign('#plncprawa', 'innerHTML',gld_pln)
-    gld_pln+='</table>'
+                left_table+='<td><a>Kup</a></td>'
+            left_table+='</tr>'
+    dajax.assign('#left_table', 'innerHTML',left_table)
+    left_table+='</table>'
     
-    return dajax.json()
-
-@dajaxice_register
-def updatecombo(request, option):
-    dajax = Dajax()
-    options = [['Madrid', 'Barcelona', 'Vitoria', 'Burgos'],
-               ['Paris', 'Evreux', 'Le Havre', 'Reims'],
-               ['London', 'Birmingham', 'Bristol', 'Cardiff']]
-    out = []
-    for option in options[int(option)]:
-        out.append("<option value='#'>%s</option>" % option)
-    dajax.assign('#gld_pln', 'innerHTML', 'dupa')
-    dajax.assign('#pln_gld', 'innerHTML', 'dupa')
     
-    dajax.assign('#combo2', 'innerHTML', ''.join(out))
+    
     return dajax.json()

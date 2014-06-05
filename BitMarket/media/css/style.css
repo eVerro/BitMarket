@@ -18,6 +18,7 @@ a img { border: none;}
 /* TOP strony - czarny pasek gorny */
 
 
+
 #top {
 	background-color: #1b1c1d;
 	width: 100%;
@@ -94,13 +95,13 @@ a img { border: none;}
 }
 /* HEADER czyli logo i menu */
 #header {
-	width: 960px;
+	width: 1000px;
 	margin-left: 200px;
 }
 
 #header h1 {
 	position: absolute;
-	top: 70px;
+	top: 90px;
 	left: 180px;
 	overflow: hidden;
 	}
@@ -134,6 +135,11 @@ a img { border: none;}
 	color: #ffffff;
 }
 
+#header label{
+	text-align: center;
+	font-size: 30px;
+	
+}
 /* MAIN content strona glowna logowanie rejestracja */
 #main {
 	width: 670px;
@@ -167,85 +173,6 @@ a img { border: none;}
 	height: 220px;
 	margin-top: 5px;
 	background-color: #1d202a;
-}
-
-#pln{
-	margin-left: auto;
-	margin-bottom: 5px;
-	margin-right: auto;
-	border-radius: 10px; 
-	width: 200px;
-	height: auto;
-	margin-top: 5px;
-	text-align: center;
-}
-
-#plnc {
-	width: 100%;
-	font-size: 12pt;
-	text-align: center;
-	margin-left: auto;
-	margin-top: 5px;
-	margin-right: auto
-}
-
-#plnclewa{
-	width: 42%;
-	font-size   : 12pt;
-	float : left; 
-	margin-left: 4%;
-	margin-bottom: 4%;
-	margin-right: 2%; 
-	margin-top: 4%;
-}
-#plnclewa table {
-	float: right;
-	margin-left: 10px;
-	margin-bottom: 10px;
-	margin-right: 10px; 
-	margin-top: 10px;
-    border-collapse : collapse;
-    border          : solid 2px black;
-}
-#plncprawa table {
-	float: left;
-	margin-left: 10px;
-	margin-bottom: 10px;
-	margin-right: 10px; 
-	margin-top: 10px;
-    border-collapse : collapse;
-    border          : solid 2px black;
-}
-#plnclewa td, #plncprawa td {
-    border  : solid 1px black;
-    padding : 5px;
-}
-#plnclewa th, #plncprawa th {
-    border      : solid 1px black;
-    color       : white;
-    background  : black;
-    font-weight : bolder;
-    font-size   : 12pt;
-    padding     : 15px;
-}
-
-#plnclewa th.tytul, #plncprawa th.tytul {
-	border      : solid 1px black;
-    color       : black;
-    background  : white;
-    font-weight : bolder;
-    font-size   : 12pt;
-    padding     : 15px;
-}
-
-#plncprawa{
-	width: 42%;
-	float: right;
-	font-size   : 12pt; 
-	margin-left: 2%;
-	margin-bottom: 4%;
-	margin-right: 4%; 
-	margin-top: 4%;
 }
 
 #rejestracja label{
@@ -303,7 +230,7 @@ a img { border: none;}
 /* MAIN2 Strone HOME po zalogowaniu */
 #main2 {
 	background-color: #1e212a;
-	width: 960px;
+	width: 1000px;
 	margin-left: 170px;
 	margin-top: 150px;
 	position: relative;
@@ -312,7 +239,7 @@ a img { border: none;}
 	
 #main2 #news {
 	background-color: #ffffff;
-	width: 640px;
+	width: 700px;
 	margin: 20px;
 	border-radius: 10px;
 	overflow: hidden;
@@ -331,7 +258,7 @@ a img { border: none;}
 	position: absolute;
 	overflow: hidden;
 	top: 180px;
-	left: 830px;
+	left: 890px;
 	}
 	
 #nawigacja #nawigacjaP {
@@ -369,4 +296,46 @@ a img { border: none;}
 #nawigacja ul li a:hover { 
 	background: url(../images/miniMenuYes.jpg) top right repeat;
 	color: #ffffff;
+}
+
+
+#right_table{
+	float: right;
+	margin-right: 10px;
+	margin-bottom: 10px;
+	margin-top: 10px;
+	
+	margin-left: 10px;
+}
+
+#left_table{
+	float: left;
+	margin-bottom: 10px;
+	margin-top: 10px;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+#tables{
+	margin: 10px;
+	height: auto;
+	
+}
+
+#bot_left_table{
+	float: right;
+	margin-right: 10px;
+	margin-bottom: 10px;
+	margin-top: 10px;
+	
+	margin-left: 10px;
+	
+}
+#bot_right_table{
+	float: right;
+	margin-right: 10px;
+	margin-bottom: 10px;
+	margin-top: 10px;
+	
+	margin-left: 10px;
 }

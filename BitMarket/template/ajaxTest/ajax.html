@@ -1,34 +1,38 @@
 {% extends "master/index.html" %}
 {% block content %}
+<link rel="stylesheet" href="{{ STATIC_URL }} /static/css/table.css" />
 <script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/autorefresh.js" ></script>
 <script type="text/javascript"> 
 	$(document).ready(
 		AutoRefreshWallet('PLN', 'GLD')
 	);	
 </script>
-	<div id="plnc">
-		Zlecenia pary walutowej plnc/gld
-	</div>
-	<div id = "pln_gld_div">
-		<div id="plnclewa">
-			
-			
-		</div>
-		<div id="plncprawa">
-			
-		</div>
-	</div>
-	{% if local.request.user.is_authenticated %}
-	<div id="pln">
-
-		<font size="3">zlecenie</font>
-		<form method="post" action="/user/register/">                     
-			<label>Ilość:</label><br><input name="quantity" type="text"><br/>            
-			<label>Wartość:</label><br><input name="price" type="text"><br/> 
-			<label>Typ:</label><input type="radio" name="typ" value="kupno" checked="checked" />Kupno
-			<input type="radio" name="typ" value="sprzedaz" />Sprzedaż<br>                        
-			<input type="submit" value="Złóż zlecenie" id="some_name"/> 
-		</form>
-	</div>
-	{%endif%} 
+		
+	<div id="tables">
+		<table>
+		<tr>
+			<td>
+				<div id="left_table"></div>
+			</td>
+				
+			<td>	
+			<div id="right_table"></div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<div id="bot_right_table">prawydiw</div>
+			</td>
+			<td>
+			<div id="bot_left_table">lewydiw</div>
+			</td>
+		</tr>
+		</table>
+	</div>	
+		
 {% endblock %}
+
+{% block header %}
+	<label>PLNC/GLD</label>
+
+{% endblock%}
