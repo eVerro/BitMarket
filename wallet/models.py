@@ -100,7 +100,29 @@ class UserProxy(User):
         purchased_commission.delete()
         
         return 0
-
+    
+    def cancelCommission(self, commission):
+        """
+        Anuluje zlecenie.
+        """
+        if(self.id is not commission.source_wallet.user.id):
+            raise Exception('Użytkownik próbuje anulować nieswoje zlecenie.')
+        if(self.id is not commission.destination_wallet.user.id):
+            raise Exception('Użytkownik próbuje anulować nieswoje zlecenie.')
+        
+        # pobranie histori i uaktualnienie wpisu
+        history = History.objects.filter(commission_id=commission.id)
+        history = history[0]
+        history.commission_id=None
+        history.save()
+        
+        # dodanei wpisu do historii
+        cancel_history = CommissionHistory(history=history, action=3, executed_time=datetime.datetime.now())
+        cancel_history.save()
+        
+        commission.delete()
+    
+   
     def withdraw(self, wallet, wallet_address, amount):
         """
         @param UserWallet : wallet
@@ -167,7 +189,17 @@ class Commission(models.Model):
 
     def __unicode__(self):
         return 'Zlecenie %s %s na %s %s' % (self.source_amount, self.source_wallet, self.destination_amount, self.destination_wallet)
-
+    def overdue(self):
+        # pobranie histori i uaktualnienie wpisu
+        history = History.objects.filter(commission_id=self.id)
+        history = history[0]
+        history.commission_id=None
+        history.save()
+    
+        # dodanei wpisu do historii
+        overdue_history = CommissionHistory(history=history, action=4, executed_time=datetime.datetime.now())
+        overdue_history.save()
+    
 
 class History(models.Model):
     """
@@ -217,15 +249,15 @@ class CommissionHistory(models.Model):
 
     def __unicode__(self):
         if(self.action is 0):
-            return 'Stworzenie zlecenia nr %d' % (self.history.commission_id)
+            return 'Stworzenie nr %d.' % (self.history.id)
         if(self.action is 1):
-            return 'Kupno zlecenia nr %d' % (self.history.commission_id)
+            return 'Kupno nr %d' % (self.history.id)
         if(self.action is 2):
-            return 'Sprzedanie zlecenia nr %d' % (self.history.commission_id)
+            return 'Sprzedanie nr %d' % (self.history.id)
         if(self.action is 3):
-            return 'Anulowanie zlecenia nr  %d' % (self.history.commission_id)
+            return 'Anulowanie nr  %d' % (self.history.id)
         if(self.action is 4):
-            return 'Przeterminowanie zlecenia nr %d' % (self.history.commission_id)
+            return 'Przeterminowanie nr %d' % (self.history.id)
 
 
 class DepositHistory(models.Model):

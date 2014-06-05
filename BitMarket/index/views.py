@@ -7,7 +7,8 @@ from django.contrib.auth import logout
 from django.contrib.auth.models import User, auth
 from django.shortcuts import render_to_response, redirect
 from django.utils.timezone import utc
-from wallet.models import UserProxy, UserWallet, Commission, WithdrawCodes
+from wallet.models import UserProxy, UserWallet, Commission, WithdrawCodes, \
+    History, CommissionHistory
 import datetime
 import hashlib
 
@@ -100,6 +101,9 @@ def ajaxTest(request):
 
 # def newCommission(self, source_amount, destination_amount, wallet_source, wallet_destination, dead_line):
 def testNewCommission(request):
+    """
+    link do testowania http://127.0.0.1:8000/nc
+    """
     user = UserProxy.objects.get(id=request.user.id)
     wallets = UserWallet.objects.filter(user=user)
     now = datetime.datetime(2016, 3, 3, 1, 30) # datetime.datetime.utcnow().replace(tzinfo=utc)
@@ -110,6 +114,9 @@ def testNewCommission(request):
     return render_to_response('master/index.html', {'local': locals()})
 # def purchase(self, purchaser, purchased_commission):
 def testPurchase(request):
+    """
+    link do testowania http://127.0.0.1:8000/nc
+    """
     user = UserProxy.objects.get(id=request.user.id)
     coms  = Commission.objects.all()
     coms  = coms[0]
@@ -117,12 +124,18 @@ def testPurchase(request):
     return render_to_response('master/index.html', {'local': locals()})
 # def withdraw(self, wallet, wallet_address, amount):
 def testWithdrawRequest(request):
+    """
+    link do testowania http://127.0.0.1:8000/wr
+    """
     user = UserProxy.objects.get(id=request.user.id)
     wallets = UserWallet.objects.filter(user=user)
     user.withdraw(wallet=wallets[0], wallet_address="test_address", amount=10)
     return render_to_response('master/index.html', {'local': locals()})
 # def confim(self, user, code):
 def testWithdraw(request, code):
+    """
+    link do testowania http://127.0.0.1:8000/wi
+    """
     user = UserProxy.objects.get(id=request.user.id)
     wallets = UserWallet.objects.filter(user=user)
     
@@ -135,7 +148,27 @@ def testWithdraw(request, code):
     return render_to_response('master/index.html', {'local': locals()})
 # def deposit(self, wallet, wallet_address, amount):
 def testDeposit(request):
+    """
+    link do testowania http://127.0.0.1:8000/de
+    """
     user = UserProxy.objects.get(id=request.user.id)
     wallets = UserWallet.objects.filter(user=user)
     user.deposit(wallet=wallets[0], wallet_address="test_address", amount=10)
     return render_to_response('master/index.html', {'local': locals()})
+def testCancelCommission(request):
+    """
+    link do testowania http://127.0.0.1:8000/cc
+    """
+    user = UserProxy.objects.get(id=request.user.id)
+    coms  = Commission.objects.all()
+    coms  = coms[0]
+    user.cancelCommission(coms)
+    return render_to_response('master/index.html', {'local': locals()})
+
+def checkOverdue(self):
+    now = datetime.datetime.utcnow().replace(tzinfo=utc)
+    overdue_commissions = Commission.objects.extra(where=['time_limit>%s'], params=[now])
+    for commission in overdue_commissions:
+        commission.overdue()
+        commission.delete()
+    commission.delete()
