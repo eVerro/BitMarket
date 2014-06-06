@@ -114,18 +114,16 @@ class UserProxy(User):
         commission.source_wallet.account_balance = commission.source_wallet.account_balance + commission.source_amount
         commission.source_wallet.save()
         
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        
         # pobranie histori i uaktualnienie wpisu
         history = History.objects.filter(commission_id=commission.id)
         history = history[0]
         history.commission_id=None
+        history.executed_time=now
         history.save()
         
-        # dodanei wpisu do historii
-        cancel_history = CommissionHistory(history=history, action=3, executed_time=datetime.datetime.now())
-        cancel_history.save()
-        
         commission.delete()
-    
    
     def withdraw(self, wallet, wallet_address, amount):
         """
@@ -199,37 +197,62 @@ class Commission(models.Model):
         history = history[0]
         history.commission_id=None
         history.save()
-    
-        # dodanei wpisu do historii
-        overdue_history = CommissionHistory(history=history, action=4, executed_time=datetime.datetime.now())
-        overdue_history.save()
-    
+        self.source_wallet.account_balance = UserWallet.objects.filter(id = self.source_wallet.id)[0].account_balance + self.source_amount
+        self.source_wallet.save()
+        self.delete()
 
 class History(models.Model):
     """
-    Historia zlecenia. Opisuje sprzedawce, co za co chce on sprzedać i za ile. W razie aktualnej transakcji jest powiązany z zleceniem poprzez 
-    commission_id. W przypadku kupienia commission_id=None i jest inicjowany purchaser. W razie anulowania również commission_id=None. 
-    User seller
-    User purchaser
-    Cryptocurrency cryptocurrency_sold
-    Cryptocurrency cryptocurrency_bought
-    int commission_id - nr zlecenia w przypadku kiedy zlecenie jeszcze istnieje.
+    Historia zlecenia.
+    seller wymienia się kryptowalute cryptocurrency_sold na cryptocurrency_bought z purchaser.
+    
+    W przypadku gdy purchaser jest równy None to oznacza, że waluta nie została sprzedana, czyli zlecenie może być anulowane, przeterminowane bądź jeszcze niezrealizowane.
+    W przypadku gdy commission_id jest równy None to onzacza, że zlecenie zostało zakończone, czyli mogło być kupione, anulowane, przeterminowane.
+    W przypadku gdy executed_time jest równy None to onzacza, że zlecenie nie zostało kupione ani anulowane, czyli mogło być przeterminowane bądź jeszcze niezrealizowane.
+    
+    Gdy jest kupione/sprzedane to purchaser wskazuje na kupca, commission_id = None, executed_time wkazuje kiedy zostało zrealizowane kupno.
+    Gdy jest niezrealizowane jeszcze to purchaser = None, commission_id wskazuje na id zlecenia, do którego jest podpięta historia i executed_time = None.
+    Gdy jest anulowane to purchaser = None, commission_id = None i executed_time wkazuje kiedy anulowanio.
+    Gdy jest przeterminowane to purchaser = None, commission_id = None i executed_time = None.
+    
+    seller - sprzedawca.
+    purchaser - kupujący.
+    cryptocurrency_sold - seller sprzedaje tą walute.
+    cryptocurrency_bought - purchaser sprzedaje tą walutę, inaczej seller kupuje ją.
+    amount_sold - kwota sprzedawana.
+    amount_bought - kwota kupowana.
+    commission_id - w przypadku istnienia zlecenia, jest tutaj id tego zlecenia.
+    create_time - data stworzenia zlecenia.
+    executed_time - data sprzedania, anulowania zlecenia.
     """
-    seller = models.ForeignKey(User, related_name='sellers', unique=False)
+    seller = models.ForeignKey(User, related_name='sellers', unique=False, blank=False)
     purchaser = models.ForeignKey(User, related_name='purchasers', unique=False, blank=True, null=True)
     cryptocurrency_sold = models.ForeignKey(Cryptocurrency, related_name='cryptocurrency_solds', unique=False, blank=False)
     cryptocurrency_bought = models.ForeignKey(Cryptocurrency, related_name='cryptocurrency_boughts', unique=False, blank=False)
     amount_sold = models.DecimalField(max_digits=32, decimal_places=16, blank=False)
     amount_bought = models.DecimalField(max_digits=32, decimal_places=16, blank=False)
-    commission_id = models.IntegerField(unique=True, null=True)
-
+    commission_id = models.IntegerField(unique=True, blank=False, null=True)
+    create_time = models.DateTimeField(auto_now_add=True, blank=True)
+    executed_time = models.DateTimeField(blank=True,null=True)
+    
+    @staticmethod
+    def getBoughtHistory(cryptocurrency_sold, cryptocurrency_bought):
+        return History.objects.extra(where=['purchaser_id is not NULL', 'cryptocurrency_sold_id=%s','cryptocurrency_bought_id=%s'], params=[cryptocurrency_sold.id, cryptocurrency_bought.id])
+    @staticmethod
+    def getExchangeHistory(cryptocurrency_sold, cryptocurrency_bought):
+        #return History.objects.extra(where=['purchaser_id is not null'])
+        return History.objects.extra(where=['purchaser_id is not null and ((cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s) OR (cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s))'], 
+                                     params=[cryptocurrency_sold.id, cryptocurrency_bought.id, cryptocurrency_sold.id,cryptocurrency_bought.id])
+    
     def __unicode__(self):
         if(self.purchaser is None):
             if(self.commission_id is None):
-                return 'Historia niezrealizowanego zlecenia %s wymiany %s %s na %s %s.' % (self.seller, self.cryptocurrency_sold.name, self.amount_sold, self.cryptocurrency_bought.name, self.amount_bought)
-            return 'Historia zlecenia %s wymiany %s %s na %s %s. Nr powiązanego zlecenia %s.' % (self.seller, self.cryptocurrency_sold, self.amount_sold, self.cryptocurrency_bought, self.amount_bought, self.commission_id)
+                if(self.executed_time is None):
+                    return 'Historia przeterminowanego zlecenia %s wymiany %s %s na %s %s.' % (self.seller, self.cryptocurrency_sold, self.amount_sold, self.cryptocurrency_bought, self.amount_bought)
+                return 'Historia anulowanego zlecenia %s wymiany %s %s na %s %s. Zlecenie anulowano ' % (self.seller, self.cryptocurrency_sold, self.amount_sold, self.cryptocurrency_bought, self.amount_bought, self.commission_id, self.executed_time)
+            return 'Historia niezrealizowanego zlecenia %s wymiany %s %s na %s %s. Nr powiązanego zlecenia %s.' % (self.seller, self.cryptocurrency_sold.name, self.amount_sold, self.cryptocurrency_bought.name, self.amount_bought, self.commission_id)
         return 'Historia między kupującym %s, a sprzedającym %s wymiany %s %s na %s %s.' % (self.seller, self.purchaser, self.cryptocurrency_sold.name, self.amount_sold, self.cryptocurrency_bought.name, self.amount_bought)
-
+    
         
 class CommissionHistory(models.Model):
     """
@@ -237,8 +260,6 @@ class CommissionHistory(models.Model):
     Tz. tworzenie nowych zleceń, anulowanie, kupno.
     Pole action:
     0 - Stworzenie:
-    1 - Kupno:
-    2 - Sprzedanie:
     3 - Anulowanie:
     4 - Przeterminowane:
     Data executed_time
@@ -246,7 +267,6 @@ class CommissionHistory(models.Model):
     """
     history = models.ForeignKey(History, unique=False)
     action = models.IntegerField()
-    executed_time = models.DateTimeField()
 
     class Meta:
         ordering = []
@@ -354,12 +374,10 @@ class UserWallet(models.Model):
         # zapis do bazy danych
         self.save()
         # dodanei wpisu do historii
-        history = History(seller=self.user, commission_id=commission.id, cryptocurrency_sold=self.cryptocurrency, cryptocurrency_bought=commission.destination_wallet.cryptocurrency,
-                           amount_sold=commission.source_amount, amount_bought=commission.destination_amount)
-        history.save()
         now = datetime.datetime.utcnow().replace(tzinfo=utc)
-        purachse_history = CommissionHistory(history=history, action=0, executed_time=now)
-        purachse_history.save()
+        history = History(seller=self.user, commission_id=commission.id, cryptocurrency_sold=self.cryptocurrency, cryptocurrency_bought=commission.destination_wallet.cryptocurrency,
+                           amount_sold=commission.source_amount, amount_bought=commission.destination_amount, create_time=now)
+        history.save()
         return 0
 
     def purchase(self, purchased_offer):
@@ -375,12 +393,6 @@ class UserWallet(models.Model):
             self.account_balance = (self.account_balance) + Decimal(purchased_offer.source_amount)
         else:
             raise Exception("Błąd w metodzie purchase")
-        # pobranie histori
-        history = History.objects.filter(commission_id=purchased_offer.id)
-        # dodanei wpisu do historii
-        now = datetime.datetime.utcnow().replace(tzinfo=utc)
-        purachse_history = CommissionHistory(history=history[0], action=1, executed_time=now)
-        purachse_history.save()
         return 0
 
     def purchaseSell(self, purchased_offer):
@@ -420,14 +432,14 @@ class UserWallet(models.Model):
             raise Exception("Błąd w metodzie sale")
         print "%s -" % self.account_balance
         # pobranie histori i uaktualnienie wpisu
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        
         history = History.objects.filter(commission_id=saled_offer.id)
         history = history[0]
         history.purchaser = self.user
         history.commission_id=None
+        history.executed_time=now
         history.save()
-        # dodanei wpisu do historii
-        sale_history = CommissionHistory(history=history, action=2, executed_time=datetime.datetime.now())
-        sale_history.save()
         return 0
     
     def withdrawRequest(self, amount, wallet_address):
@@ -541,7 +553,6 @@ class LiteWallet(UserWallet):
 admin.site.register(UserProxy)
 admin.site.register(Commission)
 admin.site.register(History)
-admin.site.register(CommissionHistory)
 admin.site.register(DepositHistory)
 admin.site.register(Cryptocurrency)
 admin.site.register(WithdrawCodes)

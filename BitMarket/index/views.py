@@ -8,7 +8,7 @@ from django.contrib.auth.models import User, auth
 from django.shortcuts import render_to_response, redirect
 from django.utils.timezone import utc
 from wallet.models import UserProxy, UserWallet, Commission, WithdrawCodes, \
-    History, CommissionHistory
+    History, CommissionHistory, Cryptocurrency
 import datetime
 import hashlib
 
@@ -110,12 +110,12 @@ def testNewCommission(request):
     now = now.replace(tzinfo=utc)
     # now += 1
     print wallets.count()
-    user.newCommission(source_amount=10, destination_amount=20, source_wallet=wallets[0], destination_wallet=wallets[1], dead_line=now)
+    user.newCommission(source_amount=10, destination_amount=20, source_wallet=wallets[1], destination_wallet=wallets[2], dead_line=now)
     return render_to_response('master/index.html', {'local': locals()})
 # def purchase(self, purchaser, purchased_commission):
 def testPurchase(request):
     """
-    link do testowania http://127.0.0.1:8000/nc
+    link do testowania http://127.0.0.1:8000/pu
     """
     user = UserProxy.objects.get(id=request.user.id)
     coms  = Commission.objects.all()
@@ -170,5 +170,14 @@ def checkOverdue(self):
     overdue_commissions = Commission.objects.extra(where=['time_limit>%s'], params=[now])
     for commission in overdue_commissions:
         commission.overdue()
-        commission.delete()
     commission.delete()
+    
+def getBoughtHistory(request):
+    for history in History.getBoughtHistory(Cryptocurrency.objects.filter(name='PLN')[0],Cryptocurrency.objects.filter(name='GLD')[0]):
+        print history
+    return render_to_response('master/index.html', {'local': locals()})
+def getExchangeHistory(request):
+    for history in History.getExchangeHistory(Cryptocurrency.objects.filter(name='PLN')[0],Cryptocurrency.objects.filter(name='GLD')[0]):
+        print history
+        print '1'
+    return render_to_response('master/index.html', {'local': locals()})
