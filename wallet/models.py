@@ -49,6 +49,8 @@ class UserProxy(User):
         wywołuje metody z destination_wallet: newPurchaseOffer(commission);    użycie metody jest zapisane w historii
         """
         now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        source_amount = Decimal(str(source_amount))
+        destination_amount = Decimal(str(destination_amount))
         # sprawdzenie danych wejściowych
         # czy portfele należą do osoby wywołującej funkcje
         if(self.id is not source_wallet.user.id):
@@ -61,7 +63,7 @@ class UserProxy(User):
         if(Decimal(destination_amount) < 0):
             raise Exception('destination_amount jest poniżej zera.')
         if(Decimal(source_amount) > Decimal(source_wallet.account_balance)):
-            raise Exception('source_amount jest powyżej stanu portfela.')
+            raise Exception('Masz za mało kasy. Posiadasz %s, a chcesz zlecenie za %s dupku' % (Decimal(source_wallet.account_balance), Decimal(source_amount)))
         if((dead_line - now).total_seconds()) < 0:
             raise Exception('Podana data jest z przeszłości.')
         commission = Commission(source_amount=source_amount, destination_amount=destination_amount, source_wallet=source_wallet, destination_wallet=destination_wallet, time_limit=dead_line)
@@ -80,7 +82,7 @@ class UserProxy(User):
         purchasersource_walllet = UserWallet.objects.filter(user=self.id, cryptocurrency=purchased_commission.destination_wallet.cryptocurrency)
         purchaserdestination_wallet = UserWallet.objects.filter(user=self.id, cryptocurrency=purchased_commission.source_wallet.cryptocurrency)
         # sprawdzenie poprawności portfeli
-        print purchased_commission
+        
         if(not purchasersource_walllet):
             raise Exception("Nie istnieje odpowiedni portfel u kupca: %s" % (purchased_commission.destination_wallet.cryptocurrency))
         if(not purchaserdestination_wallet):
@@ -132,6 +134,7 @@ class UserProxy(User):
         @param String : amount
         pobiera kwotę amount z konta i wysyłą ją na adres wallet_address
         """
+        amount=Decimal(str(amount))
         wallet.withdrawRequest(wallet_address=wallet_address,amount=amount)
         wallet.save()
         return 0
@@ -142,6 +145,7 @@ class UserProxy(User):
         @param String : wallet_address
         @param String : amount
         """
+        amount=Decimal(str(amount))
         wallet.deposit(wallet_address=wallet_address,amount=amount)
         wallet.save()
         return 0
@@ -185,6 +189,13 @@ class Commission(models.Model):
     source_amount = models.DecimalField(max_digits=32, decimal_places=16, blank=False)
     destination_amount = models.DecimalField(max_digits=32, decimal_places=16, blank=False)
     time_limit = models.DateTimeField()
+    source_price = models.DecimalField(max_digits=64, decimal_places=32, blank=True,null=False)
+    destination_price = models.DecimalField(max_digits=64, decimal_places=32, blank=True,null=False)
+    
+    def save(self):
+        self.source_price = Decimal(Decimal(self.source_amount)/Decimal(self.destination_amount))
+        self.destination_price = Decimal(Decimal(self.destination_amount)/Decimal(self.source_amount))
+        super(Commission, self).save()
 
     class Meta:
         ordering = []
@@ -231,18 +242,44 @@ class History(models.Model):
     cryptocurrency_bought = models.ForeignKey(Cryptocurrency, related_name='cryptocurrency_boughts', unique=False, blank=False)
     amount_sold = models.DecimalField(max_digits=32, decimal_places=16, blank=False)
     amount_bought = models.DecimalField(max_digits=32, decimal_places=16, blank=False)
-    commission_id = models.IntegerField(unique=True, blank=False, null=True)
+    commission_id = models.IntegerField(unique=True, blank=True, null=True)
     create_time = models.DateTimeField(auto_now_add=True, blank=True)
     executed_time = models.DateTimeField(blank=True,null=True)
+    sold_price = models.DecimalField(max_digits=64, decimal_places=32, blank=True,null=False)
+    bought_price = models.DecimalField(max_digits=64, decimal_places=32, blank=True,null=False)
+    
+    def save(self):
+        self.sold_price = Decimal(Decimal(self.amount_sold)/Decimal(self.amount_bought))
+        self.bought_price = Decimal(Decimal(self.amount_bought)/Decimal(self.amount_sold))
+        super(History, self).save()
+                                
+    @staticmethod
+    def getBoughtHistory(cryptocurrency_sold, cryptocurrency_bought, sort=None):
+        """
+        amount_sold
+        amount_bought
+        sold_price - amount_sold/amount_bought
+        bought_price - amount_bought/amount_sold
+        """
+        if(sort==None):
+            return History.objects.extra(where=['purchaser_id is not NULL', 'cryptocurrency_sold_id=%s','cryptocurrency_bought_id=%s'], params=[cryptocurrency_sold.id, cryptocurrency_bought.id])
+        return History.objects.extra(where=['purchaser_id is not null and ((cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s) OR (cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s))'], 
+                                     params=[cryptocurrency_sold.id, cryptocurrency_bought.id, cryptocurrency_sold.id,cryptocurrency_bought.id], order_by=[sort])
     
     @staticmethod
-    def getBoughtHistory(cryptocurrency_sold, cryptocurrency_bought):
-        return History.objects.extra(where=['purchaser_id is not NULL', 'cryptocurrency_sold_id=%s','cryptocurrency_bought_id=%s'], params=[cryptocurrency_sold.id, cryptocurrency_bought.id])
-    @staticmethod
-    def getExchangeHistory(cryptocurrency_sold, cryptocurrency_bought):
-        #return History.objects.extra(where=['purchaser_id is not null'])
-        return History.objects.extra(where=['purchaser_id is not null and ((cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s) OR (cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s))'], 
+    def getExchangeHistory(cryptocurrency_sold, cryptocurrency_bought, sort=None):
+        """
+        amount_sold
+        amount_bought
+        create_time
+        amount_sold/amount_bought
+        amount_bought/amount_sold
+        """
+        if(sort==None):
+            return History.objects.extra(where=['purchaser_id is not null and ((cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s) OR (cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s))'], 
                                      params=[cryptocurrency_sold.id, cryptocurrency_bought.id, cryptocurrency_sold.id,cryptocurrency_bought.id])
+        return History.objects.extra(where=['purchaser_id is not null and ((cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s) OR (cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s))'], 
+                                     params=[cryptocurrency_sold.id, cryptocurrency_bought.id, cryptocurrency_sold.id,cryptocurrency_bought.id], order_by=[sort])
     
     def __unicode__(self):
         if(self.purchaser is None):
@@ -251,7 +288,7 @@ class History(models.Model):
                     return 'Historia przeterminowanego zlecenia %s wymiany %s %s na %s %s.' % (self.seller, self.cryptocurrency_sold, self.amount_sold, self.cryptocurrency_bought, self.amount_bought)
                 return 'Historia anulowanego zlecenia %s wymiany %s %s na %s %s. Zlecenie anulowano ' % (self.seller, self.cryptocurrency_sold, self.amount_sold, self.cryptocurrency_bought, self.amount_bought, self.commission_id, self.executed_time)
             return 'Historia niezrealizowanego zlecenia %s wymiany %s %s na %s %s. Nr powiązanego zlecenia %s.' % (self.seller, self.cryptocurrency_sold.name, self.amount_sold, self.cryptocurrency_bought.name, self.amount_bought, self.commission_id)
-        return 'Historia między kupującym %s, a sprzedającym %s wymiany %s %s na %s %s.' % (self.seller, self.purchaser, self.cryptocurrency_sold.name, self.amount_sold, self.cryptocurrency_bought.name, self.amount_bought)
+        return 'Historia między kupującym %s, a sprzedającym %s wymiany %s %s na %s %s.' % (self.purchaser, self.seller, self.cryptocurrency_sold.name, self.amount_sold, self.cryptocurrency_bought.name, self.amount_bought)
     
 
 class DepositHistory(models.Model):
@@ -323,8 +360,6 @@ class UserWallet(models.Model):
         oraz odejmuje z konta potrzebną ilość gotówki,
         zapisuje użycie metody w historii
         """
-        print commission.destination_wallet.user
-        print self.user
         # sprawdzenie danych wejściowych
         # czy portfele należą do użytkownika, który wywołał funkcje
         if(commission.source_wallet.user.id is not self.user.id):
@@ -356,8 +391,7 @@ class UserWallet(models.Model):
         dodaje do konta kwotę z zatwierdzonej oferty
         zapisuje użycie metody w historii
         """
-        print "%s %s+" % (purchased_offer.source_wallet.cryptocurrency, purchased_offer.source_amount)
-        print "%s +" % self.cryptocurrency
+        
         if(purchased_offer.source_wallet.cryptocurrency.id is self.cryptocurrency.id):
             self.account_balance = UserWallet.objects.filter(id=self.id)[0].account_balance
             self.account_balance = (self.account_balance) + Decimal(purchased_offer.source_amount)
@@ -371,9 +405,6 @@ class UserWallet(models.Model):
         odejmuje z konta kwotę z zatwierdzonej oferty
         zapisuje użycie metody w historii
         """
-        print "%s %s-" % (purchased_offer.destination_wallet.cryptocurrency, purchased_offer.destination_amount)
-        print "%s -" % self.cryptocurrency
-        print "%s -" % self.account_balance
         self.account_balance = UserWallet.objects.filter(id=self.id)[0].account_balance
         if(Decimal(self.account_balance) - Decimal(purchased_offer.destination_amount) < 0):
             raise Exception("Brakuje Tobie środków na portfelu %s. Na portfelu posiadasz jedynie %s, a chcesz wypłacić %s" % (self.cryptocurrency, self.account_balance, purchased_offer.destination_amount))
@@ -381,7 +412,12 @@ class UserWallet(models.Model):
             self.account_balance = Decimal(self.account_balance) - Decimal(purchased_offer.destination_amount)
         else:
             raise Exception("Błąd w metodzie purchase sell")
-        print "%s -" % self.account_balance
+        
+        history = History.objects.filter(commission_id=purchased_offer.id)
+        history = history[0]
+        history.purchaser = self.user
+        history.save()
+        
         return 0
 
     def sale(self, saled_offer):
@@ -391,24 +427,17 @@ class UserWallet(models.Model):
         zapisuje użycie metody w historii
         """
         # zakladajacy zlecenie
-        print "%s %s+" % (saled_offer.destination_wallet.cryptocurrency, saled_offer.destination_amount)
-        print "%s +" % self.cryptocurrency
-        
         if(saled_offer.destination_wallet.id is self.id):
             self.account_balance = UserWallet.objects.filter(id=self.id)[0].account_balance
-            print "%s -" % self.account_balance
             self.account_balance = Decimal(self.account_balance) + Decimal(saled_offer.destination_amount)
         else:
             raise Exception("Błąd w metodzie sale")
-        print "%s -" % self.account_balance
         # pobranie histori i uaktualnienie wpisu
         now = datetime.datetime.utcnow().replace(tzinfo=utc)
         
-        print saled_offer.id
         
         history = History.objects.filter(commission_id=saled_offer.id)
         history = history[0]
-        history.purchaser = self.user
         history.commission_id=None
         history.executed_time=now
         history.save()

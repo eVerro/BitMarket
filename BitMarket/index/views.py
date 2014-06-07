@@ -8,7 +8,7 @@ from django.contrib.auth.models import User, auth
 from django.shortcuts import render_to_response, redirect
 from django.utils.timezone import utc
 from wallet.models import UserProxy, UserWallet, Commission, WithdrawCodes, \
-    History, CommissionHistory, Cryptocurrency
+    History, Cryptocurrency
 import datetime
 import hashlib
 
@@ -50,18 +50,7 @@ def ltc_view(request):
 
 def user(request):
     wallets = UserWallet.objects.filter(user=request.user)
-    histories = CommissionHistory.objects.all()
-    i=0
-    userhistory=[None]*len(histories)
-    while(i<len(histories)):
-        if(histories[i].history.seller==request.user):
-            userhistory[i]=histories[i]
-        i=i+1
-    i=0
-    account=0
-    while i<len(wallets):
-        account=account+wallets[i].account_balance
-        i=i+1
+    userhistories = History.objects.filter(seller=request.user)
     local = locals()
     return render_to_response('user/user.html', {'local': local})
 
@@ -146,9 +135,13 @@ def testPurchase(request):
     link do testowania http://127.0.0.1:8000/pu
     """
     user = UserProxy.objects.get(id=request.user.id)
+    #print user
     coms  = Commission.objects.all()
     for com in coms:
-        user.purchase(purchased_commission=com)
+        try:
+            user.purchase(purchased_commission=com)
+        except Exception:
+            print "pijmy bawmy się, siallalalala"
     return render_to_response('master/index.html', {'local': locals()})
 # def withdraw(self, wallet, wallet_address, amount):
 def testWithdrawRequest(request):
@@ -179,34 +172,35 @@ def testDeposit(request):
     """
     link do testowania http://127.0.0.1:8000/de
     """
-    user = UserProxy.objects.get(id=request.user.id)
-    wallets = UserWallet.objects.filter(user=user)
     amounts = {}
     amounts['Chrystian'] = ['345334.33445','232344.543432','234234.343434']
     amounts['Stefan'] = ['123123123.343434','1231233.4343','4324234.2324']
     amounts['Olga'] = ['123.45','1323.00','10.434']
     amounts['Karol'] = ['545.234','45545','123123']
     amounts['Piotr'] = ['10000','0','10']
-    if user.username == 'Chrystian':
-        user.deposit(wallet=wallets[0], wallet_address="1LxZ84RfAscG7KYpsnqit3i283g5WgBURQ", amount=amounts['Chrystian'][0])
-        user.deposit(wallet=wallets[1], wallet_address="1LasdfcG7KYpsnqit3i283g5WasdfsddRQ", amount=amounts['Chrystian'][1])
-        user.deposit(wallet=wallets[2], wallet_address="34jktnkjngkdfjgnkdbndkjfbnslWgBURQ", amount=amounts['Chrystian'][2])
-    if user.username == 'Stefan':
-        user.deposit(wallet=wallets[0], wallet_address="1LxZ84RfAscG7KYpsnqit3i283g5WgBDGF", amount=amounts['Stefan'][0])
-        user.deposit(wallet=wallets[1], wallet_address="1LxZ84RfAscFRG7KYpsdf3i283g5WgBURQ", amount=amounts['Stefan'][1])
-        user.deposit(wallet=wallets[2], wallet_address="1LxZ84RfAscG7KYpsnsdfg34tgrtgb45te", amount=amounts['Stefan'][2])
-    if user.username == 'Olga':
-        user.deposit(wallet=wallets[0], wallet_address="1LxZ84RfAscGVBW4NKJ5NG4L5T39RGRJKF", amount=amounts['Olga'][0])
-        user.deposit(wallet=wallets[1], wallet_address="4RJ398FGJODVJNEROGVJWPE48G5UJPOTGI", amount=amounts['Olga'][1])
-        user.deposit(wallet=wallets[2], wallet_address="RGN3QP2389GPJDFIVFSDVJASLFKDJSLKJF", amount=amounts['Olga'][2])
-    if user.username == 'Karol':
-        user.deposit(wallet=wallets[0], wallet_address="34H89F7OW34GHOIBUSNODB7IYODF8GB7SH", amount=amounts['Karol'][0])
-        user.deposit(wallet=wallets[1], wallet_address="9DF8SB7SUY9ERJTOW489UGOCR8TVBJSDOP", amount=amounts['Karol'][1])
-        user.deposit(wallet=wallets[2], wallet_address="VBWE4M8CUG59WU4CV9GW9ERCTGOSEIRGVL", amount=amounts['Karol'][2])
-    if user.username == 'Piotr':
-        user.deposit(wallet=wallets[0], wallet_address="UNG4OIF5YRG897FVYO9SD8BOI8SDUFBSD8", amount=amounts['Piotr'][0])
-        user.deposit(wallet=wallets[1], wallet_address="POG4JKOPGYRU8TF9BUJOFIGBJOFGIBJBBG", amount=amounts['Piotr'][1])
-        user.deposit(wallet=wallets[2], wallet_address="54GU8ED9RGUTVBJSDPOIUBJHSFGBU8F9G8", amount=amounts['Piotr'][2])
+    users = UserProxy.objects.all()
+    for user in users:
+        wallets = UserWallet.objects.filter(user=user)
+        if user.username == 'Chrystian':
+            user.deposit(wallet=wallets[0], wallet_address="1LxZ84RfAscG7KYpsnqit3i283g5WgBURQ", amount=amounts['Chrystian'][0])
+            user.deposit(wallet=wallets[1], wallet_address="1LasdfcG7KYpsnqit3i283g5WasdfsddRQ", amount=amounts['Chrystian'][1])
+            user.deposit(wallet=wallets[2], wallet_address="34jktnkjngkdfjgnkdbndkjfbnslWgBURQ", amount=amounts['Chrystian'][2])
+        if user.username == 'Stefan':
+            user.deposit(wallet=wallets[0], wallet_address="1LxZ84RfAscG7KYpsnqit3i283g5WgBDGF", amount=amounts['Stefan'][0])
+            user.deposit(wallet=wallets[1], wallet_address="1LxZ84RfAscFRG7KYpsdf3i283g5WgBURQ", amount=amounts['Stefan'][1])
+            user.deposit(wallet=wallets[2], wallet_address="1LxZ84RfAscG7KYpsnsdfg34tgrtgb45te", amount=amounts['Stefan'][2])
+        if user.username == 'Olga':
+            user.deposit(wallet=wallets[0], wallet_address="1LxZ84RfAscGVBW4NKJ5NG4L5T39RGRJKF", amount=amounts['Olga'][0])
+            user.deposit(wallet=wallets[1], wallet_address="4RJ398FGJODVJNEROGVJWPE48G5UJPOTGI", amount=amounts['Olga'][1])
+            user.deposit(wallet=wallets[2], wallet_address="RGN3QP2389GPJDFIVFSDVJASLFKDJSLKJF", amount=amounts['Olga'][2])
+        if user.username == 'Karol':
+            user.deposit(wallet=wallets[0], wallet_address="34H89F7OW34GHOIBUSNODB7IYODF8GB7SH", amount=amounts['Karol'][0])
+            user.deposit(wallet=wallets[1], wallet_address="9DF8SB7SUY9ERJTOW489UGOCR8TVBJSDOP", amount=amounts['Karol'][1])
+            user.deposit(wallet=wallets[2], wallet_address="VBWE4M8CUG59WU4CV9GW9ERCTGOSEIRGVL", amount=amounts['Karol'][2])
+        if user.username == 'Piotr':
+            user.deposit(wallet=wallets[0], wallet_address="UNG4OIF5YRG897FVYO9SD8BOI8SDUFBSD8", amount=amounts['Piotr'][0])
+            user.deposit(wallet=wallets[1], wallet_address="POG4JKOPGYRU8TF9BUJOFIGBJOFGIBJBBG", amount=amounts['Piotr'][1])
+            user.deposit(wallet=wallets[2], wallet_address="54GU8ED9RGUTVBJSDPOIUBJHSFGBU8F9G8", amount=amounts['Piotr'][2])
     return render_to_response('master/index.html', {'local': locals()})
 def testCancelCommission(request):
     """
@@ -226,11 +220,11 @@ def checkOverdue(self):
     commission.delete()
     
 def getBoughtHistory(request):
-    for history in History.getBoughtHistory(Cryptocurrency.objects.filter(name='PLN')[0],Cryptocurrency.objects.filter(name='GLD')[0]):
+    for history in History.getBoughtHistory(Cryptocurrency.objects.filter(name='BTC')[0],Cryptocurrency.objects.filter(name='GLDC')[0], sort='amount_sold'):
         print history
     return render_to_response('master/index.html', {'local': locals()})
 def getExchangeHistory(request):
-    for history in History.getExchangeHistory(Cryptocurrency.objects.filter(name='PLN')[0],Cryptocurrency.objects.filter(name='GLD')[0]):
+    for history in History.getExchangeHistory(Cryptocurrency.objects.filter(name='GLDC')[0],Cryptocurrency.objects.filter(name='BTC')[0], sort='amount_sold'):
         print history
         print '1'
     return render_to_response('master/index.html', {'local': locals()})
