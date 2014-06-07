@@ -50,7 +50,8 @@ def ltc_view(request):
 
 def user(request):
     wallets = UserWallet.objects.filter(user=request.user)
-    userhistories = UserProxy.getCommissionHistory(self, sort=None)
+    userproxy=UserProxy.objects.get(id=request.user.id)
+    userhistories = UserProxy.getCommissionHistory( userproxy, sort=None)
     local = locals()
     return render_to_response('user/user.html', {'local': local})
 
