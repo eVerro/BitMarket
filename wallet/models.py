@@ -253,36 +253,6 @@ class History(models.Model):
             return 'Historia niezrealizowanego zlecenia %s wymiany %s %s na %s %s. Nr powiązanego zlecenia %s.' % (self.seller, self.cryptocurrency_sold.name, self.amount_sold, self.cryptocurrency_bought.name, self.amount_bought, self.commission_id)
         return 'Historia między kupującym %s, a sprzedającym %s wymiany %s %s na %s %s.' % (self.seller, self.purchaser, self.cryptocurrency_sold.name, self.amount_sold, self.cryptocurrency_bought.name, self.amount_bought)
     
-        
-class CommissionHistory(models.Model):
-    """
-    Klasa histori działań użytkownika na giełdzie.
-    Tz. tworzenie nowych zleceń, anulowanie, kupno.
-    Pole action:
-    0 - Stworzenie:
-    3 - Anulowanie:
-    4 - Przeterminowane:
-    Data executed_time
-    int action
-    """
-    history = models.ForeignKey(History, unique=False)
-    action = models.IntegerField()
-
-    class Meta:
-        ordering = []
-
-    def __unicode__(self):
-        if(self.action is 0):
-            return 'Stworzenie nr %d.' % (self.history.id)
-        if(self.action is 1):
-            return 'Kupno nr %d' % (self.history.id)
-        if(self.action is 2):
-            return 'Sprzedanie nr %d' % (self.history.id)
-        if(self.action is 3):
-            return 'Anulowanie nr  %d' % (self.history.id)
-        if(self.action is 4):
-            return 'Przeterminowanie nr %d' % (self.history.id)
-
 
 class DepositHistory(models.Model):
     """
