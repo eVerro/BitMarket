@@ -16,18 +16,27 @@
 					 <tr>
 					   <td>{{wallet.cryptocurrency.name}}:</td>
 					   <td>{{wallet.account_balance}}</td>
-					   <td><input type="submit" value="wspłać na portfel" id="wp"/> <input type="submit" value="wypłać z portfela" id="wyp"/></td>
+					   <td><input type="submit" value="wpłać na portfel" id="wp"/> <input type="submit" value="wypłać z portfela" id="wyp"/></td>
 					 </tr>
 					 {%endfor%}
 				</table>
 				
 				<table>	
 					 <tr>
-					   <td>zlecenia aktywne:</td>
-					   {% for history in local.userhistories %}
-					   <td>{{history.seller.username}}</td>
-					   {%endfor%}
+					   <th colspan="2">zlecenia aktywne:</th>
 					 </tr>
+					 <tr>
+					   <th>para walutowa:</th>
+					   <th>ilosc:</th>
+					 </tr>
+					 {% for history in local.userhistories %}
+					 	{% if history.purchaser == None %}
+					 		<tr>
+					   			<td>{{history.cryptocurrency_sold.name}}/{{history.cryptocurrency_bought.name}}</td>
+					   			<td>{{history.amount_sold}}/{{history.amount_bought}}</td>
+					   		</tr>
+					   	{%endif%}
+					 {%endfor%}
 				</table>
 			</div>    
 	{% endif %} 
