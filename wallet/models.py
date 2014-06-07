@@ -149,8 +149,8 @@ class UserProxy(User):
         amount_sold
         amount_bought
         create_time
-        amount_sold/amount_bought
-        amount_bought/amount_sold
+        sold_price - amount_sold/amount_bought
+        bought_price - amount_bought/amount_sold
         executed_time
         """
         if(cryptocurrency_first==None):
@@ -163,7 +163,7 @@ class UserProxy(User):
             if(sort==None):
                 return History.objects.extra(where=['purchaser_id is not null and (purchaser_id is %s or seller_id is %s) and (cryptocurrency_sold_id=%s or cryptocurrency_bought_id=%s)'], 
                                      params=[self.id, self.id, cryptocurrency_first.id])
-            return History.objects.extra(where=['purchaser_id is not null and (purchaser_id is %s or seller_id is %s)'], 
+            return History.objects.extra(where=['purchaser_id is not null and (purchaser_id is %s or seller_id is %s) and (cryptocurrency_sold_id=%s or cryptocurrency_bought_id=%s)'], 
                                  params=[self.id, self.id, cryptocurrency_first.id, cryptocurrency_first.id], order_by=[sort])
         if(sort==None):
             return History.objects.extra(where=['purchaser_id is not null and (purchaser_id is %s or seller_id is %s) and ((cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s) OR (cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s))'], 
@@ -178,8 +178,8 @@ class UserProxy(User):
         amount_sold
         amount_bought
         create_time
-        amount_sold/amount_bought
-        amount_bought/amount_sold
+        sold_price - amount_sold/amount_bought
+        bought_price - amount_bought/amount_sold
         """
         if(sort==None):
             return History.objects.extra(where=['(purchaser_id is %s or seller_id is %s) and ((cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s) OR (cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s))'], 
@@ -194,8 +194,8 @@ class UserProxy(User):
         amount_sold
         amount_bought
         create_time
-        amount_sold/amount_bought
-        amount_bought/amount_sold
+        sold_price - amount_sold/amount_bought
+        bought_price - amount_bought/amount_sold
         """
         if(sort==None):
             return History.objects.extra(where=['(purchaser_id is %s or seller_id is %s)'], params=[self.id, self.id])
@@ -285,7 +285,34 @@ class Commission(models.Model):
         self.source_wallet.account_balance = UserWallet.objects.filter(id = self.source_wallet.id)[0].account_balance + self.source_amount
         self.source_wallet.save()
         self.delete()
-
+        
+    @staticmethod
+    def getExchangeHistory(cryptocurrency_first=None, cryptocurrency_second=None, sort=None):
+        """
+        można sortować po:
+        amount_sold
+        amount_bought
+        create_time
+        sold_price - amount_sold/amount_bought
+        bought_price - amount_bought/amount_sold
+        executed_time
+        """
+        if(cryptocurrency_first==None):
+            if(sort==None):
+                return History.objects.all()
+            return History.objects.extra(order_by=[sort])
+        if(cryptocurrency_second==None):
+            if(sort==None):
+                return History.objects.extra(where=['(cryptocurrency_sold_id=%s or cryptocurrency_bought_id=%s)'], 
+                                     params=[cryptocurrency_first.id])
+            return History.objects.extra(where=['(cryptocurrency_sold_id=%s or cryptocurrency_bought_id=%s)'], 
+                                 params=[cryptocurrency_first.id, cryptocurrency_first.id], order_by=[sort])
+        if(sort==None):
+            return History.objects.extra(where=['((cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s) OR (cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s))'], 
+                                     params=[cryptocurrency_first.id, cryptocurrency_second.id, cryptocurrency_first.id,cryptocurrency_second.id])
+        return History.objects.extra(where=['((cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s) OR (cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s))'], 
+                                     params=[cryptocurrency_first.id, cryptocurrency_second.id, cryptocurrency_first.id,cryptocurrency_second.id], order_by=[sort])
+        
 class History(models.Model):
     """
     Historia zlecenia.
