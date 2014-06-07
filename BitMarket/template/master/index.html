@@ -23,6 +23,7 @@
 			    <form method="post" action="/user/login/" id="logowanie_form">                     
 			    	<span id="logowaniePole"> <input name="username" type="text"> </span>               
 			    	<span id="passPole"> <input name="password" type="password"></span>                        
+			    	<input type="submit" style="display: none;" />
 			    </form></p>
 			    <p id="logowanie_link"><a href="/user/login/" onclick="document.getElementById('logowanie_form').submit(); return false;">Logowanie</a></p>
 			   <p id="rejestracja_link"><a href="/user/registerpage/">Rejestracja</a></p>
@@ -68,8 +69,8 @@
                 </p>
                 	{% block sidebar %}
             		<ul>
-                    	<li><a href="/user/plnc/"><p>PLNC/GLD</p></a></li>
-                        <li><a href="/user/flt/"><p>FLT/GLD</p></a></li>
+                    	<li><a href="/user/gldc/"><p>BTC/GLDC</p></a></li>
+                        <li><a href="/user/ltc/"><p>BTC/LTC</p></a></li>
                     </ul>
                     {% endblock %}
 	</div>

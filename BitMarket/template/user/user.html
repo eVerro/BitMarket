@@ -1,28 +1,36 @@
 {% extends "master/index.html" %}
-
 {% block content %}
+<link rel="stylesheet" href="{{ STATIC_URL }} /static/css/table.css" />
 	{% if local.request.user.is_authenticated %}
-	gdfrgdf
-		{% if local.profile.user == local.request.user %}
-			<div id="plnc">
-				<font size=4>Konto użytkownika {{local.profile.user}}</font>
+			<div>
+				<font size=4> Konto użytkownika {{local.request.user.username}}</font>
 			</div>
-			<div id="plnclewa">
+			<div>
 				<table>	
 					 <tr>
-					   <th>Atrybut</th>
+					   <th>Portfel</th>
 					   <th>Wartość</th>
 					 </tr>
 					 <tr>
-					   <td>Stan konta</td>
-					   <td>660</td>
+					   <td>całkowity:</td>
+					   <td>{{local.account}}</td>
 					 </tr>
+					 {% for wallet in local.wallets %}
 					 <tr>
-					  <td>Ilość zleceń oczekujacych </td>
-					  <td>3</td>
+					   <td>{{wallet.cryptocurrency.name}}:</td>
+					   <td>{{wallet.account_balance}}</td>
+					 </tr>
+					 {%endfor%}
+				</table>
+				
+				<table>	
+					 <tr>
+					   <td>zlecenia aktywne:</td>
+					   {% for history in local.userhistory %}
+					   <td>{{history.history.seller.username}}</td>
+					   {%endfor%}
 					 </tr>
 				</table>
-			</div>
-		{% endif %}     
+			</div>    
 	{% endif %} 
 {% endblock %}

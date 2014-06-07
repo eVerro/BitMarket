@@ -39,18 +39,29 @@ def register_view(request):
     return render_to_response('register/register.html')
 
 
-def plnc_view(request):
+def gldc_view(request):
     local = locals()
-    return render_to_response('plnc/plnc.html', {'local': local})
+    return render_to_response('currency/BTC_GLDC.html', {'local': local})
 
 
-def flt_view(request):
+def ltc_view(request):
     local = locals()
-    return render_to_response('flt/flt.html', {'local': local})
+    return render_to_response('currency/BTC_LTC.html', {'local': local})
 
 def user(request):
-    profile = UserProxy.objects.get(user=request.user)
-    #wallet = UserWallet.objects.get(user=profile.user)
+    wallets = UserWallet.objects.filter(user=request.user)
+    histories = CommissionHistory.objects.all()
+    i=0
+    userhistory=[None]*len(histories)
+    while(i<len(histories)):
+        if(histories[i].history.seller==request.user):
+            userhistory[i]=histories[i]
+        i=i+1
+    i=0
+    account=0
+    while i<len(wallets):
+        account=account+wallets[i].account_balance
+        i=i+1
     local = locals()
     return render_to_response('user/user.html', {'local': local})
 
