@@ -2,38 +2,120 @@
 {% block content %}
 <link rel="stylesheet" href="{{ STATIC_URL }} /static/css/table.css" />
 <script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/autorefresh.js" ></script>
-<script type="text/javascript"> 
-	$(document).ready(
-		AutoRefreshWallet('BTC', 'GLDC')
-	);	
-</script>
-		
-	<div id="tables">
-		<table>
+<script type="text/javascript">$(document).ready(AutoRefreshWallet('BTC', 'GLDC'));</script>
+<script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/validation.js"></script>
+<div id="tables">
+	<table class="form_table">
+		{% if local.request.user.is_authenticated %}
 		<tr>
-			<td>
-				<h3>Oferty Kupna</h3>
-				<div id="left_table"></div>
+			<td align="center">
+			<form>
+				<table>
+					<tr>
+						<td colspan="2">
+						<div align="center">
+							<h3>Zlecenie kupna BTC za GLDC:</h3>
+						</div></td>
+					</tr>
+					<tr>
+						<td><label>Ilość GLDC:</label></td><td>
+						<input type="number" id="First_Amount_L" name="BTC_amount" onkeyup="validate('L');" onkeypress="return isNumberKey(event);"/>
+						</td>
+					</tr>
+					<tr>
+						<td><label>Cena za 1 BTC:</label></td><td>
+						<input type="number" id="Second_Amount_L" name="GLDC_amount" onkeyup="validate('L');" onkeypress="return isNumberKey(event);"/>
+						</td>
+					</tr>
+					<tr>
+						<td><label>Razem(BTC):</label></td>
+						<td align="right"><label id="total_L">0.0000000000</label></td>
+					</tr>
+					<tr>
+						<td><label>Prowizja(0.25%):</label></td>
+						<td align="right"><label id="provision_L">0.0000000000</label></td>
+					</tr>
+					<tr>
+						<td><label>Razem(BTC) po prowizji:</label></td>
+						<td align="right"><label id="after_provision_L">0.0000000000</label>
+							
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" align="right">
+							<input class="sub_button" type="submit" value="Wystaw"/>
+						</td>
+					</tr>
+				</table>
+			</form>	
 			</td>
-				
-			<td>	
-				<h3>Oferty Sprzedaży</h3>
-				<div id="right_table"></div>
+			<td align="center">
+				<form>
+				<table>
+					<tr>
+						<td colspan="2">
+						<div align="center">
+							<h3>Zlecenie sprzedaży BTC za GLDC:</h3>
+						</div></td>
+					</tr>
+					<tr>
+						<td><label>Ilość GLDC:</label></td><td>
+						<input type="number" id="First_Amount_R" name="BTC_amount" onkeyup="validate('R');" onchange="validate('R');" onkeypress="return isNumberKey(event);"/>
+						</td>
+					</tr>
+					<tr>
+						<td><label>Cena za 1 BTC:</label></td><td>
+						<input type="number" id="Second_Amount_R" name="GLDC_amount" onkeyup="validate('R');" onkeypress="return isNumberKey(event);"/>
+						</td>
+					</tr>
+					<tr>
+						<td><label>Razem(BTC):</label></td>
+						<td align="right"><label id="total_R">0.0000000000</label></td>
+					</tr>
+					<tr>
+						<td><label>Prowizja(0.25%):</label></td>
+						<td align="right"><label id="provision_R">0.0000000000</label></td>
+					</tr>
+					<tr>
+						<td><label>Razem(BTC) po prowizji:</label></td>
+						<td align="right"><label id="after_provision_R">0.0000000000</label>
+							
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" align="right">
+							<input class="sub_button" type="submit" value="Wystaw"/>
+						</td>
+					</tr>
+				</table>
+				</form>
 			</td>
-		</tr>
-		
-		<tr>
-			<td colspan="2">
-				<h3>Historia Operacji</h3>
-				<div id="history_table"></div>
-			</td>
-		</tr>
-		</table>
-	</div>	
-		
+	</tr>
+		{% endif %}
+	<tr>
+		<td>
+		<div align="center">
+			<h3>Oferty Kupna</h3>
+		</div><div id="left_table"></div></td>
+
+		<td>
+		<div align="center">
+			<h3>Oferty Sprzedaży</h3>
+		</div><div id="right_table"></div></td>
+	</tr>
+
+	<tr>
+		<td colspan="2">
+		<div align="center">
+			<h3>Historia Operacji</h3>
+		</div><div id="history_table"></div></td>
+	</tr>
+	</table>
+</div>
+
 {% endblock %}
 
 {% block header %}
-	<label>PLNC/GLD</label>
+<label>BTC/GLDC</label>
 
 {% endblock%}

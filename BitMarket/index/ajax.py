@@ -10,11 +10,31 @@ def realizeCommision(request, comm_id):
     return None;
 
 @dajaxice_register
+def resetFields(request,site):
+    dajax=Dajax()
+    
+    dajax.assign("#total_"+site, "innerHTML", "0.0000000000")
+    dajax.assign("#provision_"+site, "innerHTML", "0.0000000000")
+    dajax.assign("#after_provision_"+site, "innerHTML", "0.0000000000")
+    return dajax.json()
+
+@dajaxice_register
+def validate(request,first_amount, second_amount, site):
+    dajax=Dajax()
+    getcontext().prec = 15
+    total = Decimal(first_amount)/Decimal(second_amount)
+    provision = Decimal(total)*Decimal(0.025)
+    
+    dajax.assign("#total_"+site, "innerHTML", str(total))
+    dajax.assign("#provision_"+site, "innerHTML", str(provision))
+    dajax.assign("#after_provision_"+site, "innerHTML", str(Decimal(total)-Decimal(provision)))
+    
+    
+    return dajax.json()
+
+@dajaxice_register
 def createTable(request, left_currency, right_currency):
     dajax = Dajax()
-    
-    
-    
     """
     Wyswietlanie lewej tabeli zleceń
     """
