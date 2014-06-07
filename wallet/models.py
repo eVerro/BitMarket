@@ -142,9 +142,9 @@ class UserProxy(User):
         return History.objects.extra(where=['purchaser_id is not null and (purchaser_id is %s or seller_id is %s) and ((cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s) OR (cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s))'], 
                                      params=[self.id, self.id, cryptocurrency_sold.id, cryptocurrency_bought.id, cryptocurrency_sold.id,cryptocurrency_bought.id], order_by=[sort])
     
-    def getExchangeHistory(self, cryptocurrency_sold, cryptocurrency_bought, sort=None):
+    def getExchangeHistory(self, cryptocurrency_first=None, cryptocurrency_second=None, sort=None):
         """
-        Zwraca tylko zrealizowane zlecenia między podanymi walutami.
+        Zwraca tylko zrealizowane.
         można sortować po:
         amount_sold
         amount_bought
@@ -153,15 +153,27 @@ class UserProxy(User):
         amount_bought/amount_sold
         executed_time
         """
+        if(cryptocurrency_first==None):
+            if(sort==None):
+                return History.objects.extra(where=['purchaser_id is not null and (purchaser_id is %s or seller_id is %s)'], 
+                                     params=[self.id, self.id])
+            return History.objects.extra(where=['purchaser_id is not null and (purchaser_id is %s or seller_id is %s)'], 
+                                 params=[self.id, self.id], order_by=[sort])
+        if(cryptocurrency_second==None):
+            if(sort==None):
+                return History.objects.extra(where=['purchaser_id is not null and (purchaser_id is %s or seller_id is %s) and (cryptocurrency_sold_id=%s or cryptocurrency_bought_id=%s)'], 
+                                     params=[self.id, self.id, cryptocurrency_first.id])
+            return History.objects.extra(where=['purchaser_id is not null and (purchaser_id is %s or seller_id is %s)'], 
+                                 params=[self.id, self.id, cryptocurrency_first.id, cryptocurrency_first.id], order_by=[sort])
         if(sort==None):
             return History.objects.extra(where=['purchaser_id is not null and (purchaser_id is %s or seller_id is %s) and ((cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s) OR (cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s))'], 
-                                     params=[self.id, self.id, cryptocurrency_sold.id, cryptocurrency_bought.id, cryptocurrency_sold.id,cryptocurrency_bought.id])
+                                     params=[self.id, self.id, cryptocurrency_first.id, cryptocurrency_second.id, cryptocurrency_first.id,cryptocurrency_second.id])
         return History.objects.extra(where=['purchaser_id is not null and (purchaser_id is %s or seller_id is %s) and ((cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s) OR (cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s))'], 
-                                     params=[self.id, self.id, cryptocurrency_sold.id, cryptocurrency_bought.id, cryptocurrency_sold.id,cryptocurrency_bought.id], order_by=[sort])
+                                     params=[self.id, self.id, cryptocurrency_first.id, cryptocurrency_second.id, cryptocurrency_first.id,cryptocurrency_second.id], order_by=[sort])
         
     def getCommissionHistoryTwoWallets(self, cryptocurrency_sold, cryptocurrency_bought, sort=None):
         """
-        Zwraca wszystkie zlecenia: anulowane, przeterminowane, wystawione, kupione i sprzedane użytkownika
+        Zwraca wszystkie zlecenia: anulowane, przeterminowane, wystawione, kupione i sprzedane użytkownika z dwóch walut 
         można sortować po:
         amount_sold
         amount_bought
@@ -174,6 +186,20 @@ class UserProxy(User):
                                      params=[cryptocurrency_sold.id, cryptocurrency_bought.id, cryptocurrency_sold.id,cryptocurrency_bought.id])
         return History.objects.extra(where=['(purchaser_id is %s or seller_id is %s) and ((cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s) OR (cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s))'], 
                                      params=[cryptocurrency_sold.id, cryptocurrency_bought.id, cryptocurrency_sold.id,cryptocurrency_bought.id], order_by=[sort])
+    
+    def getCommissionHistory(self, sort=None):
+        """
+        Zwraca wszystkie zlecenia: anulowane, przeterminowane, wystawione, kupione i sprzedane użytkownika
+        można sortować po:
+        amount_sold
+        amount_bought
+        create_time
+        amount_sold/amount_bought
+        amount_bought/amount_sold
+        """
+        if(sort==None):
+            return History.objects.extra(where=['(purchaser_id is %s or seller_id is %s)'], params=[self.id, self.id])
+        return History.objects.extra(where=['(purchaser_id is %s or seller_id is %s)'], params=[self.id, self.id], order_by=[sort])
         
     def withdraw(self, wallet, wallet_address, amount):
         """
@@ -313,7 +339,7 @@ class History(models.Model):
             return History.objects.extra(where=['purchaser_id is not NULL', 'cryptocurrency_sold_id=%s','cryptocurrency_bought_id=%s'], params=[cryptocurrency_sold.id, cryptocurrency_bought.id])
         return History.objects.extra(where=['purchaser_id is not null and ((cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s) OR (cryptocurrency_sold_id=%s and cryptocurrency_bought_id=%s))'], 
                                      params=[cryptocurrency_sold.id, cryptocurrency_bought.id, cryptocurrency_sold.id,cryptocurrency_bought.id], order_by=[sort])
-    
+
     @staticmethod
     def getExchangeHistory(cryptocurrency_sold, cryptocurrency_bought, sort=None):
         """
