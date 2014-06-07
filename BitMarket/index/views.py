@@ -8,7 +8,7 @@ from django.contrib.auth.models import User, auth
 from django.shortcuts import render_to_response, redirect
 from django.utils.timezone import utc
 from wallet.models import UserProxy, UserWallet, Commission, WithdrawCodes, \
-    History, CommissionHistory, Cryptocurrency
+    History, Cryptocurrency
 import datetime
 import hashlib
 

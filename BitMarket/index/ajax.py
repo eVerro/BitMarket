@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from dajax.core import Dajax
 from dajaxice.decorators import dajaxice_register
-from wallet.models import Commission, CommissionHistory, History, Cryptocurrency
+from wallet.models import Commission, History, Cryptocurrency
 import random
 
 @dajaxice_register
