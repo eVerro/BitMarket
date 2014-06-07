@@ -20,6 +20,7 @@ def createTable(request, left_currency, right_currency):
     """
     left_table='<table class="comm_table">'
     left_table+='<thead><tr><th>Cena('+str(left_currency)+')</th><th>'+str(right_currency)+'</th><th>Razem('+str(left_currency)+')</th>'
+    left_table+='<th></th>'
     left_table+='</tr></thead>'
     for comm in Commission.objects.all():
         if comm.source_wallet.cryptocurrency.name == str(left_currency)  and comm.destination_wallet.cryptocurrency.name == str(right_currency):
@@ -29,9 +30,9 @@ def createTable(request, left_currency, right_currency):
             left_table+=str(Decimal(comm.destination_amount)/Decimal(comm.source_amount))
             left_table+='</td>'
             left_table+='<td>' 
-            left_table+=str(comm.source_amount) 
+            left_table+=str(Decimal(comm.source_amount)) 
             left_table+='</td><td>'
-            left_table+=str(comm.destination_amount) 
+            left_table+=str(Decimal(comm.destination_amount)) 
             left_table+='</td>'
             if request.user.is_authenticated():
                 left_table+='<td><a href="#" onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Kup</a></td>'
@@ -44,6 +45,7 @@ def createTable(request, left_currency, right_currency):
     """
     right_table='<table class="comm_table">'
     right_table+='<thead><tr><th>Cena('+str(left_currency)+')</th><th>'+str(right_currency)+'</th><th>Razem('+str(left_currency)+')</th>'
+    right_table+='<th></th>'
     right_table+='</tr></thead>'
     for comm in Commission.objects.all():
         if comm.destination_wallet.cryptocurrency.name == str(left_currency)  and comm.source_wallet.cryptocurrency.name == str(right_currency):
@@ -54,12 +56,12 @@ def createTable(request, left_currency, right_currency):
             right_table+=str(Decimal(comm.destination_amount)/Decimal(comm.source_amount))
             right_table+='</td>'
             right_table+='<td>'
-            right_table+=str(comm.source_amount) 
+            right_table+=str(Decimal(comm.source_amount))
             right_table+='</td><td>'
-            right_table+=str(comm.destination_amount) 
+            right_table+=str(Decimal(comm.destination_amount)) 
             right_table+='</td>'
             if request.user.is_authenticated():
-                right_table+='<td><a href="#" onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Kup</a></td>'
+                right_table+='<td><a href="#" onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Sprzedaj</a></td>'
             right_table+='</tr>'
             
     right_table+='</table>'
@@ -78,13 +80,13 @@ def createTable(request, left_currency, right_currency):
     for comm_history in History.getExchangeHistory(left_curr_object, right_curr_object):
         history_table+='<tr>'
         history_table+='<td>'
-        history_table+=str(comm_history.executed_time)
+        history_table+=str(comm_history.executed_time.strftime("%Y-%m-%d %H:%M:%S"))
         history_table+='</td>'
         history_table+='<td>'
         if comm_history.cryptocurrency_sold.name == left_currency:
-            history_table+=left_currency+'>>'+right_currency
+            history_table+='Kupno'
         else:
-            history_table+=right_currency+'>>'+left_currency
+            history_table+='Sprzedaż'
         history_table+='</td>'
         history_table+='<td>'
         history_table+=str(float(comm_history.amount_sold)/float(comm_history.amount_bought))

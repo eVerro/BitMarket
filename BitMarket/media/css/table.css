@@ -38,7 +38,8 @@ em {
 	padding: 10px 15px;
 	position: relative;
 	text-shadow: 0 1px 0 #000;	
-	width: 80px;
+	max-width: 70px;
+	min-width: 70px;
 }
 
 .comm_table th:after {
@@ -70,7 +71,9 @@ em {
 	padding: 10px 15px;
 	position: relative;
 	transition: all 300ms;
-	width: 80px;
+	max-width: 70px;
+	min-width: 70px;
+	text-align: center;
 }
 
 .comm_table td:first-child {
