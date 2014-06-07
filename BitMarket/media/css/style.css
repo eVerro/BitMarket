@@ -95,7 +95,7 @@ a img { border: none;}
 }
 /* HEADER czyli logo i menu */
 #header {
-	width: 1000px;
+	width: 1200px;
 	margin-left: 200px;
 }
 
@@ -230,7 +230,7 @@ a img { border: none;}
 /* MAIN2 Strone HOME po zalogowaniu */
 #main2 {
 	background-color: #1e212a;
-	width: 1000px;
+	width: 1200px;
 	margin-left: 170px;
 	margin-top: 150px;
 	position: relative;
@@ -239,7 +239,7 @@ a img { border: none;}
 	
 #main2 #news {
 	background-color: #ffffff;
-	width: 700px;
+	width: 900px;
 	margin: 20px;
 	border-radius: 10px;
 	overflow: hidden;
@@ -258,7 +258,7 @@ a img { border: none;}
 	position: absolute;
 	overflow: hidden;
 	top: 180px;
-	left: 890px;
+	left: 1090px;
 	}
 	
 #nawigacja #nawigacjaP {
@@ -299,43 +299,31 @@ a img { border: none;}
 }
 
 
-#right_table{
-	float: right;
+/*#right_table{
 	margin-right: 10px;
 	margin-bottom: 10px;
 	margin-top: 10px;
-	
 	margin-left: 10px;
+	height: 400px;
+	overflow: scroll;
 }
 
 #left_table{
-	float: left;
 	margin-bottom: 10px;
 	margin-top: 10px;
 	margin-left: 10px;
 	margin-right: 10px;
+	height: 400px;
+	overflow: scroll;
 }
 
-#tables{
-	margin: 10px;
-	height: auto;
-	
-}
-
-#bot_left_table{
-	float: right;
-	margin-right: 10px;
+#history_table{
 	margin-bottom: 10px;
 	margin-top: 10px;
-	
 	margin-left: 10px;
-	
-}
-#bot_right_table{
-	float: right;
 	margin-right: 10px;
-	margin-bottom: 10px;
-	margin-top: 10px;
+	height: 400px;
+	overflow: scroll;
 	
-	margin-left: 10px;
 }
+*/
