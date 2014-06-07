@@ -50,7 +50,7 @@ def ltc_view(request):
 
 def user(request):
     wallets = UserWallet.objects.filter(user=request.user)
-    userhistories = History.objects.all()
+    userhistories = History.objects.filter(seller=request.user)
     local = locals()
     return render_to_response('user/user.html', {'local': local})
 
