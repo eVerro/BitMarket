@@ -50,18 +50,7 @@ def ltc_view(request):
 
 def user(request):
     wallets = UserWallet.objects.filter(user=request.user)
-    histories = CommissionHistory.objects.all()
-    i=0
-    userhistory=[None]*len(histories)
-    while(i<len(histories)):
-        if(histories[i].history.seller==request.user):
-            userhistory[i]=histories[i]
-        i=i+1
-    i=0
-    account=0
-    while i<len(wallets):
-        account=account+wallets[i].account_balance
-        i=i+1
+    userhistories = History.objects.filter(seller=request.user)
     local = locals()
     return render_to_response('user/user.html', {'local': local})
 
