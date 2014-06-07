@@ -1,8 +1,8 @@
 # -*- coding: UTF-8 -*-
-import random
 from dajax.core import Dajax
 from dajaxice.decorators import dajaxice_register
-from wallet.models import Commission,CommissionHistory
+from wallet.models import Commission, CommissionHistory, History, Cryptocurrency
+import random
 
 @dajaxice_register
 def randomize(request):
@@ -67,52 +67,33 @@ def createTable(request, left_currency, right_currency):
     
     
     """
-    Wyswietlanie lewej tabeli historii
+    Wyswietlanie tabeli historii
     """
-    bot_left_table='<table>'
-    bot_left_table+='<thread><th>Data</th><th>Cena('+str(left_currency)+')</th><th>'+str(left_currency)+'</th><th>'+str(right_currency)+'</th>'
-    for comm_history in CommissionHistory.objects.all():
+    history_table='<table>'
+    history_table+='<thread><th>Data</th><th>Typ</th><th>Cena('+str(left_currency)+')</th><th>'+str(left_currency)+'</th><th>'+str(right_currency)+'</th>'
+    left_curr_object = Cryptocurrency.objects.filter(name = left_currency)[0]
+    right_curr_object = Cryptocurrency.objects.filter(name = right_currency)[0]
+    for comm_history in History.getExchangeHistory(left_curr_object, right_curr_object):
         comm = Commission.objects.filter(id=comm_history.history.commission_id)[0]
-        if comm_history.action == 1 and comm.destination_wallet.cryptocurrency.name == str(left_currency)  and comm.source_wallet.cryptocurrency.name == str(right_currency):
-            bot_left_table+='<tr>'
-            bot_left_table+='<td>'
-            bot_left_table+=str(comm_history.executed_time)
-            bot_left_table+='</td>'
-            bot_left_table+='<td>'
-            bot_left_table+=str(float(comm.source_amount)/float(comm.destination_amount))
-            bot_left_table+='</td>'
-            bot_left_table+='<td>' 
-            bot_left_table+=str(comm.source_amount) 
-            bot_left_table+='</td><td>'
-            bot_left_table+=str(comm.destination_amount) 
-            bot_left_table+='</td>'
-            bot_left_table+='</tr>'
-    bot_left_table+='</table>'
-    dajax.assign('#bot_left_table', 'innerHTML',bot_left_table)
-    
-    """
-    Wyswietlanie prawej tabeli historii
-    """
-    bot_right_table='<table>'
-    bot_right_table+='<thread><th>Data</th><th>Cena('+str(left_currency)+')</th><th>'+str(left_currency)+'</th><th>'+str(right_currency)+'</th>'
-    for comm_history in CommissionHistory.objects.all():
-        comm = Commission.objects.filter(id=comm_history.history.commission_id)[0]
-        if comm_history.action == 1 and comm.source_wallet.cryptocurrency.name == str(left_currency)  and comm.destination_wallet.cryptocurrency.name == str(right_currency):
-            bot_right_table+='<tr>'
-            bot_right_table+='<td>'
-            bot_right_table+=str(comm_history.executed_time)
-            bot_right_table+='</td>'
-            bot_right_table+='<td>'
-            bot_right_table+=str(float(comm.source_amount)/float(comm.destination_amount))
-            bot_right_table+='</td>'
-            bot_right_table+='<td>' 
-            bot_right_table+=str(comm.source_amount) 
-            bot_right_table+='</td><td>'
-            bot_right_table+=str(comm.destination_amount) 
-            bot_right_table+='</td>'
-            bot_right_table+='</tr>'
-    bot_right_table+='</table>'
-    dajax.assign('#bot_right_table', 'innerHTML',bot_right_table)
-    
-    
+        history_table+='<tr>'
+        history_table+='<td>'
+        history_table+=str(comm_history.executed_time)
+        history_table+='</td>'
+        history_table+='<td>'
+        if comm.source_wallet.name == left_currency:
+            history_table+=left_currency+'>>'+right_currency
+        else:
+            history_table+=right_currency+'>>'+left_currency
+        history_table+='</td>'
+        history_table+='<td>'
+        history_table+=str(float(comm.source_amount)/float(comm.destination_amount))
+        history_table+='</td>'
+        history_table+='<td>' 
+        history_table+=str(comm.source_amount) 
+        history_table+='</td><td>'
+        history_table+=str(comm.destination_amount) 
+        history_table+='</td>'
+        history_table+='</tr>'
+    history_table+='</table>'
+    dajax.assign('#history_table', 'innerHTML',history_table)  
     return dajax.json()

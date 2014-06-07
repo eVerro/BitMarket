@@ -39,14 +39,14 @@ def register_view(request):
     return render_to_response('register/register.html')
 
 
-def plnc_view(request):
+def gldc_view(request):
     local = locals()
-    return render_to_response('plnc/plnc.html', {'local': local})
+    return render_to_response('currency/BTC_GLDC.html', {'local': local})
 
 
-def flt_view(request):
+def ltc_view(request):
     local = locals()
-    return render_to_response('flt/flt.html', {'local': local})
+    return render_to_response('currency/BTC_LTC.html', {'local': local})
 
 def user(request):
     wallets = UserWallet.objects.filter(user=request.user)
