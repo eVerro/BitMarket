@@ -362,15 +362,15 @@ class UserWallet(models.Model):
         if(commission.destination_wallet.user.id is not self.user.id):
             raise Exception('Portfel destination jest przypisany do innego użytkownika.')
         # czy podane kwoty są poprawne
-        if((commission.source_amount) < 0):
+        if(Decimal(commission.source_amount) < 0):
             raise Exception('source_amount jest poniżej zera.')
-        if((commission.destination_amount) < 0):
+        if(Decimal(commission.destination_amount) < 0):
             raise Exception('destination_amount jest poniżej zera.')
-        if((commission.source_amount) > (self.account_balance)):
-            raise Exception('Brak środkó na koncie. Posiadasz %s, a chcesz stworzyć za' % (self.account_balance, commission.source_amount))
+        if(Decimal(commission.source_amount) > Decimal(self.account_balance)):
+            raise Exception('Brak środków na koncie. Posiadasz %s, a chcesz stworzyć za %s' % (self.account_balance, commission.source_amount))
         # pobranie kwoty z konta
         self.account_balance = UserWallet.objects.filter(id=self.id)[0].account_balance
-        self.account_balance = self.account_balance - commission.source_amount
+        self.account_balance = Decimal(self.account_balance) - Decimal(commission.source_amount)
         # zapis do bazy danych
         self.save()
         # dodanei wpisu do historii
@@ -405,7 +405,7 @@ class UserWallet(models.Model):
         print "%s -" % self.cryptocurrency
         print "%s -" % self.account_balance
         self.account_balance = UserWallet.objects.filter(id=self.id)[0].account_balance
-        if(self.account_balance - Decimal(purchased_offer.destination_amount) < 0):
+        if(Decimal(self.account_balance) - Decimal(purchased_offer.destination_amount) < 0):
             raise Exception("Brakuje Tobie środków na portfelu %s. Na portfelu posiadasz jedynie %s, a chcesz wypłacić %s" % (self.cryptocurrency, self.account_balance, purchased_offer.destination_amount))
         if(purchased_offer.destination_wallet.cryptocurrency.id is self.cryptocurrency.id):
             self.account_balance = Decimal(self.account_balance) - Decimal(purchased_offer.destination_amount)
@@ -433,6 +433,8 @@ class UserWallet(models.Model):
         print "%s -" % self.account_balance
         # pobranie histori i uaktualnienie wpisu
         now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        
+        print saled_offer.id
         
         history = History.objects.filter(commission_id=saled_offer.id)
         history = history[0]
@@ -473,7 +475,7 @@ class UserWallet(models.Model):
         Zapisuje w historii.
         """
         
-        if(self.account_balance - Decimal(amount) < 0):
+        if(Decimal(self.account_balance) - Decimal(amount) < 0):
             raise Exception("Brakuje środków na koncie. Na koncie posiadasz jedynie %s, a chcesz wypłacić %s" % (self.account_balance, amount))
         
         now = datetime.datetime.utcnow().replace(tzinfo=utc)
@@ -492,7 +494,7 @@ class UserWallet(models.Model):
         now = datetime.datetime.utcnow().replace(tzinfo=utc)
         self.account_balance = UserWallet.objects.filter(id=self.id)[0].account_balance
         self.account_balance = self.account_balance + Decimal(amount)
-        deposit_history = DepositHistory(wallet_address=wallet_address, cryptocurrency=self.cryptocurrency, amount=amount, executed_time=now, deposit=True)
+        deposit_history = DepositHistory(user=self.user, wallet_address=wallet_address, cryptocurrency=self.cryptocurrency, amount=amount, executed_time=now, deposit=True)
         deposit_history.save()
         return 0;
 #    class Meta:
