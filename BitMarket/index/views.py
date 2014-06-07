@@ -117,17 +117,17 @@ def testNewCommission(request):
     # z gldc na btc
     amounts['GLDC_BTC'] = [["125.00000000","0.00202000"], ["0.01500347","0.00000024"], ["0.04322170","0.00000068"], ["1111.00000000","0.01353198"], ["948.34890540","0.01148451"], ["15.00000000","0.00010500"], ["30.00000000","0.00003000"]]
     # z gldc na ltc
-    amounts['GLDC_LTC'] = [["95.06421428","0.08871202"], ["1.05970468","1.05970468"], ["44.36339641","0.03966620"], ["1.28690191","0.00100000"], ["0.08190127","0.00004302"], ["10.00000000","0.00001660"], ["3232.98436240","3232.98436240"]]
+    amounts['BTC_LTC'] = [["95.06421428","0.08871202"], ["1.05970468","1.05970468"], ["44.36339641","0.03966620"], ["1.28690191","0.00100000"], ["0.08190127","0.00004302"], ["10.00000000","0.00001660"], ["3232.98436240","3232.98436240"]]
     # z ltc na gldc
-    amounts['LTC_GLDC'] = [["1.14547537","0.00110000"], ["8.99322994","0.00902201"], ["1.08854404","0.00113460"]]
+    amounts['LTC_BTC'] = [["1.14547537","0.00110000"], ["8.99322994","0.00902201"], ["1.08854404","0.00113460"]]
     for amount in amounts['BTC_GLDC']:
         user.newCommission(source_amount=amount[0], destination_amount=amount[1], source_wallet=BTC_wallet, destination_wallet=GLDC_wallet, dead_line=now)
     for amount in amounts['GLDC_BTC']:
         user.newCommission(source_amount=amount[0], destination_amount=amount[1], source_wallet=GLDC_wallet, destination_wallet=BTC_wallet, dead_line=now)
-    for amount in amounts['GLDC_LTC']:
-        user.newCommission(source_amount=amount[0], destination_amount=amount[1], source_wallet=GLDC_wallet, destination_wallet=LTC_wallet, dead_line=now)
-    for amount in amounts['LTC_GLDC']:
-        user.newCommission(source_amount=amount[0], destination_amount=amount[1], source_wallet=LTC_wallet, destination_wallet=GLDC_wallet, dead_line=now)
+    for amount in amounts['BTC_LTC']:
+        user.newCommission(source_amount=amount[0], destination_amount=amount[1], source_wallet=BTC_wallet, destination_wallet=LTC_wallet, dead_line=now)
+    for amount in amounts['LTC_BTC']:
+        user.newCommission(source_amount=amount[0], destination_amount=amount[1], source_wallet=LTC_wallet, destination_wallet=BTC_wallet, dead_line=now)
     return render_to_response('master/index.html', {'local': locals()})
 # def purchase(self, purchaser, purchased_commission):
 def testPurchase(request):
