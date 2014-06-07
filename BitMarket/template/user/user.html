@@ -7,6 +7,9 @@
 				<font size=4> Konto użytkownika {{local.request.user.username}}</font>
 			</div>
 			<div>
+			<table width="100%">
+			<tr>
+				<td>
 				<table class="comm_table">	
 					 <tr class="comm_table">
 					   <th class="comm_table">Portfel</th>
@@ -21,7 +24,8 @@
 					 </tr>
 					 {%endfor%}
 				</table>
-				
+				</td>
+				<td>
 				<table class="comm_table">	
 					 <tr class="comm_table">
 					   <th colspan="4">zlecenia aktywne:</th>
@@ -30,6 +34,7 @@
 					   <th class="comm_table">para walutowa:</th>
 					   <th class="comm_table">ilosc:</th>
 					   <th class="comm_table">cena:</th>
+					   <th> </th>
 					 </tr>
 					 {% for history in local.userhistories %}
 					 	{% if history.commission_id != None%}
@@ -37,14 +42,18 @@
 					   			<td class="comm_table">{{history.cryptocurrency_sold.name}}/{{history.cryptocurrency_bought.name}}</td>
 					   			<td class="comm_table">{{history.amount_sold}}{{history.cryptocurrency_sold.name}} {{history.amount_bought}}{{history.cryptocurrency_bought.name}} </td>
 					   			<td class="comm_table">{{history.sold_price}}</td>
+					   			<td class="comm_table"><a href=""> Anuluj </a></td>
 					   		</tr>
 					   	{%endif%}
 					 {%endfor%}
 				</table>
-				
+				</td>
+				</tr>
+			<tr>
+				<td colspan="2">
 				<table class="comm_table">	
 					 <tr class="comm_table">
-					   <th colspan="4">zlecenia nieaktywne:</th>
+					   <th colspan="5">zlecenia nieaktywne:</th>
 					 </tr>
 					 <tr class="comm_table">
 					   <th class="comm_table">para walutowa:</th>
@@ -75,7 +84,12 @@
 					   	{%endif%}
 					 {%endfor%}
 				</table>
-				
+				</td>
+			</tr>
+			<tr>
+				<td> <font size="1"> <a href=""> Zmień hasło </a> </font></td>
+			</tr>
+			</table>
 			</div>    
 	{% endif %} 
 {% endblock %}
