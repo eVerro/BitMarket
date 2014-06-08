@@ -54,5 +54,7 @@ urlpatterns = patterns('',
     (r'^geh/', 'BitMarket.index.views.getExchangeHistory'),
     # def getBoughtHistory(cryptocurrency_sold, cryptocurrency_bought):
     (r'^gbh/', 'BitMarket.index.views.getBoughtHistory'),
+    # getCommissions(cryptocurrency_first=None, cryptocurrency_second=None, sort=None):
+    (r'^gco/', 'BitMarket.index.tests.getCommissions'),
 )
 urlpatterns += staticfiles_urlpatterns()#bylo w tutorialu do ajaxa
