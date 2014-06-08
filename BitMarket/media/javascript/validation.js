@@ -31,9 +31,44 @@ function validate(site) {
 	{
 		Dajaxice.BitMarket.index.resetFields(Dajax.process,{
 			'site':site
-			});
-		
-		
+			});	
 	}
+}
 
+function createCommission(type, first_cryptocurrency, second_cryptocurrency){
+	if (type=='buy'){
+		var first_amount = new Decimal($('#First_Amount_L').val());
+		var second_amount = new Decimal($('#Second_Amount_L').val());
+		var end_date = $('#datepicker_L').val()+' '+$('#timepicker_L').val();
+		
+		Dajaxice.BitMarket.index.createCommision(Dajax.process,{
+			'source_amount':first_amount.toString(),
+			'destination_amount':first_amount.div(second_amount).toString(), 
+			'source_wallet_name':first_cryptocurrency, 
+			'destination_wallet_name':second_cryptocurrency,
+			'end_date': end_date
+			});
+		Dajaxice.BitMarket.index.createTable(Dajax.process,{
+			'left_currency':first_cryptocurrency,
+			'right_currency':second_cryptocurrency
+			});		
+	}
+	else
+	{
+		var first_amount = new Decimal($('#First_Amount_R').val());
+		var second_amount = new Decimal($('#Second_Amount_R').val());
+		var end_date = $('#datepicker_R').val()+$('#timepicker_R').val();
+		
+		Dajaxice.BitMarket.index.createCommision(Dajax.process,{
+			'source_amount':first_amount.toString(),
+			'destination_amount':first_amount.div(second_amount).toString(), 
+			'source_wallet_name':second_cryptocurrency, 
+			'destination_wallet_name':first_cryptocurrency,
+			'end_time': end_time
+			});
+		Dajaxice.BitMarket.index.createTable(Dajax.process,{
+			'left_currency':first_cryptocurrency,
+			'right_currency':second_cryptocurrency
+			});
+	}
 }

@@ -2,17 +2,36 @@
 from dajax.core import Dajax
 from dajaxice.decorators import dajaxice_register
 from decimal import *
-from wallet.models import Commission, History, Cryptocurrency
+from django.utils.timezone import utc
+from wallet.models import Commission, History, Cryptocurrency, UserProxy, \
+    UserWallet
+import datetime
+
+@dajaxice_register
+def createCommision(request, source_amount, destination_amount, source_wallet_name, destination_wallet_name, end_date):
+    dajax = Dajax()
+    user = UserProxy.objects.get(id=request.user.id)
+
+    user.newCommission(source_amount=Decimal(source_amount),
+                       destination_amount=Decimal(destination_amount),
+                       source_wallet=UserWallet.objects.filter(user=user, cryptocurrency=Cryptocurrency.objects.filter(name=source_wallet_name)[0])[0],
+                       destination_wallet=UserWallet.objects.filter(user=user, cryptocurrency=Cryptocurrency.objects.filter(name=destination_wallet_name)[0])[0],
+                       dead_line = datetime.datetime.strptime(end_date,"%Y-%m-%d %H:%M:%S"))
+    
+    return dajax.json()
 
 
 @dajaxice_register
 def realizeCommision(request, comm_id):
-    return None;
+    dajax = Dajax()
+    user = UserProxy.objects.get(id=request.user.id)
+    commission = Commission.objects.get(id=comm_id)
+    user.purchase(commission)
+    return dajax.json();
 
 @dajaxice_register
 def resetFields(request,site):
     dajax=Dajax()
-    
     dajax.assign("#total_"+site, "innerHTML", "0.0000000000")
     dajax.assign("#provision_"+site, "innerHTML", "0.0000000000")
     dajax.assign("#after_provision_"+site, "innerHTML", "0.0000000000")
