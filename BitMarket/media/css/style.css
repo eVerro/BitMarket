@@ -231,7 +231,7 @@ a img { border: none;}
 #main2 {
 	background-color: #1e212a;
 	width: 1200px;
-	margin-left: 170px;
+	margin: 0 auto;
 	margin-top: 150px;
 	position: relative;
 	overflow: hidden;
@@ -241,10 +241,10 @@ a img { border: none;}
 	background-color: #ffffff;
 	width: 900px;
 	margin: 20px;
-	border-radius: 10px;
+	
 	overflow: hidden;
 	margin-right: 25px;
-	margin-left: 10px;
+	margin-left: 17px;
 	float: none;
 }
 
@@ -255,10 +255,12 @@ a img { border: none;}
 #nawigacja {
 	float: none;
 	height: auto;
+	margin: 0 auto;
+	
 	position: absolute;
 	overflow: hidden;
 	top: 180px;
-	left: 1090px;
+	left: 992px;
 	}
 	
 #nawigacja #nawigacjaP {

@@ -41,7 +41,7 @@ def resetFields(request,site):
 def validate(request,first_amount, second_amount, site):
     dajax=Dajax()
     getcontext().prec = 15
-    total = Decimal(first_amount)/Decimal(second_amount)
+    total = Decimal(first_amount)*Decimal(second_amount)
     provision = Decimal(total)*Decimal(0.025)
     
     dajax.assign("#total_"+site, "innerHTML", str(total))
