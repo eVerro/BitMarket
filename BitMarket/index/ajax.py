@@ -11,13 +11,15 @@ import datetime
 def createCommision(request, source_amount, destination_amount, source_wallet_name, destination_wallet_name, end_date):
     dajax = Dajax()
     user = UserProxy.objects.get(id=request.user.id)
-
-    user.newCommission(source_amount=Decimal(source_amount),
-                       destination_amount=Decimal(destination_amount),
-                       source_wallet=UserWallet.objects.filter(user=user, cryptocurrency=Cryptocurrency.objects.filter(name=source_wallet_name)[0])[0],
-                       destination_wallet=UserWallet.objects.filter(user=user, cryptocurrency=Cryptocurrency.objects.filter(name=destination_wallet_name)[0])[0],
-                       dead_line = datetime.datetime.strptime(end_date,"%Y-%m-%d %H:%M:%S"))
-    
+    try:
+        user.newCommission(source_amount=Decimal(source_amount),
+                               destination_amount=Decimal(destination_amount),
+                               source_wallet=UserWallet.objects.filter(user=user, cryptocurrency=Cryptocurrency.objects.filter(name=source_wallet_name)[0])[0],
+                               destination_wallet=UserWallet.objects.filter(user=user, cryptocurrency=Cryptocurrency.objects.filter(name=destination_wallet_name)[0])[0],
+                               dead_line = datetime.datetime.strptime(end_date,"%Y-%m-%d %H:%M:%S").replace(tzinfo=utc))
+        dajax.script("show_msg();")
+    except:
+        dajax.script("show_err();")
     return dajax.json()
 
 
@@ -26,7 +28,13 @@ def realizeCommision(request, comm_id):
     dajax = Dajax()
     user = UserProxy.objects.get(id=request.user.id)
     commission = Commission.objects.get(id=comm_id)
-    user.purchase(commission)
+    try:
+        user.purchase(commission)
+        dajax.script('show_realize_msg();');
+    except:
+        dajax.script('show_realize_err();');
+    
+    
     return dajax.json();
 
 @dajaxice_register
@@ -61,21 +69,20 @@ def createTable(request, left_currency, right_currency):
     left_table+='<thead><tr><th>Cena('+str(left_currency)+')</th><th>'+str(right_currency)+'</th><th>Razem('+str(left_currency)+')</th>'
     left_table+='<th></th>'
     left_table+='</tr></thead>'
-    for comm in Commission.objects.all():
-        if comm.source_wallet.cryptocurrency.name == str(left_currency)  and comm.destination_wallet.cryptocurrency.name == str(right_currency):
-            left_table+='<tr>'
-            left_table+='<td>'
-            getcontext().prec = 6
-            left_table+=str(Decimal(comm.destination_amount)/Decimal(comm.source_amount))
-            left_table+='</td>'
-            left_table+='<td>' 
-            left_table+=str(Decimal(comm.source_amount)) 
-            left_table+='</td><td>'
-            left_table+=str(Decimal(comm.destination_amount)) 
-            left_table+='</td>'
-            if request.user.is_authenticated():
-                left_table+='<td><a href="#" onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Kup</a></td>'
-            left_table+='</tr>'
+    
+    for comm in Commission.getCommissions(cryptocurrency_first=left_currency,cryptocurrency_second=right_currency, sort='destination_price'):
+        left_table+='<tr>'
+        left_table+='<td>'
+        left_table+=str(format(Decimal(comm.destination_price),'.10f'))
+        left_table+='</td>'
+        left_table+='<td>' 
+        left_table+=str(format(Decimal(comm.source_amount),'.10f'))
+        left_table+='</td><td>'
+        left_table+=str(format(Decimal(comm.destination_amount),'.10f'))
+        left_table+='</td>'
+        if request.user.is_authenticated():
+            left_table+='<td><a href="#" onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Kup</a></td>'
+        left_table+='</tr>'
     left_table+='</table>'
     dajax.assign('#left_table', 'innerHTML',left_table)
     
@@ -86,23 +93,19 @@ def createTable(request, left_currency, right_currency):
     right_table+='<thead><tr><th>Cena('+str(left_currency)+')</th><th>'+str(right_currency)+'</th><th>Razem('+str(left_currency)+')</th>'
     right_table+='<th></th>'
     right_table+='</tr></thead>'
-    for comm in Commission.objects.all():
-        if comm.destination_wallet.cryptocurrency.name == str(left_currency)  and comm.source_wallet.cryptocurrency.name == str(right_currency):
-            
-            right_table+='<tr>'
-            right_table+='<td>'
-            getcontext().prec = 6
-            right_table+=str(Decimal(comm.destination_amount)/Decimal(comm.source_amount))
-            right_table+='</td>'
-            right_table+='<td>'
-            right_table+=str(Decimal(comm.source_amount))
-            right_table+='</td><td>'
-            right_table+=str(Decimal(comm.destination_amount)) 
-            right_table+='</td>'
-            if request.user.is_authenticated():
-                right_table+='<td><a href="#" onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Sprzedaj</a></td>'
-            right_table+='</tr>'
-            
+    for comm in Commission.getCommissions(cryptocurrency_first=left_currency,cryptocurrency_second=right_currency, sort='destination_price'):
+        right_table+='<tr>'
+        right_table+='<td>'
+        right_table+=str(format(Decimal(comm.destination_price),'.10f'))
+        right_table+='</td>'
+        right_table+='<td>'
+        right_table+=str(format(Decimal(comm.source_amount),'.10f'))
+        right_table+='</td><td>'
+        right_table+=str(format(Decimal(comm.destination_amount),'.10f'))
+        right_table+='</td>'
+        if request.user.is_authenticated():
+            right_table+='<td><a href="#" onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Sprzedaj</a></td>'
+        right_table+='</tr>'
     right_table+='</table>'
     dajax.assign('#right_table', 'innerHTML', right_table)
     
@@ -128,7 +131,7 @@ def createTable(request, left_currency, right_currency):
             history_table+='Sprzedaż'
         history_table+='</td>'
         history_table+='<td>'
-        history_table+=str(float(comm_history.amount_sold)/float(comm_history.amount_bought))
+        history_table+=str(format(Decimal(comm_history.amount_bought)/Decimal(comm_history.amount_sold),'.10f'))
         history_table+='</td>'
         history_table+='<td>' 
         history_table+=str(comm_history.amount_sold) 
