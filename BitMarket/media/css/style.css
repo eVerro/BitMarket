@@ -35,7 +35,7 @@ a img { border: none;}
 }
 #top #top_witaj {
 	position: absolute;
-	margin-left: 180px;
+	margin-left: 15%;
 	margin-top: 10px;
 	float: left;
 }
@@ -97,12 +97,13 @@ a img { border: none;}
 #header {
 	width: 1200px;
 	margin-left: 200px;
+	height:90px;
 }
 
 #header h1 {
 	position: absolute;
-	top: 90px;
-	left: 180px;
+	/*top: 90px;*/
+	left: 20px;
 	overflow: hidden;
 	}
 
@@ -227,24 +228,33 @@ a img { border: none;}
 	height: 60px;
 	width: 100%;}
 	
+.wrapper{
+	width:1200px;
+	margin:0 auto;
+	position: relative;
+}
+
 /* MAIN2 Strone HOME po zalogowaniu */
 #main2 {
 	background-color: #1e212a;
 	width: 1200px;
-	margin: 0 auto;
-	margin-top: 150px;
-	position: relative;
+	/*margin-left: 170px;*/
+	/*margin-top: 150px;*/
+
+	/*position: relative;*/
 	overflow: hidden;
+	padding:20px;
 	}
 	
 #main2 #news {
 	background-color: #ffffff;
 	width: 900px;
-	margin: 20px;
+	/*margin: 20px;*/
 	
 	overflow: hidden;
-	margin-right: 25px;
-	margin-left: 17px;
+	/*margin-right: 25px;
+	margin-left: 17px;*/
+	min-height: 400px;
 	float: none;
 }
 
@@ -253,14 +263,14 @@ a img { border: none;}
 }
 
 #nawigacja {
-	float: none;
+	/*float: none;
 	height: auto;
-	margin: 0 auto;
+	margin: 0 auto;*/
 	
 	position: absolute;
 	overflow: hidden;
-	top: 180px;
-	left: 992px;
+	top: 70px;
+	left: 950px;
 	}
 	
 #nawigacja #nawigacjaP {

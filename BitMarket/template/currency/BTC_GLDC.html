@@ -21,13 +21,13 @@
 		'timeFormat': 'H:i:s', 
 		'step': 5
 		});
-	
 });
 </script>
 
 <div id="tables">
 	<table class="form_table">
 		{% if local.request.user.is_authenticated %}
+		<tr><td align="center" colspan="2"><label id="msg_label"></label></td></tr>
 		<tr>
 			<td align="center">
 			
@@ -40,7 +40,7 @@
 					</tr>
 					<tr>
 						<td><label>Ilość GLDC:</label></td><td>
-						<input type="number" id="First_Amount_L" name="BTC_amount" onkeyup="validate('B');" onkeypress="return isNumberKey(event);"/>
+						<input type="number" id="First_Amount_L" name="BTC_amount" onkeyup="validate('L');" onkeypress="return isNumberKey(event);"/>
 						</td>
 					</tr>
 					<tr>

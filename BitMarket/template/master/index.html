@@ -1,83 +1,126 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>BitMarket - Cryptocurrency marketplace</title>
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/static/css/style.css" media="screen" />
-<script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/jquery.ba-serializeobject.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/jquery.dajax.core.js"></script>
-{% load dajaxice_templatetags %}
-{% dajaxice_js_import %}
-</head>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>BitMarket - Cryptocurrency marketplace</title>
+		<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/static/css/style.css" media="screen" />
+		<script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/jquery.ba-serializeobject.min.js"></script>
+		<script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/jquery.dajax.core.js"></script>
+		{% load dajaxice_templatetags %}
+		{% dajaxice_js_import %}
+	</head>
 
-<body>
+	<body>
 
-    <div id="top">
-    	<div id="top_witaj">
-    	{% if local.request.user.is_authenticated %}
-			    <p id="witaj">Witaj, <b id="username">{{ local.request.user.username }}</b>.</p>
-			    <p id="wylogowanie_link"><a href="/user/logout/">Wyloguj</a></p>
-			   	<p id="panel_admina"><a class="panel" href="/user/user">Moje konto</a></p>
-		{% else %}
+		<div id="top">
+			<div id="top_witaj">
+				{% if local.request.user.is_authenticated %}
+				<p id="witaj">
+					Witaj, <b id="username">{{ local.request.user.username }}</b>.
+				</p>
+				<p id="wylogowanie_link">
+					<a href="/user/logout/">Wyloguj</a>
+				</p>
+				<p id="panel_admina">
+					<a class="panel" href="/user/user">Moje konto</a>
+				</p>
+				{% else %}
 				<p id="logowanie_formularz">
-			    <form method="post" action="/user/login/" id="logowanie_form">                     
-			    	<span id="logowaniePole"> <input name="username" type="text"> </span>               
-			    	<span id="passPole"> <input name="password" type="password"></span>                        
-			    	<input type="submit" style="display: none;" />
-			    </form></p>
-			    <p id="logowanie_link"><a href="/user/login/" onclick="document.getElementById('logowanie_form').submit(); return false;">Logowanie</a></p>
-			   <p id="rejestracja_link"><a href="/user/registerpage/">Rejestracja</a></p>
-		{% endif %}
-		</div>
-	
-		</div>
-    
-    <div id="header">
-    	
-    	<h1><a href="/">BitMarket</a>{% block header%}
-	{% endblock %}</h1>
-    	
-        <ul>
-   	    	<li><p><a href="/aboutus">About Us</a></p></li>
-           	<li><p><a href="/market">Market</a></p></li>
-           	<li><p><a href="/contact">Contact</a></p></li>
-        </ul>
-    </div>
-    		
+					<form method="post" action="/user/login/" id="logowanie_form">
+						<span id="logowaniePole">
+							<input name="username" type="text">
+						</span>
+						<span id="passPole">
+							<input name="password" type="password">
+						</span>
+						<input type="submit" style="display: none;" />
+					</form>
+				</p>
+				<p id="logowanie_link">
+					<a href="/user/login/" onclick="document.getElementById('logowanie_form').submit(); return false;">Logowanie</a>
+				</p>
+				<p id="rejestracja_link">
+					<a href="/user/registerpage/">Rejestracja</a>
+				</p>
+				{% endif %}
+			</div>
 
-    <div id="main2">
-        	<div id="news">
-        		{% block content %}
-          		{% if latest_news_list %}
-                {% for news in latest_news_list %}
-                    <h2 class="tytul">{{ news.tytul }}</h2>
-                    <p class="kategoria">kategoria: <strong class="czerwony">{{ news.kategoria }}</strong></p>
-                     <p class="tresc"><img width="618" height="400" class="obrazekNews" src="{{ STATIC_URL }}/static/{{ news.obrazek }}"/>{{ news.text }}</p>
-                    <br/>
-              		<p class="newsInfo">dodano: <strong class="czerwony">{{ news.pub_date }} </strong>przez: <strong class="czerwony">{{ news.autor }}</strong><strong class="czerwony"></strong></p>
-                    
-                    <br/><br/><br/><br/>
-                {% endfor %}
-            	{% else %}
-                <h2 class="tytul">Nie ma newsow do wyswietlenia.</h2>
-            	{% endif %}
-            	{% endblock %}
-            </div>
-    </div>
-    <div id="nawigacja">
-            	<p id="nawigacjaP">
-                </p>
-                	{% block sidebar %}
-            		<ul>
-                    	<li><a href="/user/gldc/"><p>BTC/GLDC</p></a></li>
-                        <li><a href="/user/ltc/"><p>BTC/LTC</p></a></li>
-                    </ul>
-                    {% endblock %}
-	</div>
-    
-    <div id="down"></div>
-    
-    <div id="footer"></div>
-    
-</body>
+		</div>
+		<div class="wrapper">
+			<div id="header">
+
+				<h1><a href="/">BitMarket</a>{% block header%}
+				{% endblock %}</h1>
+
+				<ul>
+					<li>
+						<p>
+							<a href="/aboutus">About Us</a>
+						</p>
+					</li>
+					<li>
+						<p>
+							<a href="/market">Market</a>
+						</p>
+					</li>
+					<li>
+						<p>
+							<a href="/contact">Contact</a>
+						</p>
+					</li>
+				</ul>
+			</div>
+
+			<div id="main2">
+				<div id="news">
+					{% block content %}
+					{% if latest_news_list %}
+					{% for news in latest_news_list %}
+					<h2 class="tytul">{{ news.tytul }}</h2>
+					<p class="kategoria">
+						kategoria: <strong class="czerwony">{{ news.kategoria }}</strong>
+					</p>
+					<p class="tresc"><img width="618" height="400" class="obrazekNews" src="{{ STATIC_URL }}/static/{{ news.obrazek }}"/>{{ news.text }}
+					</p>
+					<br/>
+					<p class="newsInfo">
+						dodano: <strong class="czerwony">{{ news.pub_date }} </strong>przez: <strong class="czerwony">{{ news.autor }}</strong><strong class="czerwony"></strong>
+					</p>
+
+					<br/>
+					<br/>
+					<br/>
+					<br/>
+					{% endfor %}
+					{% else %}
+					<h2 class="tytul">Nie ma newsow do wyswietlenia.</h2>
+					{% endif %}
+					{% endblock %}
+				</div>
+			</div>
+			<div id="nawigacja">
+				<p id="nawigacjaP"></p>
+				{% block sidebar %}
+				<ul>
+					<li>
+						<a href="/user/gldc/">
+						<p>
+							BTC/GLDC
+						</p></a>
+					</li>
+					<li>
+						<a href="/user/ltc/">
+						<p>
+							BTC/LTC
+						</p></a>
+					</li>
+				</ul>
+				{% endblock %}
+			</div>
+		</div>
+		<div id="down"></div>
+
+		<div id="footer"></div>
+
+	</body>
 </html>
