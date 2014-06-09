@@ -1,20 +1,41 @@
 {% extends "master/index.html" %}
 {% block content %}
 <link rel="stylesheet" href="{{ STATIC_URL }} /static/css/table.css" />
+<link rel="stylesheet" media="screen" type="text/css" href="{{ STATIC_URL }} /static/css/datepicker/metallic.css" />
+<link rel="stylesheet" media="screen" type="text/css" href="{{ STATIC_URL }} /static/css/jquery.timepicker.css" />
 <script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/autorefresh.js" ></script>
-<script type="text/javascript">$(document).ready(AutoRefreshWallet('BTC', 'GLDC'));</script>
+
 <script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/validation.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/decimal.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/datepicker/zebra_datepicker.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/jquery.timepicker.min.js"></script>
+<script type="text/javascript">$(document).ready(function(){
+	AutoRefreshWallet('BTC', 'GLDC');
+	$('#datepicker_L').Zebra_DatePicker();
+	$('#datepicker_R').Zebra_DatePicker();
+	$('#timepicker_L').timepicker({ 
+		'timeFormat': 'H:i:s', 
+		'step': 5
+		});
+	$('#timepicker_R').timepicker({ 
+		'timeFormat': 'H:i:s', 
+		'step': 5
+		});
+});
+</script>
+
 <div id="tables">
 	<table class="form_table">
 		{% if local.request.user.is_authenticated %}
+		<tr><td align="center" colspan="2"><label id="msg_label"></label></td></tr>
 		<tr>
 			<td align="center">
-			<form>
+			
 				<table>
 					<tr>
 						<td colspan="2">
 						<div align="center">
-							<h3>Zlecenie kupna BTC za GLDC:</h3>
+							<h3>Zlecenie kupna GLDC za BTC:</h3>
 						</div></td>
 					</tr>
 					<tr>
@@ -23,10 +44,20 @@
 						</td>
 					</tr>
 					<tr>
-						<td><label>Cena za 1 BTC:</label></td><td>
+						<td><label>Cena za 1 GLDC (w BTC):</label></td><td>
 						<input type="number" id="Second_Amount_L" name="GLDC_amount" onkeyup="validate('L');" onkeypress="return isNumberKey(event);"/>
 						</td>
 					</tr>
+					
+					<tr>
+						<td><label>Data ukonczenia:</label></td>
+						<td> <input type="text" id="datepicker_L"></td>
+					</tr>
+					<tr>
+						<td><label>Godzina ukonczenia:</label></td>
+						<td> <input type="text" id="timepicker_L"></td>
+					</tr>
+					
 					<tr>
 						<td><label>Razem(BTC):</label></td>
 						<td align="right"><label id="total_L">0.0000000000</label></td>
@@ -43,19 +74,19 @@
 					</tr>
 					<tr>
 						<td colspan="2" align="right">
-							<input class="sub_button" type="submit" value="Wystaw"/>
+							<button class="sub_button" onclick="createCommission('buy','BTC','GLDC');" >Wystaw</button>
 						</td>
 					</tr>
 				</table>
-			</form>	
+				
 			</td>
 			<td align="center">
-				<form>
+				
 				<table>
 					<tr>
 						<td colspan="2">
 						<div align="center">
-							<h3>Zlecenie sprzedaży BTC za GLDC:</h3>
+							<h3>Zlecenie sprzedaży GLDC za BTC:</h3>
 						</div></td>
 					</tr>
 					<tr>
@@ -64,9 +95,17 @@
 						</td>
 					</tr>
 					<tr>
-						<td><label>Cena za 1 BTC:</label></td><td>
+						<td><label>Cena za 1 GLDC (w BTC):</label></td><td>
 						<input type="number" id="Second_Amount_R" name="GLDC_amount" onkeyup="validate('R');" onkeypress="return isNumberKey(event);"/>
 						</td>
+					</tr>
+					<tr>
+						<td><label>Data ukonczenia:</label></td>
+						<td> <input type="text" id="datepicker_R"></td>
+					</tr>
+					<tr>
+						<td><label>Godzina ukonczenia:</label></td>
+						<td> <input type="text" id="timepicker_R"></td>
 					</tr>
 					<tr>
 						<td><label>Razem(BTC):</label></td>
@@ -84,11 +123,11 @@
 					</tr>
 					<tr>
 						<td colspan="2" align="right">
-							<input class="sub_button" type="submit" value="Wystaw"/>
+							<button class="sub_button" onclick="createCommission('sell','BTC','GLDC');" >Wystaw</button>
 						</td>
 					</tr>
 				</table>
-				</form>
+				
 			</td>
 	</tr>
 		{% endif %}

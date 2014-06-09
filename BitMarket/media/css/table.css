@@ -107,28 +107,15 @@ em {
 	background: url(http://jackrugile.com/images/misc/noise-diagonal.png);	
 }
 
-.comm_table tr:nth-child(odd) td {
-	background: #f1f1f1 url(http://jackrugile.com/images/misc/noise-diagonal.png);	
-}
-
-.comm_table tr:last-of-type td {
-	box-shadow: inset 0 -1px 0 #fff; 
-}
-
-.comm_table tr:last-of-type td:first-child {
-	box-shadow: inset 1px -1px 0 #fff;
-}	
-
-.comm_table tr:last-of-type td:last-child {
-	box-shadow: inset -1px -1px 0 #fff;
-}	
-
-.comm_table tbody:hover td {
-	color: transparent;
-	text-shadow: 0 0 3px #aaa;
-}
-
 .comm_table tbody:hover tr:hover td {
-	color: #444;
-	text-shadow: 0 1px 0 #fff;
+	
+	background: #777777;
+}
+
+/* Sortable tables */
+table.sortable thead {
+    background-color:#eee;
+    color:#666666;
+    font-weight: bold;
+    cursor: default;
 }

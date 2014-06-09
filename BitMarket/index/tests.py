@@ -1,16 +1,6 @@
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
-
-Replace this with more appropriate tests for your application.
-"""
-
-from django.test import TestCase
-
-
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.assertEqual(1 + 1, 2)
+from django.shortcuts import render_to_response
+from wallet.models import Commission
+def getCommissions(request):
+    for commission in Commission.getCommissions(cryptocurrency_first='BTC',cryptocurrency_second='GLDC', sort='source_amount'):
+        print commission
+    return render_to_response('master/index.html', {'local': locals()})
