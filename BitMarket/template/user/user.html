@@ -11,38 +11,38 @@
 			<tr>
 				<td>
 				<table class="comm_table">	
-					 <tr class="comm_table">
-					   <th class="comm_table">Portfel</th>
-					   <th class="comm_table">Wartość</th>
-					   <th class="comm_table">Zlecenie</th>
+					 <tr>
+					   <th>Portfel</th>
+					   <th>Wartość</th>
+					   <th>Zlecenie</th>
 					 </tr>
 					 {% for wallet in local.wallets %}
-					 <tr class="comm_table">
-					   <td class="comm_table">{{wallet.cryptocurrency.name}}:</td>
-					   <td class="comm_table">{{wallet.account_balance}}</td>
-					   <td class="comm_table"><input type="submit" value="wpłać na portfel" id="wp"/> <input type="submit" value="wypłać z portfela" id="wyp"/></td>
+					 <tr>
+					   <td>{{wallet.cryptocurrency.name}}:</td>
+					   <td>{{wallet.account_balance}}</td>
+					   <td><input type="submit" value="wpłać na portfel" id="wp"/> <input type="submit" value="wypłać z portfela" id="wyp"/></td>
 					 </tr>
 					 {%endfor%}
 				</table>
 				</td>
 				<td>
 				<table class="comm_table">	
-					 <tr class="comm_table">
+					 <tr>
 					   <th colspan="4">zlecenia aktywne:</th>
 					 </tr>
-					 <tr class="comm_table">
-					   <th class="comm_table">para walutowa:</th>
-					   <th class="comm_table">ilosc:</th>
-					   <th class="comm_table">cena:</th>
+					 <tr>
+					   <th>para walutowa:</th>
+					   <th>ilosc:</th>
+					   <th>cena:</th>
 					   <th> </th>
 					 </tr>
 					 {% for history in local.userhistories %}
 					 	{% if history.commission_id != None%}
-					 		<tr class="comm_table">
-					   			<td class="comm_table">{{history.cryptocurrency_sold.name}}/{{history.cryptocurrency_bought.name}}</td>
-					   			<td class="comm_table">{{history.amount_sold}}{{history.cryptocurrency_sold.name}} {{history.amount_bought}}{{history.cryptocurrency_bought.name}} </td>
-					   			<td class="comm_table">{{history.sold_price}}</td>
-					   			<td class="comm_table"><a href=""> Anuluj </a></td>
+					 		<tr>
+					   			<td>{{history.cryptocurrency_sold.name}}/{{history.cryptocurrency_bought.name}}</td>
+					   			<td>{{history.amount_sold}}{{history.cryptocurrency_sold.name}} {{history.amount_bought}}{{history.cryptocurrency_bought.name}} </td>
+					   			<td>{{history.sold_price}}</td>
+					   			<td><a href=""> Anuluj </a></td>
 					   		</tr>
 					   	{%endif%}
 					 {%endfor%}
@@ -52,22 +52,22 @@
 			<tr>
 				<td colspan="2">
 				<table class="comm_table">	
-					 <tr class="comm_table">
+					 <tr>
 					   <th colspan="5">zlecenia nieaktywne:</th>
 					 </tr>
-					 <tr class="comm_table">
-					   <th class="comm_table">para walutowa:</th>
-					   <th class="comm_table">data realicacji:</th>
-					   <th class="comm_table">typ realicacji:</th>
-					   <th class="comm_table">ilosc:</th>
-					   <th class="comm_table">cena:</th>
+					 <tr>
+					   <th>para walutowa:</th>
+					   <th>data realicacji:</th>
+					   <th>typ realicacji:</th>
+					   <th>ilosc:</th>
+					   <th>cena:</th>
 					 </tr>
 					 {% for history in local.userhistories %}
 					 	{% if history.commission_id == None%}
 					 		<tr class="comm_table">
-					   			<td class="comm_table">{{history.cryptocurrency_sold.name}}/{{history.cryptocurrency_bought.name}}</td>
-					   			<td class="comm_table">{{history.executed_time}}</td>
-					   			<td class="comm_table">
+					   			<td>{{history.cryptocurrency_sold.name}}/{{history.cryptocurrency_bought.name}}</td>
+					   			<td>{{history.executed_time}}</td>
+					   			<td>
 					   			{% if history.purchaser != None %}
 					   				sprzedane/kupione
 					   			{%endif%}
@@ -78,8 +78,8 @@
 					   				przeterminowane
 					   			{%endif%}
 					   			</td>
-					   			<td class="comm_table">{{history.amount_sold}}{{history.cryptocurrency_sold.name}} {{history.amount_bought}}{{history.cryptocurrency_bought.name}} </td>
-					   			<td class="comm_table">{{history.sold_price}}</td>
+					   			<td>{{history.amount_sold}}{{history.cryptocurrency_sold.name}} {{history.amount_bought}}{{history.cryptocurrency_bought.name}} </td>
+					   			<td>{{history.sold_price}}</td>
 					   		</tr>
 					   	{%endif%}
 					 {%endfor%}
