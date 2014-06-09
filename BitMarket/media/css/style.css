@@ -17,7 +17,9 @@ body { font: 0.625em/1.5em tahoma, verdana, arial, sans-serif; background-color:
 a img { border: none;}
 /* TOP strony - czarny pasek gorny */
 
-
+#konto{
+	text-align: center;
+}
 
 #top {
 	background-color: #1b1c1d;
