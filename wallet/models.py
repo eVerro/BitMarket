@@ -316,16 +316,16 @@ class Commission(models.Model):
             cryptocurrency_first = Cryptocurrency.objects.filter(name=cryptocurrency_first)[0]
         if(cryptocurrency_second==None):
             if(sort==None):
-                return Commission.objects.extra(where=["source_wallet_id in (Select id from wallet.user_wallet where cryptocurrency_id == %s) or destination_wallet_id in (Select id from wallet.user_wallet where cryptocurrency_id == %s)"], 
+                return Commission.objects.extra(where=["source_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s) or destination_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)"], 
                                                 params=[cryptocurrency_first.id,cryptocurrency_first.id])
-            return Commission.objects.extra(where=["source_wallet_id in (Select id from wallet.user_wallet where cryptocurrency_id == %s) or destination_wallet_id in (Select id from wallet.user_wallet where cryptocurrency_id == %s)"], 
+            return Commission.objects.extra(where=["source_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s) or destination_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)"], 
                                             params=[cryptocurrency_first.id,cryptocurrency_first.id], order_by=[sort])
         if(not hasattr(cryptocurrency_second,'id')):
             cryptocurrency_second = Cryptocurrency.objects.filter(name=cryptocurrency_second)[0]
         if(sort==None):
-            return Commission.objects.extra(where=["((source_wallet_id in (Select id from wallet.user_wallet where cryptocurrency_id == %s)) OR (destination_wallet_id IN (Select id from wallet.user_wallet where cryptocurrency_id == %s))) AND ((source_wallet_id in (Select id from wallet.user_wallet where cryptocurrency_id == %s)) or (destination_wallet_id in (Select id from wallet.user_wallet where cryptocurrency_id == %s)))"], 
+            return Commission.objects.extra(where=["((source_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)) OR (destination_wallet_id IN (Select id from wallet_userwallet where cryptocurrency_id == %s))) AND ((source_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)) or (destination_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)))"], 
                                             params=[cryptocurrency_first.id,cryptocurrency_first.id,cryptocurrency_second.id,cryptocurrency_second.id])
-        return Commission.objects.extra(where=["((source_wallet_id in (Select id from wallet.user_wallet where cryptocurrency_id == %s)) OR (destination_wallet_id IN (Select id from wallet.user_wallet where cryptocurrency_id == %s))) AND ((source_wallet_id in (Select id from wallet.user_wallet where cryptocurrency_id == %s)) or (destination_wallet_id in (Select id from wallet.user_wallet where cryptocurrency_id == %s)))"], 
+        return Commission.objects.extra(where=["((source_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)) OR (destination_wallet_id IN (Select id from wallet_userwallet where cryptocurrency_id == %s))) AND ((source_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)) or (destination_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)))"], 
                                         params=[cryptocurrency_first.id,cryptocurrency_first.id,cryptocurrency_second.id,cryptocurrency_second.id], order_by=[sort])
         
 class History(models.Model):
