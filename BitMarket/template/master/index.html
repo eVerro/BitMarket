@@ -72,31 +72,31 @@
 			</div>
 
 			<div id="main2">
+				
 				<div id="news">
 					{% block content %}
+					<p id="newsImage"></p>
+					<hr />
 					{% if latest_news_list %}
 					{% for news in latest_news_list %}
 					<h2 class="tytul">{{ news.tytul }}</h2>
 					<p class="kategoria">
-						kategoria: <strong class="czerwony">{{ news.kategoria }}</strong>
+					Kategoria: <strong class="niebieski">{{ news.kategoria }}</strong> dodano: <strong class="niebieski">{{ news.pub_date }} </strong>przez: <strong class="niebieski">{{ news.autor }}</strong>
 					</p>
-					<p class="tresc"><img width="618" height="400" class="obrazekNews" src="{{ STATIC_URL }}/static/{{ news.obrazek }}"/>{{ news.text }}
+					<img class="obrazekNews" src="{{ STATIC_URL }}{{ news.obrazek }}"/>
+					<p class="tresc">{{ news.text }}
 					</p>
 					<br/>
-					<p class="newsInfo">
-						dodano: <strong class="czerwony">{{ news.pub_date }} </strong>przez: <strong class="czerwony">{{ news.autor }}</strong><strong class="czerwony"></strong>
-					</p>
 
-					<br/>
-					<br/>
-					<br/>
-					<br/>
+					<hr />
 					{% endfor %}
 					{% else %}
-					<h2 class="tytul">Nie ma newsow do wyswietlenia.</h2>
+					<h2 class="tytul">Brak nowych wiadomości.</h2>
 					{% endif %}
 					{% endblock %}
+					
 				</div>
+				
 			</div>
 			<div id="nawigacja">
 				<p id="nawigacjaP"></p>
@@ -116,7 +116,16 @@
 					</li>
 				</ul>
 				{% endblock %}
+				<p id="chatNawigacja"></p>
+				<div id="chatFormat">
+					<p>Hello world!</p>
+				</div>
+				<p id="networkConnect"></p>
+				<div id="networkFormat">
+					<p>Join us on Facebook!</p>
+				</div>
 			</div>
+			
 		</div>
 		<div id="down"></div>
 

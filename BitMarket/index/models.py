@@ -37,7 +37,7 @@ class Newss(models.Model):
     pub_date = models.DateTimeField('data publikacji')
     text = models.CharField(max_length=2000)
     autor = models.CharField(max_length=20)
-    obrazek = models.ImageField(upload_to='newsImage')
+    obrazek = models.ImageField(upload_to='image')
     def __unicode__(self):
         return self.tytul
     def was_published_today(self):

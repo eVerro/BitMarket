@@ -97,7 +97,7 @@ a img { border: none;}
 }
 /* HEADER czyli logo i menu */
 #header {
-	width: 1200px;
+	width: 1000px;
 	margin-left: 200px;
 	height:90px;
 }
@@ -242,37 +242,87 @@ a img { border: none;}
 	width: 1200px;
 	/*margin-left: 170px;*/
 	/*margin-top: 150px;*/
-
+	margin: 0 auto;
 	/*position: relative;*/
 	overflow: hidden;
-	padding:20px;
+	padding-left: 20px;
+	padding-top: 20px;
+	padding-bottom: 20px;
 	}
 	
 #main2 #news {
 	background-color: #ffffff;
-	width: 900px;
+	width: 910px;
 	/*margin: 20px;*/
-	
 	overflow: hidden;
 	/*margin-right: 25px;
 	margin-left: 17px;*/
-	min-height: 400px;
+	min-height: 800px;
+	height:100%;
 	float: none;
+}
+
+#main2 #news #newsImage {
+	background: url(../images/news_image.png) top right no-repeat;
+	width: 90px;
+	height: 26px;
+	padding-left: 10px;
+	margin-top: 10px;
+}
+
+#main2 #news hr{
+	margin-left: 20px;
+	margin-right: 20px;
 }
 
 #main2 #news p {
 	margin: 10px;
 }
 
-#nawigacja {
-	/*float: none;
-	height: auto;
-	margin: 0 auto;*/
+#main2 #news .tytul {
+	padding: 11px 20px 10px; 
+	color: #3399cc; 
+	font: bold 2.5em tahoma, verdana, arial, sans-serif;
+	text-decoration: none;
+}
+
+#main2 #news .kategoria {
+	padding-left: 11px;
+	margin-top:-05px;
+	color: #333366; 
+	font: 1em tahoma, verdana, arial, sans-serif;
+	text-decoration: none;
+}
+
+#main2 #news img {
+	margin-left: 20px;
+	width: 863px;
+	height: 150px;
+	padding:3px;
+	background: #FFFFFF;
+	border: 1px solid #CCCCCC;
+}
+
+#main2 #news .tresc {
+	padding-left: 11px;
+	padding-right: 11px;
 	
+	color: #333366; 
+	font: 1.3em tahoma, verdana, arial, sans-serif;
+	text-decoration: none;
+}
+
+.niebieski {
+	color: #3399cc; 
+}
+
+#nawigacja {
+	float: none;
+	height: auto;
 	position: absolute;
 	overflow: hidden;
 	top: 70px;
-	left: 950px;
+	left: 930px;
 	}
 	
 #nawigacja #nawigacjaP {
@@ -281,6 +331,47 @@ a img { border: none;}
 	height: 48px;
 	background: url(../images/siteNavigation.png) top right no-repeat;
 	background-color: #eef0f5;
+}
+
+#nawigacja #chatNawigacja {
+	width: 268px;
+	height: 48px;
+	background: url(../images/chat.png) top right no-repeat;
+	background-color: #eef0f5;
+}
+
+#nawigacja #chatFormat {
+	min-height: 350px;
+	bottom: 0; 
+	background-color: #eef0f5;
+}
+
+#nawigacja #chatFormat p {
+	padding: 11px 26px 10px; 
+	color: #7a8090; 
+	font: bold 1.5em tahoma, verdana, arial, sans-serif;
+	text-decoration: none;
+}
+
+#nawigacja #networkConnect {
+	width: 268px;
+	height: 48px;
+	background: url(../images/network_connect.png) top right no-repeat;
+	background-color: #eef0f5;
+}
+
+#nawigacja #networkFormat {
+	min-height: 174px;
+	bottom: 0; 
+	background-color: #eef0f5;
+}
+
+#nawigacja #networkFormat p {
+	padding: 11px 26px 10px; 
+	color: #7a8090; 
+	font: bold 1.5em tahoma, verdana, arial, sans-serif;
+	text-decoration: none;
+	margin-left: 30px;
 }
 
 #nawigacja ul { 

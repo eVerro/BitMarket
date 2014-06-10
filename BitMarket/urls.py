@@ -3,8 +3,12 @@ from django.conf.urls import patterns, include, url
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from dajaxice.core import dajaxice_autodiscover, dajaxice_config# tutaj ciagle wykrywa blad, nie wiem czemu, ale powinno dzialac
 from django.contrib import admin
+
 admin.autodiscover()
 dajaxice_autodiscover()
+
+import os
+ROOT_PATH = os.path.dirname(__file__)
 
 urlpatterns = patterns('',
     # Examples:
@@ -27,6 +31,7 @@ urlpatterns = patterns('',
     (r'^registrationconfirm/(?P<code>\d+)/$','BitMarket.index.register.checkConfirmLink'),
     (r'^ajax/ajaxTest/$','BitMarket.index.views.ajaxTest'),
     (dajaxice_config.dajaxice_url, include('dajaxice.urls')),
+    (r'^image/(?P<path>.*)$', 'django.views.static.serve',{'document_root': ROOT_PATH + '/media/image/'}),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
@@ -57,4 +62,4 @@ urlpatterns = patterns('',
     # getCommissions(cryptocurrency_first=None, cryptocurrency_second=None, sort=None):
     (r'^gco/', 'BitMarket.index.tests.getCommissions'),
 )
-urlpatterns += staticfiles_urlpatterns()#bylo w tutorialu do ajaxa
+urlpatterns += staticfiles_urlpatterns()
