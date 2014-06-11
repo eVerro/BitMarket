@@ -55,6 +55,14 @@ def user(request):
     local = locals()
     return render_to_response('user/user.html', {'local': local})
 
+def open_orders(request):
+    local = locals()
+    return render_to_response('user/open_orders.html', {'local': local})
+
+def trade_history(request):
+    local = locals()
+    return render_to_response('user/trade_history.html', {'local': local})
+
 def login(request):
             if request.method == 'POST':
                     username = request.POST['username']

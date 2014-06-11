@@ -113,6 +113,19 @@ a img { border: none;}
 	margin-left: -30px;
 }
 
+#top #top_witaj #aktywne_zlecenia{
+	float: left;
+	margin-top: -12px;
+	margin-left: -30px;
+}
+
+#top #top_witaj #historia_zlecen{
+	float: left;
+	margin-top: -12px;
+	margin-left: -30px;
+}
+
+
 #top #top_witaj #witaj{
 	color: #7a8090; 
 	font: bold 1.5em tahoma, verdana, arial, sans-serif;
@@ -350,6 +363,21 @@ a img { border: none;}
 	margin-top: 10px;
 }
 
+#main2 #news #tradeHistoryImage {
+	background: url(../images/historia_zlecen.png) top right no-repeat;
+	width: 193px;
+	height: 26px;
+	padding-left: 10px;
+	margin-top: 10px;
+}
+
+#main2 #news #openOrdersImage {
+	background: url(../images/aktywne_zlecenia.png) top right no-repeat;
+	width: 223px;
+	height: 26px;
+	padding-left: 10px;
+	margin-top: 10px;
+}
 
 #main2 #news hr{
 	margin-left: 20px;
