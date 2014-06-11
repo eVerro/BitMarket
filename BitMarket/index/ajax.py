@@ -51,11 +51,15 @@ def validate(request,first_amount, second_amount, site):
     getcontext().prec = 15
     total = Decimal(first_amount)*Decimal(second_amount)
     provision = Decimal(total)*Decimal(0.025)
-    
-    dajax.assign("#total_"+site, "innerHTML", str(total))
-    dajax.assign("#provision_"+site, "innerHTML", str(provision))
-    dajax.assign("#after_provision_"+site, "innerHTML", str(Decimal(total)-Decimal(provision)))
-    
+    if site == "L":
+        dajax.assign("#total_"+site, "innerHTML", str(total))
+        dajax.assign("#provision_"+site, "innerHTML", str(provision))
+        dajax.assign("#after_provision_"+site, "innerHTML", str(Decimal(total)+Decimal(provision)))
+    if site == "R":
+        dajax.assign("#total_"+site, "innerHTML", str(total))
+        dajax.assign("#provision_"+site, "innerHTML", str(provision))
+        dajax.assign("#after_provision_"+site, "innerHTML", str(Decimal(total)-Decimal(provision)))
+        
     
     return dajax.json()
 
@@ -93,7 +97,7 @@ def createTable(request, left_currency, right_currency):
     right_table+='<thead><tr><th>Cena('+str(left_currency)+')</th><th>'+str(right_currency)+'</th><th>Razem('+str(left_currency)+')</th>'
     right_table+='<th></th>'
     right_table+='</tr></thead>'
-    for comm in Commission.getCommissions(cryptocurrency_first=left_currency,cryptocurrency_second=right_currency, sort='destination_price'):
+    for comm in Commission.getCommissions(cryptocurrency_first=right_currency,cryptocurrency_second=left_currency, sort='destination_price'):
         right_table+='<tr>'
         right_table+='<td>'
         right_table+=str(format(Decimal(comm.destination_price),'.10f'))
@@ -114,7 +118,7 @@ def createTable(request, left_currency, right_currency):
     """
     Wyswietlanie tabeli historii
     """
-    history_table='<table class="comm_table">'
+    history_table='<table class="history_table">'
     history_table+='<thead><tr><th>Data</th><th>Typ</th><th>Cena('+str(left_currency)+')</th><th>'+str(left_currency)+'</th><th>'+str(right_currency)+'</th>'
     history_table+='</tr></thead>'
     left_curr_object = Cryptocurrency.objects.filter(name = left_currency)[0]
