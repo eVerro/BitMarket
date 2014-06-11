@@ -2,6 +2,9 @@
 {% block content %}
 <link rel="stylesheet" href="{{ STATIC_URL }} /static/css/table.css" />
 	{% if local.request.user.is_authenticated %}
+<p id="userImage"></p>
+<hr />
+
 			<div id="konto">
 				<br>
 				<font size=4> Konto użytkownika {{local.request.user.username}}</font>

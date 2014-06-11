@@ -11,7 +11,8 @@
 	</head>
 
 	<body>
-
+	<div id="background">
+		<p id="background2">
 		<div id="top">
 			<div id="top_witaj">
 				{% if local.request.user.is_authenticated %}
@@ -28,10 +29,10 @@
 				<p id="logowanie_formularz">
 					<form method="post" action="/user/login/" id="logowanie_form">
 						<span id="logowaniePole">
-							<input name="username" type="text">
+							Login <input name="username" type="text">
 						</span>
 						<span id="passPole">
-							<input name="password" type="password">
+							Hasło <input name="password" type="password">
 						</span>
 						<input type="submit" style="display: none;" />
 					</form>
@@ -55,17 +56,17 @@
 				<ul>
 					<li>
 						<p>
-							<a href="/aboutus">About Us</a>
+							<a href="/aboutus">O Nas</a>
 						</p>
 					</li>
 					<li>
 						<p>
-							<a href="/market">Market</a>
+							<a href="/market">Kryptowaluty</a>
 						</p>
 					</li>
 					<li>
 						<p>
-							<a href="/contact">Contact</a>
+							<a href="/contact">Kontakt</a>
 						</p>
 					</li>
 				</ul>
@@ -105,7 +106,7 @@
 					<li>
 						<a href="/user/gldc/">
 						<p>
-							BTC/GLDC
+							BTC/GLD
 						</p></a>
 					</li>
 					<li>
@@ -130,6 +131,7 @@
 		<div id="down"></div>
 
 		<div id="footer"></div>
-
+		</p>
+		</div>
 	</body>
 </html>

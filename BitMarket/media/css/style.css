@@ -8,7 +8,9 @@ html, body, ul, li { margin: 0; padding: 0;}
 h1, h2, ul, li, p { margin: 0; padding: 0; font-size: 1em; line-height: 1.5em;}
 
 /* ustawienia globalne */
-body { font: 0.625em/1.5em tahoma, verdana, arial, sans-serif; background-color: #282d3a;}
+body { font: 0.625em/1.5em tahoma, verdana, arial, sans-serif; background-color: #282d3a;
+		background: url(../images/down.png) top right repeat;	
+}
 
 /* szerokość strony */
 .content { width: 960px;}
@@ -17,12 +19,26 @@ body { font: 0.625em/1.5em tahoma, verdana, arial, sans-serif; background-color:
 a img { border: none;}
 /* TOP strony - czarny pasek gorny */
 
+#background {
+	background: url(../images/top.png) top right repeat-x;
+
+	position:relative;
+}
+
+#background #background2 {
+	background: url(../images/kontakt.png) top right repeat-y;
+	position: absolute;
+	display:block;
+	overflow:hidden;
+}
+
+
 #konto{
 	text-align: center;
 }
 
 #top {
-	background-color: #1b1c1d;
+	/*background-color: #1b1c1d;*/
 	width: 100%;
 	height: 50px;
 	position: relative;
@@ -37,19 +53,29 @@ a img { border: none;}
 }
 #top #top_witaj {
 	position: absolute;
-	margin-left: 15%;
-	margin-top: 10px;
+	margin-left: 10%;
+	margin-top: 18px;
 	float: left;
 }
 
-#top #top_witaj #logowanie_formularz{
+#top #top_witaj #logowaniePole {
+	color: #7a8090; 
+	font: bold 1.5em tahoma, verdana, arial, sans-serif;
+	text-decoration: none;
 }
+
+#top #top_witaj #passPole {
+	color: #7a8090; 
+	font: bold 1.5em tahoma, verdana, arial, sans-serif;
+	text-decoration: none;
+}
+
 
 
 #top #top_witaj #logowanie_link{
 	float: left;
 	margin-top: -33px;
-	margin-left: 300px;
+	margin-left: 400px;
 }
 
 #top #top_witaj #rejestracja_link{
@@ -175,14 +201,19 @@ a img { border: none;}
 	width: auto;
 	height: 220px;
 	margin-top: 5px;
-	background-color: #1d202a;
+	
 }
 
 #rejestracja label{
-	color: #FFFFFF;
+	padding-left: 11px;
+	padding-right: 11px;
+	
+	color: #333366; 
+	font: 1.5em tahoma,verdana, arial, sans-serif;
+	text-decoration: none;
 	display: block;
-	width: 100px;
-	height: 15px;
+	width: 200px;
+	
 	margin-top: 5px;
 	float: left;
 	text-align: center; 
@@ -197,6 +228,11 @@ a img { border: none;}
 	text-align: center; 
 }
 
+#rejestracja #some_name{
+	margin-left: 150px;
+}
+
+
 #rejestracja form{
 	margin-left: 190px;
 	margin-top: 5px;
@@ -205,18 +241,6 @@ a img { border: none;}
 	text-align: center; 
 }
 
-#main #rejestracja p {
-	width: 289px;
-	height: 46px;
-	background: url(../images/rejestracja.jpg) top right no-repeat;
-}
-
-.registerHeader {
-	width: 289px;
-	height: 46px;
-	background: url(../images/rejestracja.jpg) top right no-repeat;
-	
-}
 /* DOWN strona z informacjami */
 #down {
 	background-color: #0f131f;
@@ -270,10 +294,77 @@ a img { border: none;}
 	margin-top: 10px;
 }
 
+#main2 #news #aboutUsImage {
+	background: url(../images/o_nas.png) top right no-repeat;
+	width: 107px;
+	height: 26px;
+	padding-left: 10px;
+	margin-top: 10px;
+}
+
+#main2 #news #contactImage {
+	background: url(../images/kontakt.png) top right no-repeat;
+	width: 121px;
+	height: 26px;
+	padding-left: 10px;
+	margin-top: 10px;
+}
+
+#main2 #news #marketImage {
+	background: url(../images/kryptowaluty.png) top right no-repeat;
+	width: 180px;
+	height: 26px;
+	padding-left: 10px;
+	margin-top: 10px;
+}
+
+#main2 #news #userImage {
+	background: url(../images/konto.png) top right no-repeat;
+	width: 107px;
+	height: 26px;
+	padding-left: 10px;
+	margin-top: 10px;
+}
+
+#main2 #news #btcGldImage {
+	background: url(../images/btc_gld.png) top right no-repeat;
+	width: 136px;
+	height: 26px;
+	padding-left: 10px;
+	margin-top: 10px;
+}
+
+#main2 #news #btcLtcImage {
+	background: url(../images/btc_ltc.png) top right no-repeat;
+	width: 136px;
+	height: 26px;
+	padding-left: 10px;
+	margin-top: 10px;
+}
+
+#main2 #news #rejestracjaImage {
+	background: url(../images/rejestracja.png) top right no-repeat;
+	width: 151px;
+	height: 26px;
+	padding-left: 10px;
+	margin-top: 10px;
+}
+
+
 #main2 #news hr{
 	margin-left: 20px;
 	margin-right: 20px;
 }
+
+#main2 #news .tresc {
+	padding-left: 11px;
+	padding-right: 11px;
+	
+	color: #333366; 
+	font: 1.3em tahoma,verdana, arial, sans-serif;
+	text-decoration: none;
+}
+
 
 #main2 #news p {
 	margin: 10px;
@@ -282,7 +373,7 @@ a img { border: none;}
 #main2 #news .tytul {
 	padding: 11px 20px 10px; 
 	color: #3399cc; 
-	font: bold 2.5em tahoma, verdana, arial, sans-serif;
+	font: bold 2.5em tahoma,verdana, arial, sans-serif;
 	text-decoration: none;
 }
 
@@ -290,7 +381,7 @@ a img { border: none;}
 	padding-left: 11px;
 	margin-top:-05px;
 	color: #333366; 
-	font: 1em tahoma, verdana, arial, sans-serif;
+	font: 1em tahoma,verdana, arial, sans-serif;
 	text-decoration: none;
 }
 
@@ -308,7 +399,7 @@ a img { border: none;}
 	padding-right: 11px;
 	
 	color: #333366; 
-	font: 1.3em tahoma, verdana, arial, sans-serif;
+	font: 1.3em tahoma,verdana, arial, sans-serif;
 	text-decoration: none;
 }
 
