@@ -73,7 +73,7 @@ def createTable(request, left_currency, right_currency):
     for comm in Commission.getCommissions(cryptocurrency_first=left_currency,cryptocurrency_second=right_currency, sort='destination_price'):
         left_table+='<tr>'
         left_table+='<td>'
-        left_table+=str(format(Decimal(comm.destination_price),'.10f'))
+        left_table+=str(format(Decimal(comm.destination_amount),'.10f'))
         left_table+='</td>'
         left_table+='<td>' 
         left_table+=str(format(Decimal(comm.source_amount),'.10f'))
