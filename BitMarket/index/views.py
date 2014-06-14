@@ -55,6 +55,10 @@ def user(request):
     local = locals()
     return render_to_response('user/user.html', {'local': local})
 
+def cancel(request, cancel):
+    com = Commission.objects.filter(id=cancel)[0].delete()
+    return render_to_response('user/user.html', {'local': locals()})
+
 def login(request):
             if request.method == 'POST':
                     username = request.POST['username']

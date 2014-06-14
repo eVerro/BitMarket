@@ -142,3 +142,12 @@ def createTable(request, left_currency, right_currency):
     history_table+='</table>'
     dajax.assign('#history_table', 'innerHTML',history_table)  
     return dajax.json()
+
+@dajaxice_register
+def cancelCom(request, com_id):
+    dajax = Dajax()
+    user = UserProxy.objects.get(id=request.user.id)
+    coms  = Commission.objects.filter(id=com_id)
+    coms  = coms[0]
+    user.cancelCommission(coms)
+    return dajax.json()

@@ -42,7 +42,7 @@
 					   			<td>{{history.cryptocurrency_sold.name}}/{{history.cryptocurrency_bought.name}}</td>
 					   			<td>{{history.amount_sold}}{{history.cryptocurrency_sold.name}} {{history.amount_bought}}{{history.cryptocurrency_bought.name}} </td>
 					   			<td>{{history.sold_price}}</td>
-					   			<td><a href=""> Anuluj </a></td>
+					   			<td> <button class="sub_button" onclick="cancelCom(local.request, history.commission_id)" >Anuluj</button></td>
 					   		</tr>
 					   	{%endif%}
 					 {%endfor%}
