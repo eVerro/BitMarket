@@ -85,7 +85,7 @@ def createTable(request, left_currency, right_currency):
         left_table+=str(format(Decimal(comm.destination_amount),'.10f'))
         left_table+='</td>'
         if request.user.is_authenticated():
-            left_table+='<td><a href="#" onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Sprzedaj</a></td>'
+            left_table+='<td><button onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Sprzedaj</button></td>'
         left_table+='</tr>'
     left_table+='</table>'
     dajax.assign('#left_table', 'innerHTML',left_table)
@@ -108,7 +108,7 @@ def createTable(request, left_currency, right_currency):
         right_table+=str(format(Decimal(comm.source_amount),'.10f'))
         right_table+='</td>'
         if request.user.is_authenticated():
-            right_table+='<td><a href="#" onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Kup</a></td>'
+            right_table+='<td><button onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Kup</button></td>'
         right_table+='</tr>'
     right_table+='</table>'
     dajax.assign('#right_table', 'innerHTML', right_table)
