@@ -74,7 +74,7 @@ def createTable(request, left_currency, right_currency):
     left_table+='<th></th>'
     left_table+='</tr></thead>'
     
-    for comm in Commission.getCommissions(cryptocurrency_first=left_currency,cryptocurrency_second=right_currency, sort='destination_price'):
+    for comm in Commission.getCommissions(cryptocurrency_sold=left_currency,cryptocurrency_bought=right_currency, sort='destination_price'):
         left_table+='<tr>'
         left_table+='<td>'
         left_table+=str(format(Decimal(comm.destination_amount),'.10f'))
@@ -97,7 +97,7 @@ def createTable(request, left_currency, right_currency):
     right_table+='<thead><tr><th>Cena('+str(left_currency)+')</th><th>'+str(right_currency)+'</th><th>Razem('+str(left_currency)+')</th>'
     right_table+='<th></th>'
     right_table+='</tr></thead>'
-    for comm in Commission.getCommissions(cryptocurrency_first=right_currency,cryptocurrency_second=left_currency, sort='destination_price'):
+    for comm in Commission.getCommissions(cryptocurrency_sold=right_currency,cryptocurrency_bought=left_currency, sort='destination_price'):
         right_table+='<tr>'
         right_table+='<td>'
         right_table+=str(format(Decimal(comm.destination_price),'.10f'))
