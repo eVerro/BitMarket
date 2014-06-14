@@ -296,7 +296,7 @@ class Commission(models.Model):
         self.delete()
         
     @staticmethod
-    def getCommissions(cryptocurrency_first=None, cryptocurrency_second=None, sort=None):
+    def getCommissions(cryptocurrency_sold, cryptocurrency_bought, sort=None):
         """
         W parametrach można podać nazwy albo obiekty Cryptocurrency
         można sortować po:
@@ -308,25 +308,11 @@ class Commission(models.Model):
         source_price
         destination_price 
         """
-        if(cryptocurrency_first==None):
-            if(sort==None):
-                return Commission.objects.all()
-            return Commission.objects.extra(order_by=[sort])
-        if(not hasattr(cryptocurrency_first,'id')):
-            cryptocurrency_first = Cryptocurrency.objects.filter(name=cryptocurrency_first)[0]
-        if(cryptocurrency_second==None):
-            if(sort==None):
-                return Commission.objects.extra(where=["source_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s) or destination_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)"], 
-                                                params=[cryptocurrency_first.id,cryptocurrency_first.id])
-            return Commission.objects.extra(where=["source_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s) or destination_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)"], 
-                                            params=[cryptocurrency_first.id,cryptocurrency_first.id], order_by=[sort])
-        if(not hasattr(cryptocurrency_second,'id')):
-            cryptocurrency_second = Cryptocurrency.objects.filter(name=cryptocurrency_second)[0]
         if(sort==None):
-            return Commission.objects.extra(where=["((source_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)) OR (destination_wallet_id IN (Select id from wallet_userwallet where cryptocurrency_id == %s))) AND ((source_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)) or (destination_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)))"], 
-                                            params=[cryptocurrency_first.id,cryptocurrency_first.id,cryptocurrency_second.id,cryptocurrency_second.id])
-        return Commission.objects.extra(where=["((source_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)) OR (destination_wallet_id IN (Select id from wallet_userwallet where cryptocurrency_id == %s))) AND ((source_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)) or (destination_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)))"], 
-                                        params=[cryptocurrency_first.id,cryptocurrency_first.id,cryptocurrency_second.id,cryptocurrency_second.id], order_by=[sort])
+            return Commission.objects.extra(where=["((source_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)) AND ((source_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)))"], 
+                                            params=[cryptocurrency_sold,cryptocurrency_bought.id])
+        return Commission.objects.extra(where=["((source_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)) AND ((source_wallet_id in (Select id from wallet_userwallet where cryptocurrency_id == %s)))"], 
+                                        params=[cryptocurrency_sold.id,cryptocurrency_bought.id], order_by=[sort])
         
 class History(models.Model):
     """
