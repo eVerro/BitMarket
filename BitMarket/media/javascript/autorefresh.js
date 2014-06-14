@@ -2,12 +2,17 @@ var left_table_scroll = 0;
 var right_table_scroll = 0;
 var history_table_scroll = 0;
 
+var left_curr;
+var right_currency;
+
 function AutoRefreshWallet(left_currency, right_currency) {
 	Dajaxice.BitMarket.index.createTable(Dajax.process, {
 		'left_currency' : left_currency,
 		'right_currency' : right_currency
 	});
 
+	left_curr = left_currency;
+	right_curr = right_currency;
 	
 
 	var refresh_rate = 5;
@@ -60,7 +65,12 @@ function AutoRefreshWallet(left_currency, right_currency) {
 	window.addEventListener("keypress", reset, false);
 }
 
-
+function recreateTable(){
+	Dajaxice.BitMarket.index.createTable(Dajax.process, {
+				'left_currency' : left_curr,
+				'right_currency' : right_curr
+			});
+}
 
 function scrollRefresh() {
 
