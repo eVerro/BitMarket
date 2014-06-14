@@ -42,15 +42,7 @@ function AutoRefreshWallet(left_currency, right_currency) {
 		var focus = window.onfocus;
 		if (last_user_action >= refresh_rate && document.readyState == "complete") {
 
-			left_table_scroll = $(".form_table #left_table tbody").scrollTop();
-			right_table_scroll = $(".form_table #right_table tbody").scrollTop();
-			history_table_scroll = $(".form_table #history_table tbody").scrollTop();
-
-			Dajaxice.BitMarket.index.createTable(Dajax.process, {
-				'left_currency' : left_currency,
-				'right_currency' : right_currency
-			});
-
+			recreateTable();
 			reset();
 
 		}
@@ -66,6 +58,10 @@ function AutoRefreshWallet(left_currency, right_currency) {
 }
 
 function recreateTable(){
+	left_table_scroll = $(".form_table #left_table tbody").scrollTop();
+	right_table_scroll = $(".form_table #right_table tbody").scrollTop();
+	history_table_scroll = $(".form_table #history_table tbody").scrollTop();
+	
 	Dajaxice.BitMarket.index.createTable(Dajax.process, {
 				'left_currency' : left_curr,
 				'right_currency' : right_curr
