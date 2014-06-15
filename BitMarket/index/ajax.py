@@ -74,18 +74,18 @@ def createTable(request, left_currency, right_currency):
     left_table+='<th></th>'
     left_table+='</tr></thead>'
     
-    for comm in Commission.getCommissions(cryptocurrency_sold=left_currency,cryptocurrency_bought=right_currency, sort='destination_price'):
+    for comm in Commission.getCommissions(cryptocurrency_sold=left_currency,cryptocurrency_bought=right_currency, sort='source_price').reverse():
         left_table+='<tr>'
         left_table+='<td>'
-        left_table+=str(format(Decimal(comm.destination_amount),'.10f'))
+        left_table+=str(format(Decimal(comm.source_price),'.10f'))
         left_table+='</td>'
         left_table+='<td>' 
-        left_table+=str(format(Decimal(comm.source_amount),'.10f'))
-        left_table+='</td><td>'
         left_table+=str(format(Decimal(comm.destination_amount),'.10f'))
+        left_table+='</td><td>'
+        left_table+=str(format(Decimal(comm.source_amount),'.10f'))
         left_table+='</td>'
         if request.user.is_authenticated():
-            left_table+='<td><a href="#" onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Kup</a></td>'
+            left_table+='<td><button onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Sprzedaj</button></td>'
         left_table+='</tr>'
     left_table+='</table>'
     dajax.assign('#left_table', 'innerHTML',left_table)
@@ -108,7 +108,7 @@ def createTable(request, left_currency, right_currency):
         right_table+=str(format(Decimal(comm.destination_amount),'.10f'))
         right_table+='</td>'
         if request.user.is_authenticated():
-            right_table+='<td><a href="#" onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Sprzedaj</a></td>'
+            right_table+='<td><button onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Kup</button></td>'
         right_table+='</tr>'
     right_table+='</table>'
     dajax.assign('#right_table', 'innerHTML', right_table)
@@ -130,9 +130,9 @@ def createTable(request, left_currency, right_currency):
         history_table+='</td>'
         history_table+='<td>'
         if comm_history.cryptocurrency_sold.name == left_currency:
-            history_table+='Kupno'
-        else:
             history_table+='Sprzedaż'
+        else:
+            history_table+='Kupno'
         history_table+='</td>'
         history_table+='<td>'
         history_table+=str(format(Decimal(comm_history.amount_bought)/Decimal(comm_history.amount_sold),'.10f'))
@@ -145,6 +145,8 @@ def createTable(request, left_currency, right_currency):
         history_table+='</tr>'
     history_table+='</table>'
     dajax.assign('#history_table', 'innerHTML',history_table)  
+    
+    dajax.script('scrollRefresh();')
     return dajax.json()
 
 @dajaxice_register
