@@ -283,7 +283,7 @@ class Commission(models.Model):
         ordering = []
 
     def __unicode__(self):
-        return 'Zlecenie %s %s na %s %s' % (self.source_amount, self.source_wallet, self.destination_amount, self.destination_wallet)
+        return 'Wymiana z %s %s na %s %s %s' % (self.source_amount, self.source_wallet.cryptocurrency.name, self.destination_amount, self.destination_wallet.cryptocurrency.name, self.source_wallet.user.username)
     
     def overdue(self):
         # pobranie histori i uaktualnienie wpisu
