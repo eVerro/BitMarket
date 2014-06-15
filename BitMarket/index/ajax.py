@@ -66,11 +66,51 @@ def createOpenOrders(request):
         open_orders_table+='</td></tr>'
     open_orders_table+='</table>'
     dajax.assign('#open_orders_table', 'innerHTML', open_orders_table)
+    dajax.script('setScrollPosition();')
     return dajax.json()
 
 @dajaxice_register
 def createCommissionsHistory(request):
-    return None
+    dajax = Dajax()
+    commisions_history_table = '<table class="history_commisions">'
+    commisions_history_table+='<thead><tr><th>Data zrealizowania</th><th>Akcja</th><th>Market</th><th>Cena(BTC)</th><th>Ilość</th><th>Razem(BTC)</th>'
+    commisions_history_table+='</tr></thead>'
+    userproxy = UserProxy.objects.get(id=request.user.id)
+    user_commissions_history = UserProxy.getExchangeHistory( userproxy, sort="executed_time")
+    for comm in user_commissions_history:
+        commisions_history_table+='<tr><td>'
+        commisions_history_table+=str(comm.executed_time.strftime("%Y-%m-%d %H:%M:%S"))
+        commisions_history_table+='</td><td>'
+        if(comm.cryptocurrency_sold.name == 'BTC'):
+            commisions_history_table+='Kupno'
+        else:
+            commisions_history_table+='Sprzedaż'
+        commisions_history_table+='</td><td>'
+        if(comm.cryptocurrency_sold.name == 'LTC' or comm.cryptocurrency_bought.name == 'LTC'):
+            commisions_history_table+='BTC/LTC'
+        else:
+            commisions_history_table+='BTC/GLD'
+        commisions_history_table+='</td><td>'
+        if(comm.cryptocurrency_sold.name == 'BTC'):
+            commisions_history_table+=str(format(Decimal(comm.sold_price),'.10f'))
+            commisions_history_table+='</td><td>'
+            commisions_history_table+=str(format(Decimal(comm.amount_bought),'.10f'))
+            commisions_history_table+=' '+str(comm.cryptocurrency_bought.name)
+            commisions_history_table+='</td><td>'
+            commisions_history_table+=str(format(Decimal(comm.amount_sold),'.10f'))
+            commisions_history_table+='</td>'
+        else:
+            commisions_history_table+=str(format(Decimal(comm.bought_price),'.10f'))
+            commisions_history_table+='</td><td>'
+            commisions_history_table+=str(format(Decimal(comm.amount_sold),'.10f'))
+            commisions_history_table+=' '+str(comm.cryptocurrency_sold.name)
+            commisions_history_table+='</td><td>'
+            commisions_history_table+=str(format(Decimal(comm.amount_bought),'.10f'))
+            commisions_history_table+='</td>'
+        commisions_history_table+='</tr>'
+    commisions_history_table+='</table>'
+    dajax.assign('#commisions_history_table', 'innerHTML', commisions_history_table)
+    return dajax.json()
 
 @dajaxice_register
 def realizeCommision(request, comm_id):

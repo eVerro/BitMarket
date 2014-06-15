@@ -393,3 +393,95 @@ em {
 	
 	background: #777777;
 }
+
+
+
+/* history of commissions  */
+
+.history_commisions {
+	background: #f5f5f5;
+	border-collapse: separate;
+	box-shadow: inset 0 1px 0 #fff;
+	font-size: 12px;
+	margin: 30px auto;
+	text-align: left;
+}
+
+.history_commisions tbody{
+	height:800px; 
+	overflow-y:overlay; 
+	display:block;
+	
+}
+.history_commisions thead{
+	display:block;
+	
+}
+
+.history_commisions th {
+	background: url(http://jackrugile.com/images/misc/noise-diagonal.png), linear-gradient(#777, #444);
+	border-left: 1px solid #555;
+	border-right: 1px solid #777;
+	border-top: 1px solid #555;
+	border-bottom: 1px solid #333;
+	box-shadow: inset 0 1px 0 #999;
+	color: #fff;
+  	font-weight: bold;
+	padding: 10px 15px;
+	position: relative;
+	text-shadow: 0 1px 0 #000;	
+	max-width: 115px;
+	min-width: 115px;
+}
+
+.history_commisions th:after {
+	background: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,.08));
+	content: '';
+	display: block;
+	height: 25%;
+	left: 0;
+	margin: 1px 0 0 0;
+	position: absolute;
+	top: 25%;
+	width: 100%;
+}
+
+.history_commisions th:first-child {
+	border-left: 1px solid #777;	
+	box-shadow: inset 1px 1px 0 #999;
+}
+
+.history_commisions th:last-child {
+	box-shadow: inset -1px 1px 0 #999;
+}
+
+.history_commisions td {
+	border-right: 1px solid #fff;
+	border-left: 1px solid #e8e8e8;
+	border-top: 1px solid #fff;
+	border-bottom: 1px solid #e8e8e8;
+	padding: 10px 15px;
+	position: relative;
+	transition: all 300ms;
+	max-width: 115px;
+	min-width: 115px;
+	text-align: center;
+}
+
+.history_commisions td:first-child {
+	box-shadow: inset 1px 0 0 #fff;
+}	
+
+.history_commisions td:last-child {
+	border-right: 1px solid #e8e8e8;
+	box-shadow: inset -1px 0 0 #fff;
+}	
+
+.history_commisions tr {
+	background: url(http://jackrugile.com/images/misc/noise-diagonal.png);	
+}
+
+.history_commisions tbody:hover tr:hover td {
+	
+	background: #777777;
+}

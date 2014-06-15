@@ -3,13 +3,22 @@
 {% block content %}
 
 <link rel="stylesheet" href="{{ STATIC_URL }} /static/css/table.css" />
+<script type="text/javascript">
+	$(document).ready(function(){
+		Dajaxice.BitMarket.index.createCommissionsHistory(Dajax.process);
+		
+		
+	});
+	
+</script>
+
 
 {% if local.request.user.is_authenticated %}
 <p id="tradeHistoryImage"></p>
 <hr />
 
-<p class="tresc">
-	<table class="konto">	
+<div id="commisions_history_table"></div>
+	<!-- <table class="konto">	
 					 <tr>
 					   <th>para walutowa:</th>
 					   <th>data realicacji:</th>
@@ -40,5 +49,5 @@
 					 {%endfor%}
 	</table>
 </p>
-{% endif %} 
+{% endif %}  -->
 {% endblock %}
