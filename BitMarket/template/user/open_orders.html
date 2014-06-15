@@ -1,0 +1,33 @@
+{% extends "master/index.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ STATIC_URL }} /static/css/table.css" />
+
+{% if local.request.user.is_authenticated %}
+<p id="openOrdersImage"></p>
+<hr />
+
+<p class="tresc">
+	<div id="active"></div>
+	<table class="konto">
+		<tr>
+			<th>para walutowa:</th>
+			<th>ilosc:</th>
+			<th>cena:</th>
+			<th></th>
+		</tr>
+		{% for history in local.userhistories %}
+			{% if history.commission_id != None %}
+				<tr>
+					<td>{{history.cryptocurrency_sold.name}}/{{history.cryptocurrency_bought.name}}</td>
+					<td>{{history.amount_sold}}{{history.cryptocurrency_sold.name}} {{history.amount_bought}}{{history.cryptocurrency_bought.name}} </td>
+					<td>{{history.sold_price}}</td>
+					<td><a href="#" onclick=""> Anuluj </a></td>
+				</tr>
+			{%endif%}
+		{%endfor%}
+	</table>
+</p>
+{% endif %} 
+{% endblock %}

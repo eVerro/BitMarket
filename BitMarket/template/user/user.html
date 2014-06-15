@@ -2,6 +2,9 @@
 {% block content %}
 <link rel="stylesheet" href="{{ STATIC_URL }} /static/css/table.css" />
 	{% if local.request.user.is_authenticated %}
+<p id="userImage"></p>
+<hr />
+
 			<div id="konto">
 				<br>
 				<font size=4> Konto użytkownika {{local.request.user.username}}</font>
@@ -10,7 +13,7 @@
 			<table width="100%">
 			<tr>
 				<td>
-				<table class="comm_table">	
+				<table class="konto">	
 					 <tr>
 					   <th>Portfel</th>
 					   <th>Wartość</th>
@@ -25,67 +28,7 @@
 					 {%endfor%}
 				</table>
 				</td>
-				<td>
-				<table class="comm_table">	
-					 <tr>
-					   <th colspan="4">zlecenia aktywne:</th>
-					 </tr>
-					 <tr>
-					   <th>para walutowa:</th>
-					   <th>ilosc:</th>
-					   <th>cena:</th>
-					   <th> </th>
-					 </tr>
-					 {% for history in local.userhistories %}
-					 	{% if history.commission_id != None%}
-					 		<tr>
-					   			<td>{{history.cryptocurrency_sold.name}}/{{history.cryptocurrency_bought.name}}</td>
-					   			<td>{{history.amount_sold}}{{history.cryptocurrency_sold.name}} {{history.amount_bought}}{{history.cryptocurrency_bought.name}} </td>
-					   			<td>{{history.sold_price}}</td>
-					   			<td> <button class="sub_button" onclick="cancelCom(local.request, history.commission_id)" >Anuluj</button></td>
-					   		</tr>
-					   	{%endif%}
-					 {%endfor%}
-				</table>
-				</td>
 				</tr>
-			<tr>
-				<td colspan="2">
-				<table class="comm_table">	
-					 <tr>
-					   <th colspan="5">zlecenia nieaktywne:</th>
-					 </tr>
-					 <tr>
-					   <th>para walutowa:</th>
-					   <th>data realicacji:</th>
-					   <th>typ realicacji:</th>
-					   <th>ilosc:</th>
-					   <th>cena:</th>
-					 </tr>
-					 {% for history in local.userhistories %}
-					 	{% if history.commission_id == None%}
-					 		<tr class="comm_table">
-					   			<td>{{history.cryptocurrency_sold.name}}/{{history.cryptocurrency_bought.name}}</td>
-					   			<td>{{history.executed_time}}</td>
-					   			<td>
-					   			{% if history.purchaser != None %}
-					   				sprzedane/kupione
-					   			{%endif%}
-					   			{% if history.purchaser == None and executed_time != None%}
-					   				anulowane
-					   			{%endif%}
-					   			{% if history.purchaser == None and executed_time == None%}
-					   				przeterminowane
-					   			{%endif%}
-					   			</td>
-					   			<td>{{history.amount_sold}}{{history.cryptocurrency_sold.name}} {{history.amount_bought}}{{history.cryptocurrency_bought.name}} </td>
-					   			<td>{{history.sold_price}}</td>
-					   		</tr>
-					   	{%endif%}
-					 {%endfor%}
-				</table>
-				</td>
-			</tr>
 			<tr>
 				<td> <font size="1"> <a href=""> Zmień hasło </a> </font></td>
 			</tr>

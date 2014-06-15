@@ -24,6 +24,9 @@
 });
 </script>
 
+<p id="btcGldImage"></p>
+<hr />
+
 <div id="tables">
 	<table class="form_table">
 		{% if local.request.user.is_authenticated %}
@@ -147,7 +150,7 @@
 		<td colspan="2">
 		<div align="center">
 			<h3>Historia Operacji</h3>
-		</div><div id="history_table"></div></td>
+		</div><div align="central" id="history_table"></div></td>
 	</tr>
 	</table>
 </div>
@@ -155,6 +158,6 @@
 {% endblock %}
 
 {% block header %}
-<label>BTC/GLDC</label>
+
 
 {% endblock%}

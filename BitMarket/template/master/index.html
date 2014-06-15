@@ -11,7 +11,8 @@
 	</head>
 
 	<body>
-
+	<div id="background">
+		<p id="background2">
 		<div id="top">
 			<div id="top_witaj">
 				{% if local.request.user.is_authenticated %}
@@ -24,14 +25,20 @@
 				<p id="panel_admina">
 					<a class="panel" href="/user/user">Moje konto</a>
 				</p>
+				<p id="aktywne_zlecenia">
+					<a class="panel" href="/user/open_orders">Aktywne zlecenia</a>
+				</p>
+				<p id="historia_zlecen">
+					<a class="panel" href="/user/trade_history">Historia zleceń</a>
+				</p>
 				{% else %}
 				<p id="logowanie_formularz">
 					<form method="post" action="/user/login/" id="logowanie_form">
 						<span id="logowaniePole">
-							<input name="username" type="text">
+							Login <input name="username" type="text">
 						</span>
 						<span id="passPole">
-							<input name="password" type="password">
+							Hasło <input name="password" type="password">
 						</span>
 						<input type="submit" style="display: none;" />
 					</form>
@@ -55,48 +62,48 @@
 				<ul>
 					<li>
 						<p>
-							<a href="/aboutus">About Us</a>
+							<a href="/aboutus">O Nas</a>
 						</p>
 					</li>
 					<li>
 						<p>
-							<a href="/market">Market</a>
+							<a href="/market">Kryptowaluty</a>
 						</p>
 					</li>
 					<li>
 						<p>
-							<a href="/contact">Contact</a>
+							<a href="/contact">Kontakt</a>
 						</p>
 					</li>
 				</ul>
 			</div>
 
 			<div id="main2">
+				
 				<div id="news">
 					{% block content %}
+					<p id="newsImage"></p>
+					<hr />
 					{% if latest_news_list %}
 					{% for news in latest_news_list %}
 					<h2 class="tytul">{{ news.tytul }}</h2>
 					<p class="kategoria">
-						kategoria: <strong class="czerwony">{{ news.kategoria }}</strong>
+					Kategoria: <strong class="niebieski">{{ news.kategoria }}</strong> dodano: <strong class="niebieski">{{ news.pub_date }} </strong>przez: <strong class="niebieski">{{ news.autor }}</strong>
 					</p>
-					<p class="tresc"><img width="618" height="400" class="obrazekNews" src="{{ STATIC_URL }}/static/{{ news.obrazek }}"/>{{ news.text }}
+					<img class="obrazekNews" src="{{ STATIC_URL }}{{ news.obrazek }}"/>
+					<p class="tresc">{{ news.text }}
 					</p>
 					<br/>
-					<p class="newsInfo">
-						dodano: <strong class="czerwony">{{ news.pub_date }} </strong>przez: <strong class="czerwony">{{ news.autor }}</strong><strong class="czerwony"></strong>
-					</p>
 
-					<br/>
-					<br/>
-					<br/>
-					<br/>
+					<hr />
 					{% endfor %}
 					{% else %}
-					<h2 class="tytul">Nie ma newsow do wyswietlenia.</h2>
+					<h2 class="tytul">Brak nowych wiadomości.</h2>
 					{% endif %}
 					{% endblock %}
+					
 				</div>
+				
 			</div>
 			<div id="nawigacja">
 				<p id="nawigacjaP"></p>
@@ -105,7 +112,7 @@
 					<li>
 						<a href="/user/gldc/">
 						<p>
-							BTC/GLDC
+							BTC/GLD
 						</p></a>
 					</li>
 					<li>
@@ -116,11 +123,21 @@
 					</li>
 				</ul>
 				{% endblock %}
+				<p id="chatNawigacja"></p>
+				<div id="chatFormat">
+					<p>Hello world!</p>
+				</div>
+				<p id="networkConnect"></p>
+				<div id="networkFormat">
+					<p>Join us on Facebook!</p>
+				</div>
 			</div>
+			
 		</div>
 		<div id="down"></div>
 
 		<div id="footer"></div>
-
+		</p>
+		</div>
 	</body>
 </html>

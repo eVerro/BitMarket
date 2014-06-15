@@ -8,10 +8,10 @@
 
 <div>
 	{% if confirm == True  %}
-		Gratulacje {{user.username}}, udało się Tobie potwierdzić swoje konto mail. Teraz możesz się zalogować.
+		<h2 align="center">Gratulacje {{user.username}}, udało się Tobie potwierdzić swoje konto mail. Teraz możesz się zalogować.</h2>
 	{% endif %}
 	{% if confirm == False  %}
-		Wysłany kod w linku jest niepoprawny.
+		<h2 align="center">Wysłany kod w linku jest niepoprawny.</h2>
 	{% endif %}
 </div>
 {% endblock %}

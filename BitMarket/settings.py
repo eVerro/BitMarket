@@ -63,8 +63,8 @@ STATICFILES_DIRS = (
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
 # MEDIA_ROOT = 'C:/Users/Karol/Documents/Aptana Studio 3 Workspace/BitMarket/BitMarket/static'
-MEDIA_ROOT = os.path.join(ROOT_PATH, 'newsImage')
-upload_to = 'newsImage'
+MEDIA_ROOT = os.path.join(ROOT_PATH, 'media')
+upload_to = 'image'
 
 
 

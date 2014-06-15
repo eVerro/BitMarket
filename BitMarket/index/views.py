@@ -50,14 +50,27 @@ def ltc_view(request):
 
 def user(request):
     wallets = UserWallet.objects.filter(user=request.user)
-    userproxy=UserProxy.objects.get(id=request.user.id)
-    userhistories = UserProxy.getCommissionHistory( userproxy, sort=None)
     local = locals()
     return render_to_response('user/user.html', {'local': local})
 
 def cancel(request, cancel):
-    com = Commission.objects.filter(id=cancel)[0].delete()
-    return render_to_response('user/user.html', {'local': locals()})
+    user = UserProxy.objects.get(id=request.user.id)
+    coms  = Commission.objects.filter(id=cancel)
+    coms  = coms[0]
+    user.cancelCommission(coms)
+    return render_to_response('user/cancel.html', {'local': locals()})
+
+def open_orders(request):
+    userproxy=UserProxy.objects.get(id=request.user.id)
+    userhistories = UserProxy.getCommissionHistory( userproxy, sort=None)
+    local = locals()
+    return render_to_response('user/open_orders.html', {'local': local})
+
+def trade_history(request):
+    userproxy=UserProxy.objects.get(id=request.user.id)
+    userhistories = UserProxy.getCommissionHistory( userproxy, sort=None)
+    local = locals()
+    return render_to_response('user/trade_history.html', {'local': local})
 
 def login(request):
             if request.method == 'POST':
