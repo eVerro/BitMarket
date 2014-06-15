@@ -6,6 +6,8 @@ from django.utils.timezone import utc
 from wallet.models import Commission, History, Cryptocurrency, UserProxy, \
     UserWallet
 import datetime
+import random
+
 
 @dajaxice_register
 def createCommision(request, source_amount, destination_amount, source_wallet_name, destination_wallet_name, end_date):
@@ -246,4 +248,24 @@ def cancelComm(request, comm_id):
     coms  = coms[0]
     user.cancelCommission(coms)
     dajax.script('RefreshTable();')
+    return dajax.json()
+
+@dajaxice_register
+def createDepositView(request):
+    dajax = Dajax()
+    if request.user.is_authenticated():
+        withdraw_table='<table class="">'
+        withdraw_table+='<tr><td>'
+        withdraw_table+='wartosc1'
+        # tu wpisz jakies wartosci
+        withdraw_table+='</td><td>'
+        withdraw_table+='wartosc2'
+        withdraw_table+='</td><tr>'
+        withdraw_table+='<tr><td>'
+        withdraw_table+=str(random.randint(0,100))
+        # tu wpisz jakies wartosci
+        withdraw_table+='</td><td>'
+        withdraw_table+=str(random.randint(0,100))
+        withdraw_table+='</td><tr>'
+        dajax.assign('#deposit_view', 'innerHTML', withdraw_table)
     return dajax.json()
