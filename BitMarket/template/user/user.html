@@ -43,7 +43,7 @@ $(document).ready(function() {
 					   <td>{{wallet.cryptocurrency.name}}:</td>
 					   <td>{{wallet.account_balance}}</td>
 					   <!-- <td><input type="submit" value="wpłać na giełdę" id="wp" /> <input type="submit" value="wypłać z giełdy" id="wyp"/></td> -->
-					   <td><a class="various" data-fancybox-type="iframe" href="/user/deposit">Wpłać</a> <a class="various" data-fancybox-type="iframe" href="/user/withdraw">Wypłać</a></td>
+					   <td><a class="various" data-fancybox-type="iframe" href="/user/deposit/{{wallet.cryptocurrency.name}}">Wpłać</a> <a class="various" data-fancybox-type="iframe" href="/user/withdraw/{{wallet.cryptocurrency.name}}">Wypłać</a></td>
 					 </tr>
 					 {%endfor%}
 				</table>
