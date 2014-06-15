@@ -3,12 +3,18 @@
 {% block content %}
 
 <link rel="stylesheet" href="{{ STATIC_URL }} /static/css/table.css" />
+<script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/OpenOrders.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		RefreshTable();
+	});
+</script>
 
-{% if local.request.user.is_authenticated %}
 <p id="openOrdersImage"></p>
 <hr />
-
-<p class="tresc">
+<div align="center" id="msg_label"></div>
+<div id="open_orders_table"></div>
+<!-- <p class="tresc">
 	<div id="active"></div>
 	<table class="konto">
 		<tr>
@@ -28,6 +34,6 @@
 			{%endif%}
 		{%endfor%}
 	</table>
-</p>
-{% endif %} 
+</p> -->
+
 {% endblock %}

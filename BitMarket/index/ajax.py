@@ -21,7 +21,57 @@ def createCommision(request, source_amount, destination_amount, source_wallet_na
     except:
         dajax.script("show_err();")
     return dajax.json()
+   
+@dajaxice_register
+def createOpenOrders(request):
+    dajax = Dajax()
+    open_orders_table='<table class="open_orders">'
+    open_orders_table+='<thead><tr><th>Data wygaśnięcia</th><th>Akcja</th><th>Market</th><th>Cena(BTC)</th><th>Ilość</th><th>Razem(BTC)</th><th></th>'
+    open_orders_table+='</tr></thead>'
+    userproxy = UserProxy.objects.get(id=request.user.id)
+    userhistories = UserProxy.getCommissionHistory( userproxy, sort="create_time")
+    
+    for comm in userhistories:
+        if(comm.commission_id is not None):
+            open_orders_table+='<tr><td>'
+            open_orders_table+=str(comm.executed_time)
+            open_orders_table+='</td><td>'
+            if(comm.cryptocurrency_sold.name == 'BTC'):
+                open_orders_table+='Sprzedaż'
+            else:
+                open_orders_table+='Kupno'
+            open_orders_table+='</td><td>'
+            if(comm.cryptocurrency_sold.name == 'LTC' or comm.cryptocurrency_bought.name == 'LTC'):
+                open_orders_table+='BTC/LTC'
+            else:
+                open_orders_table+='BTC/GLD'
+            open_orders_table+='</td><td>'
+            if(comm.cryptocurrency_sold.name == 'BTC'):
+                open_orders_table+=str(format(Decimal(comm.sold_price),'.10f'))
+                open_orders_table+='</td><td>'
+                open_orders_table+=str(format(Decimal(comm.amount_bought),'.10f'))
+                open_orders_table+=' '+str(comm.cryptocurrency_bought.name)
+                open_orders_table+='</td><td>'
+                open_orders_table+=str(format(Decimal(comm.amount_sold),'.10f'))
+                open_orders_table+='</td>'
+            else:
+                open_orders_table+=str(format(Decimal(comm.bought_price),'.10f'))
+                open_orders_table+='</td><td>'
+                open_orders_table+=str(format(Decimal(comm.amount_sold),'.10f'))
+                open_orders_table+=' '+str(comm.cryptocurrency_sold.name)
+                open_orders_table+='</td><td>'
+                open_orders_table+=str(format(Decimal(comm.amount_bought),'.10f'))
+                open_orders_table+='</td>'
+            open_orders_table+='<td>'
+            open_orders_table+='<button onclick="cancelCommission('+str(comm.commission_id)+')">Anuluj</button>'
+            open_orders_table+='</td></tr>'
+    open_orders_table+='</table>'
+    dajax.assign('#open_orders_table', 'innerHTML', open_orders_table)
+    return dajax.json()
 
+@dajaxice_register
+def createCommissionsHistory(request):
+    return None
 
 @dajaxice_register
 def realizeCommision(request, comm_id):
@@ -156,4 +206,5 @@ def cancelComm(request, comm_id):
     coms  = Commission.objects.filter(id=comm_id)
     coms  = coms[0]
     user.cancelCommission(coms)
+    dajax.script('RefreshTable();')
     return dajax.json()
