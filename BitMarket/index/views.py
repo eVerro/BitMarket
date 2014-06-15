@@ -24,6 +24,13 @@ def aboutus(request):
         local = locals()
         return render_to_response('aboutus/aboutus.html', {'local': local})
     
+def deposit(request):
+        local = locals()
+        return render_to_response('user/deposit.html', {'local': local})
+    
+def withdraw(request):
+        local = locals()
+        return render_to_response('user/withdraw.html', {'local': local})
     
 def market(request):
         local = locals()

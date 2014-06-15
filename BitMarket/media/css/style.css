@@ -523,6 +523,20 @@ a img { border: none;}
 }
 
 
+.konto a{
+	display: block;
+	padding: 5px 16px 10px; 
+	color: #7a8090; 
+	font: bold 1.0em tahoma, verdana, arial, sans-serif;
+	text-decoration: none;
+}
+
+.konto a:hover{
+	color: #ffffff;
+}
+
+
+
 /*#right_table{
 	margin-right: 10px;
 	margin-bottom: 10px;

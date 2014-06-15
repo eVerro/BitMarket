@@ -1,6 +1,25 @@
 {% extends "master/index.html" %}
 {% block content %}
 <link rel="stylesheet" href="{{ STATIC_URL }} /static/css/table.css" />
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }} /static/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+<link rel="stylesheet" href="{{ STATIC_URL }} /static/fancybox/source/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
+<script type="text/javascript" src="{{ STATIC_URL }} /static/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+<script>
+$(document).ready(function() {
+	$(".various").fancybox({
+		maxWidth	: 800,
+		maxHeight	: 600,
+		fitToView	: false,
+		width		: '70%',
+		height		: '70%',
+		autoSize	: false,
+		closeClick	: false,
+		openEffect	: 'none',
+		closeEffect	: 'none'
+	});
+});
+</script>
 	{% if local.request.user.is_authenticated %}
 <p id="userImage"></p>
 <hr />
@@ -23,7 +42,8 @@
 					 <tr>
 					   <td>{{wallet.cryptocurrency.name}}:</td>
 					   <td>{{wallet.account_balance}}</td>
-					   <td><input type="submit" value="wpłać na portfel" id="wp"/> <input type="submit" value="wypłać z portfela" id="wyp"/></td>
+					   <!-- <td><input type="submit" value="wpłać na giełdę" id="wp" /> <input type="submit" value="wypłać z giełdy" id="wyp"/></td> -->
+					   <td><a class="various" data-fancybox-type="iframe" href="/user/deposit">Wpłać</a> <a class="various" data-fancybox-type="iframe" href="/user/withdraw">Wypłać</a></td>
 					 </tr>
 					 {%endfor%}
 				</table>
