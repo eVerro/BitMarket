@@ -209,6 +209,25 @@ class UserProxy(User):
             return History.objects.extra(where=['(purchaser_id is %s or seller_id is %s)'], params=[self.id, self.id])
         return History.objects.extra(where=['(purchaser_id is %s or seller_id is %s)'], params=[self.id, self.id], order_by=[sort])
         
+    
+    def getCommissions(self, sort=None):
+        """
+        W parametrach można podać nazwy albo obiekty Cryptocurrency
+        można sortować po:
+        source_wallet
+        destination_wallet 
+        source_amount 
+        destination_amount 
+        time_limit
+        source_price
+        destination_price 
+        """
+        if(sort==None):
+            return Commission.objects.extra(where=["(source_wallet_id in (Select id from wallet_userwallet where user_id == %s))"], 
+                                            params=[self.id])
+        return Commission.objects.extra(where=["(source_wallet_id in (Select id from wallet_userwallet where user_id == %s))"], 
+                                            params=[self.id], order_by=[sort])
+        
     def withdraw(self, wallet, wallet_address, amount):
         """
         @param UserWallet : wallet
@@ -619,7 +638,11 @@ class UserWallet(models.Model):
 #        @note: Ustawia klasę UserWallet jako klasa abstrakcyjna
 #        """
 #        abstract = True
-
+class AdminWallets():
+    def takeProvision(self, commission):
+        """
+        Przesyla pieniadze dla administratora.
+        """
 
 class PLNWallet(UserWallet):
     """
