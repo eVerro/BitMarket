@@ -97,7 +97,11 @@ def createTable(request, left_currency, right_currency):
     right_table+='<thead><tr><th>Cena('+str(left_currency)+')</th><th>'+str(right_currency)+'</th><th>Razem('+str(left_currency)+')</th>'
     right_table+='<th></th>'
     right_table+='</tr></thead>'
+<<<<<<< HEAD
     for comm in Commission.getCommissions(cryptocurrency_sold=right_currency,cryptocurrency_bought=left_currency, sort='destination_price'):
+=======
+    for comm in Commission.getCommissions(cryptocurrency_sold=left_currency,cryptocurrency_bought=right_currency, sort='destination_price'):
+>>>>>>> origin/master
         right_table+='<tr>'
         right_table+='<td>'
         right_table+=str(format(Decimal(comm.destination_price),'.10f'))
@@ -144,8 +148,13 @@ def createTable(request, left_currency, right_currency):
         history_table+='</td>'
         history_table+='</tr>'
     history_table+='</table>'
+<<<<<<< HEAD
     dajax.assign('#history_table', 'innerHTML',history_table)  
     
     dajax.script('scrollRefresh();')
     
+=======
+    dajax.assign('#history_table', 'innerHTML',history_table)    
+    dajax.script('scrollRefresh();')  
+>>>>>>> origin/master
     return dajax.json()

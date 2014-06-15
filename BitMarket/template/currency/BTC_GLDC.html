@@ -9,19 +9,20 @@
 <script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/decimal.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/datepicker/zebra_datepicker.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/jquery.timepicker.min.js"></script>
-<script type="text/javascript">$(document).ready(function(){
-	AutoRefreshWallet('BTC', 'GLDC');
-	$('#datepicker_L').Zebra_DatePicker();
-	$('#datepicker_R').Zebra_DatePicker();
-	$('#timepicker_L').timepicker({ 
-		'timeFormat': 'H:i:s', 
-		'step': 5
+<script type="text/javascript">
+	$(document).ready(function() {
+		AutoRefreshWallet('BTC', 'GLDC');
+		$('#datepicker_L').Zebra_DatePicker();
+		$('#datepicker_R').Zebra_DatePicker();
+		$('#timepicker_L').timepicker({
+			'timeFormat' : 'H:i:s',
+			'step' : 5
 		});
-	$('#timepicker_R').timepicker({ 
-		'timeFormat': 'H:i:s', 
-		'step': 5
+		$('#timepicker_R').timepicker({
+			'timeFormat' : 'H:i:s',
+			'step' : 5
 		});
-});
+	}); 
 </script>
 
 <p id="btcGldImage"></p>
@@ -30,134 +31,135 @@
 <div id="tables">
 	<table class="form_table">
 		{% if local.request.user.is_authenticated %}
-		<tr><td align="center" colspan="2"><label id="msg_label"></label></td></tr>
+		<tr>
+			<td align="center" colspan="2"><label id="msg_label"></label></td>
+		</tr>
 		<tr>
 			<td align="center">
-			
-				<table>
-					<tr>
-						<td colspan="2">
-						<div align="center">
-							<h3>Zlecenie kupna GLDC za BTC:</h3>
-						</div></td>
-					</tr>
-					<tr>
-						<td><label>Ilość GLDC:</label></td><td>
-						<input type="number" id="First_Amount_L" name="BTC_amount" onkeyup="validate('L');" onkeypress="return isNumberKey(event);"/>
-						</td>
-					</tr>
-					<tr>
-						<td><label>Cena za 1 GLDC (w BTC):</label></td><td>
-						<input type="number" id="Second_Amount_L" name="GLDC_amount" onkeyup="validate('L');" onkeypress="return isNumberKey(event);"/>
-						</td>
-					</tr>
-					
-					<tr>
-						<td><label>Data ukonczenia:</label></td>
-						<td> <input type="text" id="datepicker_L"></td>
-					</tr>
-					<tr>
-						<td><label>Godzina ukonczenia:</label></td>
-						<td> <input type="text" id="timepicker_L"></td>
-					</tr>
-					
-					<tr>
-						<td><label>Razem(BTC):</label></td>
-						<td align="right"><label id="total_L">0.0000000000</label></td>
-					</tr>
-					<tr>
-						<td><label>Prowizja(0.25%):</label></td>
-						<td align="right"><label id="provision_L">0.0000000000</label></td>
-					</tr>
-					<tr>
-						<td><label>Razem(BTC) po prowizji:</label></td>
-						<td align="right"><label id="after_provision_L">0.0000000000</label>
-							
-						</td>
-					</tr>
-					<tr>
-						<td colspan="2" align="right">
-							<button class="sub_button" onclick="createCommission('buy','BTC','GLDC');" >Wystaw</button>
-						</td>
-					</tr>
-				</table>
-				
-			</td>
+			<table>
+				<tr>
+					<td colspan="2">
+					<div align="center">
+						<h3>Zlecenie kupna GLD za BTC:</h3>
+					</div></td>
+				</tr>
+				<tr>
+					<td><label>Ilość GLD:</label></td><td>
+					<input type="number" id="First_Amount_L" onkeyup="validate('L');" onkeypress="return isNumberKey(event);"/>
+					</td>
+				</tr>
+				<tr>
+					<td><label>Cena za 1 GLD (w BTC):</label></td><td>
+					<input type="number" id="Second_Amount_L" onkeyup="validate('L');" onkeypress="return isNumberKey(event);"/>
+					</td>
+				</tr>
+
+				<tr>
+					<td><label>Data ukonczenia:</label></td>
+					<td>
+					<input type="text" id="datepicker_L">
+					</td>
+				</tr>
+				<tr>
+					<td><label>Godzina ukonczenia:</label></td>
+					<td>
+					<input type="text" id="timepicker_L">
+					</td>
+				</tr>
+
+				<tr>
+					<td><label>Razem(BTC):</label></td>
+					<td align="right"><label id="total_L">0.0000000000</label></td>
+				</tr>
+				<tr>
+					<td><label>Prowizja(0.25%):</label></td>
+					<td align="right"><label id="provision_L">0.0000000000</label></td>
+				</tr>
+				<tr>
+					<td><label>Razem(BTC) po prowizji:</label></td>
+					<td align="right"><label id="after_provision_L">0.0000000000</label></td>
+				</tr>
+				<tr>
+					<td colspan="2" align="right">
+					<button class="sub_button" onclick="createCommission('buy','BTC','GLDC');" >
+						Wystaw
+					</button></td>
+				</tr>
+			</table></td>
 			<td align="center">
-				
-				<table>
-					<tr>
-						<td colspan="2">
-						<div align="center">
-							<h3>Zlecenie sprzedaży GLDC za BTC:</h3>
-						</div></td>
-					</tr>
-					<tr>
-						<td><label>Ilość GLDC:</label></td><td>
-						<input type="number" id="First_Amount_R" name="BTC_amount" onkeyup="validate('R');" onchange="validate('R');" onkeypress="return isNumberKey(event);"/>
-						</td>
-					</tr>
-					<tr>
-						<td><label>Cena za 1 GLDC (w BTC):</label></td><td>
-						<input type="number" id="Second_Amount_R" name="GLDC_amount" onkeyup="validate('R');" onkeypress="return isNumberKey(event);"/>
-						</td>
-					</tr>
-					<tr>
-						<td><label>Data ukonczenia:</label></td>
-						<td> <input type="text" id="datepicker_R"></td>
-					</tr>
-					<tr>
-						<td><label>Godzina ukonczenia:</label></td>
-						<td> <input type="text" id="timepicker_R"></td>
-					</tr>
-					<tr>
-						<td><label>Razem(BTC):</label></td>
-						<td align="right"><label id="total_R">0.0000000000</label></td>
-					</tr>
-					<tr>
-						<td><label>Prowizja(0.25%):</label></td>
-						<td align="right"><label id="provision_R">0.0000000000</label></td>
-					</tr>
-					<tr>
-						<td><label>Razem(BTC) po prowizji:</label></td>
-						<td align="right"><label id="after_provision_R">0.0000000000</label>
-							
-						</td>
-					</tr>
-					<tr>
-						<td colspan="2" align="right">
-							<button class="sub_button" onclick="createCommission('sell','BTC','GLDC');" >Wystaw</button>
-						</td>
-					</tr>
-				</table>
-				
-			</td>
-	</tr>
+			<table>
+				<tr>
+					<td colspan="2">
+					<div align="center">
+						<h3>Zlecenie sprzedaży GLD za BTC:</h3>
+					</div></td>
+				</tr>
+				<tr>
+					<td><label>Ilość GLD:</label></td><td>
+					<input type="number" id="First_Amount_R" onkeyup="validate('R');" onchange="validate('R');" onkeypress="return isNumberKey(event);"/>
+					</td>
+				</tr>
+				<tr>
+					<td><label>Cena za 1 GLD (w BTC):</label></td><td>
+					<input type="number" id="Second_Amount_R" onkeyup="validate('R');" onkeypress="return isNumberKey(event);"/>
+					</td>
+				</tr>
+				<tr>
+					<td><label>Data ukonczenia:</label></td>
+					<td>
+					<input type="text" id="datepicker_R">
+					</td>
+				</tr>
+				<tr>
+					<td><label>Godzina ukonczenia:</label></td>
+					<td>
+					<input type="text" id="timepicker_R">
+					</td>
+				</tr>
+				<tr>
+					<td><label>Razem(BTC):</label></td>
+					<td align="right"><label id="total_R">0.0000000000</label></td>
+				</tr>
+				<tr>
+					<td><label>Prowizja(0.25%):</label></td>
+					<td align="right"><label id="provision_R">0.0000000000</label></td>
+				</tr>
+				<tr>
+					<td><label>Razem(BTC) po prowizji:</label></td>
+					<td align="right"><label id="after_provision_R">0.0000000000</label></td>
+				</tr>
+				<tr>
+					<td colspan="2" align="right">
+					<button class="sub_button" onclick="createCommission('sell','BTC','GLDC');" >
+						Wystaw
+					</button></td>
+				</tr>
+			</table></td>
+		</tr>
 		{% endif %}
-	<tr>
-		<td>
-		<div align="center">
-			<h3>Oferty Kupna</h3>
-		</div><div id="left_table"></div></td>
+		<tr>
+			<td>
+			<div align="center">
+				<h3>Oferty Sprzedaży</h3>
+			</div><div id="left_table"></div></td>
 
-		<td>
-		<div align="center">
-			<h3>Oferty Sprzedaży</h3>
-		</div><div id="right_table"></div></td>
-	</tr>
+			<td>
+			<div align="center">
+				<h3>Oferty Kupna</h3>
+			</div><div id="right_table"></div></td>
+		</tr>
 
-	<tr>
-		<td colspan="2">
-		<div align="center">
-			<h3>Historia Operacji</h3>
-		</div><div align="central" id="history_table"></div></td>
-	</tr>
+		<tr>
+			<td colspan="2">
+			<div align="center">
+				<h3>Historia Operacji</h3>
+			</div><div align="central" id="history_table"></div></td>
+		</tr>
 	</table>
 </div>
 
 {% endblock %}
 
 {% block header %}
-
 
 {% endblock%}

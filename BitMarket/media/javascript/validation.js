@@ -70,6 +70,7 @@ function show_err (){
 	$('#msg_label').html('Masz niewystarczającą ilość pieniędzy lub wpisałeś złą date .');
 	$('#msg_label').slideDown();
 	setTimeout(function(){$('#msg_label').slideUp();}, 3000);
+	recreateTable();
 }
 
 function show_msg (){
@@ -77,7 +78,7 @@ function show_msg (){
 	$('#msg_label').html('Dodano zlecenie.');
 	$('#msg_label').slideDown();
 	setTimeout(function(){$('#msg_label').slideUp();}, 3000);
-	setTimeout(function(){location.reload();}, 4000);
+	recreateTable();
 }
 
 function show_realize_msg(){
@@ -85,12 +86,12 @@ function show_realize_msg(){
 	$('#msg_label').html('Zrealizowano zlecenie');
 	$('#msg_label').slideDown();
 	setTimeout(function(){$('#msg_label').slideUp();}, 3000);
-	setTimeout(function(){location.reload();}, 4000);
-	
+	recreateTable();
 }
 function show_realize_err(){
 	$('#msg_label').css('color', 'red');
 	$('#msg_label').html('Brak Kasy');
 	$('#msg_label').slideDown();
 	setTimeout(function(){$('#msg_label').slideUp();}, 3000);	
+	recreateTable();
 }
