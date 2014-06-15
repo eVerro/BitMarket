@@ -29,42 +29,41 @@ def createOpenOrders(request):
     open_orders_table+='<thead><tr><th>Data wygaśnięcia</th><th>Akcja</th><th>Market</th><th>Cena(BTC)</th><th>Ilość</th><th>Razem(BTC)</th><th></th>'
     open_orders_table+='</tr></thead>'
     userproxy = UserProxy.objects.get(id=request.user.id)
-    userhistories = UserProxy.getCommissionHistory( userproxy, sort="create_time")
+    user_commisions = UserProxy.getCommissions( userproxy, sort="time_limit")
     
-    for comm in userhistories:
-        if(comm.commission_id is not None):
-            open_orders_table+='<tr><td>'
-            open_orders_table+=str(comm.executed_time)
+    for comm in user_commisions:
+        open_orders_table+='<tr><td>'
+        open_orders_table+=str(comm.time_limit.strftime("%Y-%m-%d %H:%M:%S"))
+        open_orders_table+='</td><td>'
+        if(comm.source_wallet.cryptocurrency.name == 'BTC'):
+            open_orders_table+='Kupno'
+        else:
+            open_orders_table+='Sprzedaż'
+        open_orders_table+='</td><td>'
+        if(comm.source_wallet.cryptocurrency.name == 'LTC' or comm.destination_wallet.cryptocurrency.name == 'LTC'):
+            open_orders_table+='BTC/LTC'
+        else:
+            open_orders_table+='BTC/GLD'
+        open_orders_table+='</td><td>'
+        if(comm.source_wallet.cryptocurrency.name == 'BTC'):
+            open_orders_table+=str(format(Decimal(comm.source_price),'.10f'))
             open_orders_table+='</td><td>'
-            if(comm.cryptocurrency_sold.name == 'BTC'):
-                open_orders_table+='Sprzedaż'
-            else:
-                open_orders_table+='Kupno'
+            open_orders_table+=str(format(Decimal(comm.destination_amount),'.10f'))
+            open_orders_table+=' '+str(comm.destination_wallet.cryptocurrency.name)
             open_orders_table+='</td><td>'
-            if(comm.cryptocurrency_sold.name == 'LTC' or comm.cryptocurrency_bought.name == 'LTC'):
-                open_orders_table+='BTC/LTC'
-            else:
-                open_orders_table+='BTC/GLD'
+            open_orders_table+=str(format(Decimal(comm.source_amount),'.10f'))
+            open_orders_table+='</td>'
+        else:
+            open_orders_table+=str(format(Decimal(comm.destination_price),'.10f'))
             open_orders_table+='</td><td>'
-            if(comm.cryptocurrency_sold.name == 'BTC'):
-                open_orders_table+=str(format(Decimal(comm.sold_price),'.10f'))
-                open_orders_table+='</td><td>'
-                open_orders_table+=str(format(Decimal(comm.amount_bought),'.10f'))
-                open_orders_table+=' '+str(comm.cryptocurrency_bought.name)
-                open_orders_table+='</td><td>'
-                open_orders_table+=str(format(Decimal(comm.amount_sold),'.10f'))
-                open_orders_table+='</td>'
-            else:
-                open_orders_table+=str(format(Decimal(comm.bought_price),'.10f'))
-                open_orders_table+='</td><td>'
-                open_orders_table+=str(format(Decimal(comm.amount_sold),'.10f'))
-                open_orders_table+=' '+str(comm.cryptocurrency_sold.name)
-                open_orders_table+='</td><td>'
-                open_orders_table+=str(format(Decimal(comm.amount_bought),'.10f'))
-                open_orders_table+='</td>'
-            open_orders_table+='<td>'
-            open_orders_table+='<button onclick="cancelCommission('+str(comm.commission_id)+')">Anuluj</button>'
-            open_orders_table+='</td></tr>'
+            open_orders_table+=str(format(Decimal(comm.source_amount),'.10f'))
+            open_orders_table+=' '+str(comm.source_wallet.cryptocurrency.name)
+            open_orders_table+='</td><td>'
+            open_orders_table+=str(format(Decimal(comm.destination_amount),'.10f'))
+            open_orders_table+='</td>'
+        open_orders_table+='<td>'
+        open_orders_table+='<button onclick="cancelCommission('+str(comm.id)+')">Anuluj</button>'
+        open_orders_table+='</td></tr>'
     open_orders_table+='</table>'
     dajax.assign('#open_orders_table', 'innerHTML', open_orders_table)
     return dajax.json()
