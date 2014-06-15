@@ -148,10 +148,10 @@ def createTable(request, left_currency, right_currency):
     return dajax.json()
 
 @dajaxice_register
-def cancelCom(request, com_id):
+def cancelComm(request, comm_id):
     dajax = Dajax()
     user = UserProxy.objects.get(id=request.user.id)
-    coms  = Commission.objects.filter(id=com_id)
+    coms  = Commission.objects.filter(id=comm_id)
     coms  = coms[0]
     user.cancelCommission(coms)
     return dajax.json()
