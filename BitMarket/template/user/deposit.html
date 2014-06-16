@@ -1,57 +1,49 @@
-<script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/jquery.ba-serializeobject.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/jquery.dajax.core.js"></script>
-{% load dajaxice_templatetags %}
-{% dajaxice_js_import %}
-<script type="text/javascript">
-function AutoRefresh(wallet) {
-	Dajaxice.BitMarket.index.createDepositView(Dajax.process,{'wallet': wallet});
-
-	var refresh_rate = 20;
-	var last_user_action = 0;
-	var has_focus = false;
-
-	
-
-	function reset() {
-		last_user_action = 0;
-	}
-
-	function windowHasFocus() {
-		has_focus = true;
-	}
-
-	function windowLostFocus() {
-		has_focus = false;
-	}
-
-	setInterval(function() {
-		last_user_action++;
-		refreshCheck();
-	}, 1000);
-
-	function refreshCheck() {
-		var focus = window.onfocus;
-		if (last_user_action >= refresh_rate && document.readyState == "complete") {
-
-			Dajaxice.BitMarket.index.createDepositView(Dajax.process,{'wallet': wallet});
-			reset();
-
-		}
-
-	}
-
-
-	window.addEventListener("focus", windowHasFocus, false);
-	window.addEventListener("blur", windowLostFocus, false);
-	window.addEventListener("click", reset, false);
-	window.addEventListener("mousemove", reset, false);
-	window.addEventListener("keypress", reset, false);
+{% if local.request.user.is_authenticated %}
+<style>
+#depositWithdraw {
+	padding-left: 11px;
+	padding-right: 11px;
+	margin-top: 30px;
+	color: #333366; 
+	font: 1.0em tahoma,verdana, arial, sans-serif;
+	text-decoration: none;
 }
 
-$(document).ready(function(){
-	AutoRefresh($('#wallet_name').html());
-	});
+#depositWithdraw #adresPortfela {
+	padding: 11px 20px 10px; 
+	color: #3399cc; 
+	font: bold 2.0em tahoma,verdana, arial, sans-serif;
+	text-decoration: none;
+}
+
+#depositWithdraw a{
 	
-</script>
-<label id="wallet_name" style="display: none;">{{local.wallet}}</label>
-<div id="deposit_view"></div>
+	color: #333366; 
+	font: bold 1.0em tahoma, verdana, arial, sans-serif;
+	text-decoration: none;
+}
+
+#depositWithdraw a:hover{
+	color: #7a8090; 
+}
+
+
+#depositWithdraw .amount{
+	
+	color: #3399cc; 
+	font: bold 1.2em tahoma, verdana, arial, sans-serif;
+	text-decoration: none;
+}
+
+</style>
+
+
+<div id="depositWithdraw">
+	<p>Jeżeli chcesz wpłacić <strong class="wallet">{{local.wallet}}</strong> na swoje konto, wyślij je na adres:</p>
+	<div id="adresPortfela">{{local.accountAddresses}}</div>
+	<p>Jeśli wpłaciłeś środki na podany wyżej adres, kliknij <a href="/user/deposit/{{local.wallet}}">Potwierdź</a></p>
+	<p>Wpłaciłeś <strong class="amount">{{local.amount}}</strong> na swoje konto.</p>
+	<p>Operacja może potrwać kilka minut, w zależności od kryptowaluty.</p>
+</div>
+
+{% endif %} 

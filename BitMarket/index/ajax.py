@@ -260,22 +260,3 @@ def cancelComm(request, comm_id):
     dajax.script('RefreshTable();')
     return dajax.json()
 
-@dajaxice_register
-def createDepositView(request, wallet):
-    dajax = Dajax()
-    if request.user.is_authenticated():
-        withdraw_table='<table class="">'
-        withdraw_table+='<tr><td>'
-        withdraw_table+=str(wallet)
-        # tu wpisz jakies wartosci
-        withdraw_table+='</td><td>'
-        withdraw_table+='wartosc2'
-        withdraw_table+='</td><tr>'
-        withdraw_table+='<tr><td>'
-        withdraw_table+=str(random.randint(0,100))
-        # tu wpisz jakies wartosci
-        withdraw_table+='</td><td>'
-        withdraw_table+=str(random.randint(0,100))
-        withdraw_table+='</td><tr>'
-        dajax.assign('#deposit_view', 'innerHTML', withdraw_table)
-    return dajax.json()
