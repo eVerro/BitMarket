@@ -485,7 +485,7 @@ class UserWallet(models.Model):
     user = models.ForeignKey(User, blank=False, unique=False)
     account_balance = models.DecimalField(max_digits=32, decimal_places=16, blank=False)
     cryptocurrency = models.ForeignKey(Cryptocurrency, blank=False, unique=False)
-    code = models.CharField(max_length="64", blank=True, unique=False)
+    code = models.IntegerField(max_length="64", blank=True, unique=False, null=True)
 
     def __unicode__(self):
         return 'Portfel %s użytkownika %s posiadający %s' % (self.cryptocurrency.name, self.user.username, self.account_balance)
