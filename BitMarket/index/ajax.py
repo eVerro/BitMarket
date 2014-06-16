@@ -214,7 +214,7 @@ def createTable(request, left_currency, right_currency):
     history_table+='</tr></thead>'
     left_curr_object = Cryptocurrency.objects.filter(name = left_currency)[0]
     right_curr_object = Cryptocurrency.objects.filter(name = right_currency)[0]
-    for comm_history in History.getExchangeHistory(left_curr_object, right_curr_object, 'executed_time'):
+    for comm_history in History.getExchangeHistory(left_curr_object, right_curr_object, 'executed_time').reverse():
         history_table+='<tr>'
         history_table+='<td>'
         history_table+=str(comm_history.executed_time.strftime("%Y-%m-%d %H:%M:%S"))
