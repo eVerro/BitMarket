@@ -228,7 +228,7 @@ class UserProxy(User):
         return Commission.objects.extra(where=["(source_wallet_id in (Select id from wallet_userwallet where user_id == %s))"], 
                                             params=[self.id], order_by=[sort])
         
-    def withdraw(self, wallet, wallet_address, amount):
+    def withdraw(self, wallet, wallet_address=None, amount=None):
         """
         @param UserWallet : wallet
         @param String : wallet_address
