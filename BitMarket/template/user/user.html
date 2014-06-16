@@ -25,15 +25,11 @@
 <p id="userImage"></p>
 <hr />
 
-<div id="konto">
-	<br>
-	<font size=4> Konto użytkownika {{local.request.user.username}}</font>
-</div>
 <div align="center">
 	<table>
 		<tr>
 			<td style="vertical-align: baseline;" align="center" >
-			<table class="konto" style="margin-right: 100px;" >
+			<table class="konto">
 				<tr>
 					<th>Portfel</th>
 					<th>Wartość</th>
@@ -48,9 +44,9 @@
 				</tr>
 				{%endfor%}
 			</table></td>
-			<td style="vertical-align: baseline;" align="center">
+			<td style="vertical-align: baseline; " align="center">
 				<label id="email_msg"></label><br/>
-				<table>
+				<table class="changeTable" >
 					<tr >
 						<th colspan="2" >Zmiana adresu email:</th>
 					</tr>
@@ -74,7 +70,7 @@
 					</tr>
 				</table><br/>
 				<label id="pass_msg"></label><br/>
-				<table>
+				<table class="changeTable" >
 					<tr >
 						<th colspan="2" >Zmiana hasła:</th>
 					</tr>

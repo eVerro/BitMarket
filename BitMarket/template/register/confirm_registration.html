@@ -6,12 +6,12 @@
 
 {% block content %}
 
-<div>
+<div class="registerMsg" align="center">
 	{% if confirm == True  %}
-		<h2 align="center">Gratulacje {{user.username}}, udało się Tobie potwierdzić swoje konto mail. Teraz możesz się zalogować.</h2>
+		<label >Gratulacje {{user.username}}, udało się Tobie potwierdzić swoje konto mail. Teraz możesz się zalogować.</label>
 	{% endif %}
 	{% if confirm == False  %}
-		<h2 align="center">Wysłany kod w linku jest niepoprawny.</h2>
+		<label >Wysłany kod w linku jest niepoprawny.</label>
 	{% endif %}
 </div>
 {% endblock %}

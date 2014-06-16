@@ -535,7 +535,10 @@ a img { border: none;}
 	color: #ffffff;
 }
 
-
+.registerMsg{
+	margin: 10px;
+	font-size: x-large;
+}
 
 /*#right_table{
 	margin-right: 10px;

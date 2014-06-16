@@ -491,3 +491,13 @@ em {
 	
 	background: #777777;
 }
+
+.changeTable{
+	margin-left: 100px;
+}
+
+.changeTable label{
+	color: #333366; 
+	font: 1.3em tahoma,verdana, arial, sans-serif;
+	text-decoration: none;
+}
