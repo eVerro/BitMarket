@@ -168,12 +168,12 @@ def createTable(request, left_currency, right_currency):
     for comm in Commission.getCommissions(cryptocurrency_sold=left_currency,cryptocurrency_bought=right_currency, sort='source_price').reverse():
         left_table+='<tr>'
         left_table+='<td>'
-        left_table+=str(format(Decimal(comm.source_price),'.10f'))
+        left_table+=foramt_decimal(comm.source_price,8)
         left_table+='</td>'
         left_table+='<td>' 
-        left_table+=str(format(Decimal(comm.destination_amount),'.10f'))
+        left_table+=foramt_decimal(comm.destination_amount,8)
         left_table+='</td><td>'
-        left_table+=str(format(Decimal(comm.source_amount),'.10f'))
+        left_table+=foramt_decimal(comm.source_amount,8)
         left_table+='</td>'
         if request.user.is_authenticated():
             left_table+='<td><button onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Sprzedaj</button></td>'
@@ -191,12 +191,12 @@ def createTable(request, left_currency, right_currency):
     for comm in Commission.getCommissions(cryptocurrency_sold=right_currency,cryptocurrency_bought=left_currency, sort='destination_price'):
         right_table+='<tr>'
         right_table+='<td>'
-        right_table+=str(format(Decimal(comm.destination_price),'.10f'))
+        right_table+=foramt_decimal(comm.destination_price,8)
         right_table+='</td>'
         right_table+='<td>'
-        right_table+=str(format(Decimal(comm.source_amount),'.10f'))
+        right_table+=foramt_decimal(comm.source_amount,8)
         right_table+='</td><td>'
-        right_table+=str(format(Decimal(comm.destination_amount),'.10f'))
+        right_table+=foramt_decimal(comm.destination_amount,8)
         right_table+='</td>'
         if request.user.is_authenticated():
             right_table+='<td><button onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Kup</button></td>'
@@ -214,7 +214,7 @@ def createTable(request, left_currency, right_currency):
     history_table+='</tr></thead>'
     left_curr_object = Cryptocurrency.objects.filter(name = left_currency)[0]
     right_curr_object = Cryptocurrency.objects.filter(name = right_currency)[0]
-    for comm_history in History.getExchangeHistory(left_curr_object, right_curr_object):
+    for comm_history in History.getExchangeHistory(left_curr_object, right_curr_object, 'executed_time'):
         history_table+='<tr>'
         history_table+='<td>'
         history_table+=str(comm_history.executed_time.strftime("%Y-%m-%d %H:%M:%S"))
@@ -226,12 +226,15 @@ def createTable(request, left_currency, right_currency):
             history_table+='Kupno'
         history_table+='</td>'
         history_table+='<td>'
-        history_table+=str(format(Decimal(comm_history.amount_bought)/Decimal(comm_history.amount_sold),'.10f'))
+        if comm_history.cryptocurrency_sold.name == left_currency:
+            history_table+=foramt_decimal(comm_history.sold_price,8)
+        else:
+            history_table+=foramt_decimal(comm_history.bought_price,8)
         history_table+='</td>'
         history_table+='<td>' 
-        history_table+=str(comm_history.amount_sold) 
+        history_table+=foramt_decimal(comm_history.amount_sold,8)
         history_table+='</td><td>'
-        history_table+=str(comm_history.amount_bought) 
+        history_table+=foramt_decimal(comm_history.amount_bought,8) 
         history_table+='</td>'
         history_table+='</tr>'
     history_table+='</table>'
@@ -239,6 +242,13 @@ def createTable(request, left_currency, right_currency):
     
     dajax.script('scrollRefresh();')
     return dajax.json()
+
+def foramt_decimal(decimal, digits_count):
+    if(decimal.adjusted()<0):
+        d = digits_count
+    else:
+        d = digits_count - decimal.adjusted()
+    return ("{:0<%ss}" % digits_count).format(("{:.%sf}" % d).format(decimal))
 
 @dajaxice_register
 def cancelComm(request, comm_id):
