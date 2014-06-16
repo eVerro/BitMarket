@@ -15,12 +15,18 @@ em {
 	text-align: left;
 }
 
+#right_wallet,#left_wallet{
+	color: green;
+	
+}
+
 .sub_button{
 	background: url(http://jackrugile.com/images/misc/noise-diagonal.png), linear-gradient(#777, #444);
 	color: aliceblue;
 	border-right: 1px solid #777;
 	border-top: 1px solid #555;
 	border-bottom: 1px solid #333;
+	border-left: 1px solid #555;
 }
 
 .form_table{

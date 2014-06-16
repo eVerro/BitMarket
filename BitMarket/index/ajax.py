@@ -64,7 +64,7 @@ def createOpenOrders(request):
             open_orders_table+=str(format(Decimal(comm.destination_amount),'.10f'))
             open_orders_table+='</td>'
         open_orders_table+='<td>'
-        open_orders_table+='<button onclick="cancelCommission('+str(comm.id)+')">Anuluj</button>'
+        open_orders_table+='<button class="sub_button" onclick="cancelCommission('+str(comm.id)+')">Anuluj</button>'
         open_orders_table+='</td></tr>'
     open_orders_table+='</table>'
     dajax.assign('#open_orders_table', 'innerHTML', open_orders_table)
@@ -176,7 +176,7 @@ def createTable(request, left_currency, right_currency):
         left_table+=foramt_decimal(comm.source_amount,8)
         left_table+='</td>'
         if request.user.is_authenticated():
-            left_table+='<td><button onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Sprzedaj</button></td>'
+            left_table+='<td><button class="sub_button" onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Sprzedaj</button></td>'
         left_table+='</tr>'
     left_table+='</table>'
     dajax.assign('#left_table', 'innerHTML',left_table)
@@ -199,7 +199,7 @@ def createTable(request, left_currency, right_currency):
         right_table+=foramt_decimal(comm.destination_amount,8)
         right_table+='</td>'
         if request.user.is_authenticated():
-            right_table+='<td><button onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Kup</button></td>'
+            right_table+='<td><button class="sub_button" onclick="Dajaxice.BitMarket.index.realizeCommision(Dajax.process,{''comm_id'':'+str(comm.id)+'});">Kup</button></td>'
         right_table+='</tr>'
     right_table+='</table>'
     dajax.assign('#right_table', 'innerHTML', right_table)
@@ -240,6 +240,10 @@ def createTable(request, left_currency, right_currency):
     history_table+='</table>'
     dajax.assign('#history_table', 'innerHTML',history_table)  
     
+    user_wallet = UserWallet.objects.get(user = request.user, cryptocurrency = Cryptocurrency.objects.get(name = left_currency));
+    dajax.assign('#left_wallet','innerHTML',str(user_wallet.account_balance))
+    user_wallet = UserWallet.objects.get(user = request.user, cryptocurrency = Cryptocurrency.objects.get(name = right_currency));
+    dajax.assign('#right_wallet','innerHTML',str(user_wallet.account_balance))
     dajax.script('scrollRefresh();')
     return dajax.json()
 
