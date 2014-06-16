@@ -497,7 +497,19 @@ em {
 }
 
 .changeTable label{
+	padding-left: 11px;
+	padding-right: 11px;
+	
 	color: #333366; 
 	font: 1.3em tahoma,verdana, arial, sans-serif;
 	text-decoration: none;
+}
+
+.changeTable th{
+	padding: 11px 20px 10px; 
+	color: #3399cc; 
+	font: bold 2em tahoma,verdana, arial, sans-serif;
+	text-decoration: none;
+	
+	
 }
