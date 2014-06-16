@@ -236,7 +236,7 @@ class UserProxy(User):
         pobiera kwotę amount z konta i wysyłą ją na adres wallet_address
         """
         amount=Decimal(str(amount))
-        wallet.withdrawRequest(wallet_address=wallet_address,amount=amount)
+        wallet.withdrawRequest()
         wallet.save()
         return 0
 
@@ -632,9 +632,6 @@ class UserWallet(models.Model):
         """
         Wysyła maila potwierdzającego.
         """
-        if(self.account_balance - Decimal(amount) < 0):
-            raise Exception("Nie jesteś w stanie wypłacić tylu środków z konta. Na koncie posiadasz jedynie %s, a chcesz wypłacić %s" % (self.account_balance, amount))
-        
         now = datetime.datetime.utcnow().replace(tzinfo=utc)
         deposit_history = DepositHistory(user=self.user, wallet_address="x", cryptocurrency=self.cryptocurrency, amount=Decimal("0.0"), executed_time=now, deposit=False, confirmed=False)
         deposit_history.save()
