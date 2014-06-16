@@ -31,7 +31,7 @@ class UserProxy(User):
         super(UserProxy, self).save()
         cryptocurrency = Cryptocurrency.objects.all()
         for c in cryptocurrency:
-            wallet = UserWallet(user=self,account_balance=0,cryptocurrency=c)
+            wallet = UserWallet(user=self,account_balance=0,cryptocurrency=c, code=1)
             wallet.save()
             
     class Meta:
@@ -633,6 +633,11 @@ class UserWallet(models.Model):
         deposit_history = DepositHistory(user=self.user, wallet_address=wallet_address, cryptocurrency=self.cryptocurrency, amount=amount, executed_time=now, deposit=True)
         deposit_history.save()
         return 0;
+    
+    def incrementCode(self):
+        self.code = self.code+1
+        self.save()
+        return self.code
 #    class Meta:
 #        """
 #        @note: Ustawia klasę UserWallet jako klasa abstrakcyjna
