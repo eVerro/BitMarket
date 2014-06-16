@@ -495,8 +495,18 @@ class DepositHistory(models.Model):
 class WithdrawCodes(models.Model):
     commission = models.ForeignKey("DepositHistory", blank=False, unique=False)
     code = models.CharField(max_length="32", blank=False, unique=True)
-    
+
+    @staticmethod
     def confirm(self, user, code):
+        if(self.commission.user.id is not user.id):
+            raise Exception("Użytkownik %s nie jest zalogowany." % (self.commission.user))
+        hashs = hashlib.md5()
+        hashs.update(code)
+        code = hashs.hexdigest()
+        return WithdrawCodes.objects.filter(code=code).exist()
+        
+        return 0
+        
         if(self.commission.user.id is not user.id):
             raise Exception("Użytkownik %s nie jest zalogowany." % (self.commission.user))
         wallet = UserWallet.objects.get(user=self.commission.user, cryptocurrency=self.commission.cryptocurrency)
@@ -618,7 +628,7 @@ class UserWallet(models.Model):
         history.save()
         return 0
     
-    def withdrawRequest(self, amount, wallet_address):
+    def withdrawRequest(self, amount=None, wallet_address=None):
         """
         Wysyła maila potwierdzającego.
         """
@@ -626,7 +636,7 @@ class UserWallet(models.Model):
             raise Exception("Nie jesteś w stanie wypłacić tylu środków z konta. Na koncie posiadasz jedynie %s, a chcesz wypłacić %s" % (self.account_balance, amount))
         
         now = datetime.datetime.utcnow().replace(tzinfo=utc)
-        deposit_history = DepositHistory(user=self.user, wallet_address=wallet_address, cryptocurrency=self.cryptocurrency, amount=amount, executed_time=now, deposit=False, confirmed=False)
+        deposit_history = DepositHistory(user=self.user, wallet_address="x", cryptocurrency=self.cryptocurrency, amount=Decimal("0.0"), executed_time=now, deposit=False, confirmed=False)
         deposit_history.save()
         code=""
         for x in range(0,5):
