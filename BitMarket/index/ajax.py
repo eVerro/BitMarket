@@ -239,11 +239,11 @@ def createTable(request, left_currency, right_currency):
         history_table+='</tr>'
     history_table+='</table>'
     dajax.assign('#history_table', 'innerHTML',history_table)  
-    
-    user_wallet = UserWallet.objects.get(user = request.user, cryptocurrency = Cryptocurrency.objects.get(name = left_currency));
-    dajax.assign('#left_wallet','innerHTML',str(user_wallet.account_balance))
-    user_wallet = UserWallet.objects.get(user = request.user, cryptocurrency = Cryptocurrency.objects.get(name = right_currency));
-    dajax.assign('#right_wallet','innerHTML',str(user_wallet.account_balance))
+    if request.user.is_authenticated():
+        user_wallet = UserWallet.objects.get(user = request.user, cryptocurrency = Cryptocurrency.objects.get(name = left_currency));
+        dajax.assign('#left_wallet','innerHTML',str(user_wallet.account_balance))
+        user_wallet = UserWallet.objects.get(user = request.user, cryptocurrency = Cryptocurrency.objects.get(name = right_currency));
+        dajax.assign('#right_wallet','innerHTML',str(user_wallet.account_balance))
     dajax.script('scrollRefresh();')
     return dajax.json()
 
