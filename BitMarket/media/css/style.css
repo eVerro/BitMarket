@@ -536,8 +536,13 @@ a img { border: none;}
 }
 
 .registerMsg{
-	margin: 10px;
-	font-size: x-large;
+	margin-top: 20px;
+	padding-left: 11px;
+	padding-right: 11px;
+	
+	color: #333366; 
+	font: 1.7em tahoma,verdana, arial, sans-serif;
+	text-decoration: none;
 }
 
 /*#right_table{
