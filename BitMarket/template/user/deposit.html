@@ -3,8 +3,8 @@
 {% load dajaxice_templatetags %}
 {% dajaxice_js_import %}
 <script type="text/javascript">
-function AutoRefresh() {
-	Dajaxice.BitMarket.index.createDepositView(Dajax.process);
+function AutoRefresh(wallet) {
+	Dajaxice.BitMarket.index.createDepositView(Dajax.process,{'wallet': wallet});
 
 	var refresh_rate = 20;
 	var last_user_action = 0;
@@ -33,7 +33,7 @@ function AutoRefresh() {
 		var focus = window.onfocus;
 		if (last_user_action >= refresh_rate && document.readyState == "complete") {
 
-			Dajaxice.BitMarket.index.createDepositView(Dajax.process);
+			Dajaxice.BitMarket.index.createDepositView(Dajax.process,{'wallet': wallet});
 			reset();
 
 		}
@@ -48,8 +48,10 @@ function AutoRefresh() {
 	window.addEventListener("keypress", reset, false);
 }
 
-$(document).ready(AutoRefresh);
+$(document).ready(function(){
+	AutoRefresh($('#wallet_name').html());
+	});
 	
 </script>
-
+<label id="wallet_name" style="display: none;">{{local.wallet}}</label>
 <div id="deposit_view"></div>

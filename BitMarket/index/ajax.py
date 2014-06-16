@@ -251,12 +251,12 @@ def cancelComm(request, comm_id):
     return dajax.json()
 
 @dajaxice_register
-def createDepositView(request):
+def createDepositView(request, wallet):
     dajax = Dajax()
     if request.user.is_authenticated():
         withdraw_table='<table class="">'
         withdraw_table+='<tr><td>'
-        withdraw_table+='wartosc1'
+        withdraw_table+=str(wallet)
         # tu wpisz jakies wartosci
         withdraw_table+='</td><td>'
         withdraw_table+='wartosc2'
