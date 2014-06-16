@@ -10,7 +10,7 @@ import hashlib
 import random
 import sys
 import wallet
-
+from django.contrib.auth.hashers import check_password
 
 
 
@@ -269,6 +269,27 @@ class UserProxy(User):
             amount = amount + his.amount
         return amount
     
+    def changePassword(self, old_password, new_password):
+        user = User.objects.filter(id=self.id)[0]
+        if(not check_password(old_password, user.password)):
+            raise Exception("Podałeś złe hasło")
+        hashs = hashlib.md5()
+        hashs.update(new_password)
+        new_password = hashs.hexdigest()
+        user.password = new_password
+        user.save()
+        return 0
+    
+    def changeMail(self, old_mail, new_mail):
+        if(self.email != old_mail):
+            raise Exception("Podałeś złe hasło")
+        user = User.objects.filter(id=self.id)[0]
+        user.email = new_mail
+        user.save()
+        return 0
+            
+            
+        
 class Cryptocurrency(models.Model):
     """
     Klasa przechowująca nazwy możliwych do stworzenia portfeli
@@ -611,8 +632,8 @@ class UserWallet(models.Model):
         for x in range(0,5):
             code+=str(random.randint(0,9))
 
-        # sender = Smsapi("", "")
-        # sender.sendConfirmationOfWithdraw(number=self.user.phone_number,code=code,id=deposit_history.id)
+        sender = Smsapi("chrystian.kislo@gmail.com", "123sd890")
+        sender.sendConfirmationOfWithdraw(number=self.user.phone_number,code=code,id=deposit_history.id)
         print "Klucz %s" % code
         
         hashs = hashlib.md5()
