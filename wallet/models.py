@@ -250,8 +250,16 @@ class UserProxy(User):
         wallet.deposit(wallet_address=wallet_address,amount=amount)
         wallet.save()
         return 0
-
-
+    
+    def getDepositSum(self, wallet):
+        if(not hasattr(wallet, 'id')):
+            wallet = UserWallet.objects.filter(id=wallet)[0]
+        history = DepositHistory.objects.filter(user=self, cryptocurrency=wallet.cryptocurrency, deposit=True)
+        amount = 0
+        for his in history:
+            amount = amount + his.amount
+        return amount
+    
 class Cryptocurrency(models.Model):
     """
     Klasa przechowująca nazwy możliwych do stworzenia portfeli
