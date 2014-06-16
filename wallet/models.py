@@ -260,6 +260,15 @@ class UserProxy(User):
             amount = amount + his.amount
         return amount
     
+    def getWithdrawSum(self, wallet):
+        if(not hasattr(wallet, 'id')):
+            wallet = UserWallet.objects.filter(id=wallet)[0]
+        history = DepositHistory.objects.filter(user=self, cryptocurrency=wallet.cryptocurrency, deposit=False)
+        amount = 0
+        for his in history:
+            amount = amount + his.amount
+        return amount
+    
 class Cryptocurrency(models.Model):
     """
     Klasa przechowująca nazwy możliwych do stworzenia portfeli
