@@ -6,7 +6,6 @@ from django.utils.timezone import utc
 from wallet.models import Commission, History, Cryptocurrency, UserProxy, \
     UserWallet
 import datetime
-import random
 
 
 @dajaxice_register
@@ -264,3 +263,30 @@ def cancelComm(request, comm_id):
     dajax.script('RefreshTable();')
     return dajax.json()
 
+@dajaxice_register
+def changeEmail(request,old_email,email,sec_email):
+    dajax = Dajax()
+    if(email == sec_email):
+        try:
+            user = UserProxy.objects.get(id=request.user.id)
+            user.changeMail(old_email,email)
+            dajax.script('emailSuccess();')
+        except:
+            dajax.script('emailErr();')
+    else:
+        dajax.script('emailErr();')
+    return dajax.json()
+
+@dajaxice_register
+def changePass(request,old_password,password,sec_password):
+    dajax = Dajax()
+    if(password == sec_password):
+        try:
+            user = UserProxy.objects.get(id=request.user.id)
+            user.changePassword(old_password,password)
+            dajax.script('passSuccess();')
+        except:
+            dajax.script('passErr();')
+    else:
+        dajax.script('passErr();')
+    return dajax.json()

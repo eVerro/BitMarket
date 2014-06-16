@@ -214,7 +214,7 @@ em {
 }
 .konto tbody{
 	height:300px; 
-	overflow-y:scroll; 
+	overflow-y:overlay; 
 	display:block;
 
 }

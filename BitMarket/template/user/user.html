@@ -5,54 +5,103 @@
 <script type="text/javascript" src="{{ STATIC_URL }} /static/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
 <link rel="stylesheet" href="{{ STATIC_URL }} /static/fancybox/source/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
 <script type="text/javascript" src="{{ STATIC_URL }} /static/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+<script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/user.js" ></script>
 <script>
-$(document).ready(function() {
-	$(".various").fancybox({
-		maxWidth	: 800,
-		maxHeight	: 300,
-		fitToView	: false,
-		width		: '70%',
-		height		: '70%',
-		autoSize	: false,
-		closeClick	: false,
-		openEffect	: 'none',
-		closeEffect	: 'none'
-	});
-});
+	$(document).ready(function() {
+		$(".various").fancybox({
+			maxWidth : 800,
+			maxHeight : 300,
+			fitToView : false,
+			width : '70%',
+			height : '70%',
+			autoSize : false,
+			closeClick : false,
+			openEffect : 'none',
+			closeEffect : 'none'
+		});
+	}); 
 </script>
-	{% if local.request.user.is_authenticated %}
+{% if local.request.user.is_authenticated %}
 <p id="userImage"></p>
 <hr />
 
-			<div id="konto">
-				<br>
-				<font size=4> Konto użytkownika {{local.request.user.username}}</font>
-			</div>
-			<div>
-			<table width="100%">
-			<tr>
-				<td>
-				<table class="konto">	
-					 <tr>
-					   <th>Portfel</th>
-					   <th>Wartość</th>
-					   <th>Zlecenie</th>
-					 </tr>
-					 {% for wallet in local.wallets %}
-					 <tr>
-					   <td>{{wallet.cryptocurrency.name}}:</td>
-					   <td>{{wallet.account_balance}}</td>
-					   <!-- <td><input type="submit" value="wpłać na giełdę" id="wp" /> <input type="submit" value="wypłać z giełdy" id="wyp"/></td> -->
-					   <td><a class="various" data-fancybox-type="iframe" href="/user/deposit/{{wallet.cryptocurrency.name}}">Wpłać</a> <a class="various" data-fancybox-type="iframe" href="/user/withdraw/{{wallet.cryptocurrency.name}}">Wypłać</a></td>
-					 </tr>
-					 {%endfor%}
-				</table>
-				</td>
+<div id="konto">
+	<br>
+	<font size=4> Konto użytkownika {{local.request.user.username}}</font>
+</div>
+<div align="center">
+	<table>
+		<tr>
+			<td style="vertical-align: baseline;" align="center" >
+			<table class="konto" style="margin-right: 100px;" >
+				<tr>
+					<th>Portfel</th>
+					<th>Wartość</th>
+					<th>Zlecenie</th>
 				</tr>
-			<tr>
-				<td> <font size="1"> <a href=""> Zmień hasło </a> </font></td>
-			</tr>
-			</table>
-			</div>    
-	{% endif %} 
+				{% for wallet in local.wallets %}
+				<tr>
+					<td>{{wallet.cryptocurrency.name}}:</td>
+					<td>{{wallet.account_balance}}</td>
+					<!-- <td><input type="submit" value="wpłać na giełdę" id="wp" /> <input type="submit" value="wypłać z giełdy" id="wyp"/></td> -->
+					<td><a class="various" data-fancybox-type="iframe" href="/user/deposit/{{wallet.cryptocurrency.name}}">Wpłać</a><a class="various" data-fancybox-type="iframe" href="/user/withdraw/{{wallet.cryptocurrency.name}}">Wypłać</a></td>
+				</tr>
+				{%endfor%}
+			</table></td>
+			<td style="vertical-align: baseline;" align="center">
+				<label id="email_msg"></label><br/>
+				<table>
+					<tr >
+						<th colspan="2" >Zmiana adresu email:</th>
+					</tr>
+					<tr>
+						<td><label>Stary email:</label></td>
+						<td><input type="email" id="old_email" /></td>
+					</tr>
+					<tr>
+						<td><label>Email:</label></td>
+						<td><input type="email" id="email" /></td>
+					</tr>
+					<tr>
+						<td><label>Powtóż email:</label></td>
+						<td><input type="email" id="sec_email" /></td>
+					</tr>
+					<tr>
+						<td colspan="2" align="center">
+							<button class="sub_button" onclick="changeEmail($('#old_email').val(),$('#email').val(),$('#sec_email').val());">Zmień email</button>
+						</td>
+						
+					</tr>
+				</table><br/>
+				<label id="pass_msg"></label><br/>
+				<table>
+					<tr >
+						<th colspan="2" >Zmiana hasła:</th>
+					</tr>
+					<tr>
+						<td><label>Stare hasło:</label></td>
+						<td><input type="password" id="old_password" /></td>
+					</tr>
+					<tr>
+						<td><label>Hasło:</label></td>
+						<td><input type="password" id="password" /></td>
+					</tr>
+					<tr>
+						<td><label>Powtóż hasło:</label></td>
+						<td><input type="password" id="sec_password" /></td>
+					</tr>
+					<tr>
+						<td colspan="2" align="center">
+							<button class="sub_button" onclick="changePass($('#old_password').val(),$('#password').val(),$('#sec_password').val());">Zmień hasło</button>
+						</td>
+						
+					</tr>
+					
+				</table>
+				
+			</td>
+		</tr>
+	</table>
+</div>
+{% endif %}
 {% endblock %}
