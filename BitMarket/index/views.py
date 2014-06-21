@@ -32,6 +32,8 @@ def deposit(request,wallet):
             bitMarketWallet = AuthServiceProxy("http://litecoinrpc:pythonPassword@localhost:8332")
         if wallet == "BTC":
             bitMarketWallet = AuthServiceProxy("http://bitcoinrpc:pythonPassword@localhost:8221")
+        if wallet == "GLD":
+            bitMarketWallet = AuthServiceProxy("http://goldcoinrpc:pythonPassword@localhost:8111")
         
         accountAddresses = bitMarketWallet.getaddressesbyaccount(request.user.username)
         if len(accountAddresses) == 0:
@@ -43,30 +45,19 @@ def deposit(request,wallet):
         cryptocurrency = Cryptocurrency.objects.filter(name=wallet)
         walletUser = UserWallet.objects.filter(user=request.user,cryptocurrency=cryptocurrency)
         
-        if wallet == "LTC":
-            minconf = walletUser[0].code
-            if minconf == 1:
-                walletUser[0].incrementCode()
-                walletUser[0].incrementCode()
-                walletUser[0].incrementCode()
-            amount = float(bitMarketWallet.getreceivedbyaccount(request.user.username,minconf))
-            amountHistory = user.getDepositSum(walletUser[0])
-            summary = amount - float(amountHistory)
-            if summary <= 0:
-                amount = 0.0
-            else:
-                summary = amount
-        if wallet == "BTC":
-            minconf = walletUser[0].code
-            if minconf == 1:
-                walletUser[0].incrementCode()
-                walletUser[0].incrementCode()
-                walletUser[0].incrementCode()
-            amount = float(bitMarketWallet.getreceivedbyaccount(request.user.username,minconf))
-            amountHistory = user.getDepositSum(walletUser[0])
-            summary = amount - float(amountHistory)
-            if summary <= 0:
-                amount = 0.0
+        
+        minconf = walletUser[0].code
+        if minconf == 1:
+            walletUser[0].incrementCode()
+            walletUser[0].incrementCode()
+            walletUser[0].incrementCode()
+        amount = float(bitMarketWallet.getreceivedbyaccount(request.user.username,minconf))
+        amountHistory = user.getDepositSum(walletUser[0])
+        summary = amount - float(amountHistory)
+        if summary <= 0:
+            amount = 0.0
+        else:
+            summary = amount
         
         local = locals()
         return render_to_response('user/deposit.html', {'local': local})
@@ -78,6 +69,8 @@ def depositConfirm(request,wallet):
             bitMarketWallet = AuthServiceProxy("http://litecoinrpc:pythonPassword@localhost:8332")
         if wallet == "BTC":
             bitMarketWallet = AuthServiceProxy("http://bitcoinrpc:pythonPassword@localhost:8221")
+        if wallet == "GLD":
+            bitMarketWallet = AuthServiceProxy("http://goldcoinrpc:pythonPassword@localhost:8111")
         
         accountAddresses = bitMarketWallet.getaddressesbyaccount(request.user.username)
         if len(accountAddresses) == 0:
@@ -90,36 +83,20 @@ def depositConfirm(request,wallet):
         walletUser = UserWallet.objects.filter(user=request.user,cryptocurrency=cryptocurrency)
         
         
-        if wallet == "LTC":
-            minconf = walletUser[0].code
-            amount = float(bitMarketWallet.getreceivedbyaccount(request.user.username,minconf))
-            amountHistory = user.getDepositSum(walletUser[0])
-            summary = amount - float(amountHistory)
-            if summary > 0:
-                user.deposit(wallet=walletUser[0],wallet_address=accountAddresses,amount=amount)
+        minconf = walletUser[0].code
+        amount = float(bitMarketWallet.getreceivedbyaccount(request.user.username,minconf))
+        amountHistory = user.getDepositSum(walletUser[0])
+        summary = amount - float(amountHistory)
+        if summary > 0:
+            user.deposit(wallet=walletUser[0],wallet_address=accountAddresses,amount=amount)
             
-            amount = float(bitMarketWallet.getreceivedbyaccount(request.user.username,minconf))
-            amountHistory = user.getDepositSum(walletUser[0])
-            summary = amount - float(amountHistory)
-            if summary <= 0:
-                amount = 0.0
-                
-        if wallet == "BTC":
-            minconf = walletUser[0].code
-            amount = float(bitMarketWallet.getreceivedbyaccount(request.user.username,minconf))
-            amountHistory = user.getDepositSum(walletUser[0])
-            summary = amount - amountHistory
-            if summary > 0:
-                user.deposit(wallet=walletUser[0],wallet_address=accountAddresses,amount=amount)
-        
-            amount = float(bitMarketWallet.getreceivedbyaccount(request.user.username,minconf))
-            amountHistory = user.getDepositSum(walletUser[0])
-            summary = amount - float(amountHistory)
-            if summary <= 0:
-                amount = 0.0
+        amount = float(bitMarketWallet.getreceivedbyaccount(request.user.username,minconf))
+        amountHistory = user.getDepositSum(walletUser[0])
+        summary = amount - float(amountHistory)
+        if summary <= 0:
+            amount = 0.0
+            
         # pobieram amount z portfela i odejmuje od niego sume depozytów z historii, jezeli wieksze od zera to dodaje kase
-        
-        
         
         local = locals()
         return render_to_response('user/deposit.html', {'local': local})
@@ -131,6 +108,8 @@ def withdraw(request,wallet):
             bitMarketWallet = AuthServiceProxy("http://litecoinrpc:pythonPassword@localhost:8332")
         if wallet == "BTC":
             bitMarketWallet = AuthServiceProxy("http://bitcoinrpc:pythonPassword@localhost:8221")
+        if wallet == "GLD":
+            bitMarketWallet = AuthServiceProxy("http://goldcoinrpc:pythonPassword@localhost:8111")
         
         accountAddresses = bitMarketWallet.getaddressesbyaccount(request.user.username)
         if len(accountAddresses) == 0:
@@ -142,14 +121,13 @@ def withdraw(request,wallet):
         cryptocurrency = Cryptocurrency.objects.filter(name=wallet)
         walletUser = UserWallet.objects.filter(user=request.user,cryptocurrency=cryptocurrency)
         
-        if wallet == "LTC":
-            balance = walletUser[0].account_balance
-        if wallet == "BTC":
-            balance = walletUser[0].account_balance
         
+        balance = walletUser[0].account_balance
         
         #confirm = WithdrawCodes.objects.filter(code=code)
-        user.withdraw(wallet=walletUser[0])
+        
+        #wysylanie sms'a - WAŻNE 
+        #user.withdraw(wallet=walletUser[0])
         
         local = locals()
         return render_to_response('user/withdraw.html', {'local': local})
