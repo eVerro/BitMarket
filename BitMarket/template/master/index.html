@@ -16,6 +16,7 @@
 		<div id="top">
 			<div id="top_witaj">
 				{% if local.request.user.is_authenticated %}
+				<div id="topWitajUser">
 				<p id="witaj">
 					Witaj, <b id="username">{{ local.request.user.username }}</b>.
 				</p>
@@ -31,6 +32,7 @@
 				<p id="historia_zlecen">
 					<a class="panel" href="/user/trade_history">Historia zleceń</a>
 				</p>
+				</div>
 				{% else %}
 				<p id="logowanie_formularz">
 					<form method="post" action="/user/login/" id="logowanie_form">
