@@ -1,7 +1,58 @@
 {% if local.request.user.is_authenticated %}
+<style>
+#depositWithdraw {
+	padding-left: 11px;
+	padding-right: 11px;
+	margin-top: 30px;
+	color: #333366; 
+	font: 1.0em tahoma,verdana, arial, sans-serif;
+	text-decoration: none;
+}
 
-withdraw test
+#depositWithdraw #adresPortfela {
+	padding: 11px 20px 10px; 
+	color: #3399cc; 
+	font: bold 2.0em tahoma,verdana, arial, sans-serif;
+	text-decoration: none;
+}
 
-{{wallet}}
+#depositWithdraw a{
+	
+	color: #333366; 
+	font: bold 1.0em tahoma, verdana, arial, sans-serif;
+	text-decoration: none;
+}
+
+#depositWithdraw a:hover{
+	color: #7a8090; 
+}
+
+
+#depositWithdraw .amount{
+	
+	color: #3399cc; 
+	font: bold 1.2em tahoma, verdana, arial, sans-serif;
+	text-decoration: none;
+}
+
+#depositWithdraw #withdraw_form #adres{
+	
+	width: 600px;
+}
+
+
+</style>
+
+
+<div id="depositWithdraw">
+	<p>Jezeli chcesz wyplacic <strong class="wallet">{{local.wallet}}</strong> na swój portfel, podaj swój adres i kwote:</p>
+	<form method="post" action="/user/withdraw/{{local.wallet}}/confirm" id="withdraw_form">
+	Adres portfela: <input id="adres" name="adresPortfela" type="text">
+	<p>Kwota: <input name="kwota" type="text"> Dostepne {{local.wallet}} <strong class="amount">{{local.balance}}</strong></p>
+	<p>Kod SMS: <input name="kod" type="text"></p>
+	</form>
+	<p>Jesli wpisales dane, kliknij <a href="/user/withdraw/{{local.wallet}}/confirm">Wyslij srodki na portfel</a></p>
+	<p>Operacja moze potrwac kilka minut, w zaleznosci od kryptowaluty.</p>
+</div>
 
 {% endif %} 

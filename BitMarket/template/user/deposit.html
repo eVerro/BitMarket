@@ -39,11 +39,12 @@
 
 
 <div id="depositWithdraw">
-	<p>Jeżeli chcesz wpłacić <strong class="wallet">{{local.wallet}}</strong> na swoje konto, wyślij je na adres:</p>
+	<p>Jezeli chcesz wplacic <strong class="wallet">{{local.wallet}}</strong> na swoje konto, wyslij je na adres:</p>
 	<div id="adresPortfela">{{local.accountAddresses}}</div>
-	<p>Jeśli wpłaciłeś środki na podany wyżej adres, kliknij <a href="/user/deposit/{{local.wallet}}">Potwierdź</a></p>
-	<p>Wpłaciłeś <strong class="amount">{{local.amount}}</strong> na swoje konto.</p>
-	<p>Operacja może potrwać kilka minut, w zależności od kryptowaluty.</p>
+	<p>Jesli wplaciles srodki na podany wyzej adres, kliknij <a href="/user/deposit/{{local.wallet}}">Sprawdz stan</a></p>
+	<p>Wplaciles <strong class="amount">{{local.amount}}</strong> na swoje konto.</p>
+	<p>Aby operowac wplaconymi srodkami kliknij <a href="/user/deposit/{{local.wallet}}/confirm">Dodaj do BitMarket</a></p>
+	<p>Operacja moze potrwac kilka minut, w zaleznosci od kryptowaluty.</p>
 </div>
 
 {% endif %} 

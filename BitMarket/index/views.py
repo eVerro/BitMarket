@@ -9,6 +9,7 @@ from django.shortcuts import render_to_response, redirect
 from django.utils.timezone import utc
 from wallet.models import UserProxy, UserWallet, Commission, WithdrawCodes, \
     History, Cryptocurrency
+from bitcoinrpc.authproxy import AuthServiceProxy
 import datetime
 import hashlib
 
@@ -25,12 +26,155 @@ def aboutus(request):
         return render_to_response('aboutus/aboutus.html', {'local': local})
     
 def deposit(request,wallet):
+    
+        #polaczene z portfelem ltc
+        if wallet == "LTC":
+            bitMarketWallet = AuthServiceProxy("http://litecoinrpc:pythonPassword@localhost:8332")
+        if wallet == "BTC":
+            bitMarketWallet = AuthServiceProxy("http://bitcoinrpc:pythonPassword@localhost:8221")
+        
+        accountAddresses = bitMarketWallet.getaddressesbyaccount(request.user.username)
+        if len(accountAddresses) == 0:
+            accountAddresses = bitMarketWallet.getnewaddress(request.user.username)
+        
+        accountAddresses = accountAddresses[0]
+        
+        user = UserProxy.objects.get(id=request.user.id)
+        cryptocurrency = Cryptocurrency.objects.filter(name=wallet)
+        walletUser = UserWallet.objects.filter(user=request.user,cryptocurrency=cryptocurrency)
+        
+        if wallet == "LTC":
+            minconf = walletUser[0].code
+            if minconf == 1:
+                walletUser[0].incrementCode()
+                walletUser[0].incrementCode()
+                walletUser[0].incrementCode()
+            amount = float(bitMarketWallet.getreceivedbyaccount(request.user.username,minconf))
+            amountHistory = user.getDepositSum(walletUser[0])
+            summary = amount - float(amountHistory)
+            if summary <= 0:
+                amount = 0.0
+            else:
+                summary = amount
+        if wallet == "BTC":
+            minconf = walletUser[0].code
+            if minconf == 1:
+                walletUser[0].incrementCode()
+                walletUser[0].incrementCode()
+                walletUser[0].incrementCode()
+            amount = float(bitMarketWallet.getreceivedbyaccount(request.user.username,minconf))
+            amountHistory = user.getDepositSum(walletUser[0])
+            summary = amount - float(amountHistory)
+            if summary <= 0:
+                amount = 0.0
+        
         local = locals()
-        return render_to_response('user/deposit.html', {'local': local,'wallet': wallet})
+        return render_to_response('user/deposit.html', {'local': local})
      
-def withdraw(request,wallet):
+def depositConfirm(request,wallet):
+        
+        #polaczene z portfelem ltc
+        if wallet == "LTC":
+            bitMarketWallet = AuthServiceProxy("http://litecoinrpc:pythonPassword@localhost:8332")
+        if wallet == "BTC":
+            bitMarketWallet = AuthServiceProxy("http://bitcoinrpc:pythonPassword@localhost:8221")
+        
+        accountAddresses = bitMarketWallet.getaddressesbyaccount(request.user.username)
+        if len(accountAddresses) == 0:
+            accountAddresses = bitMarketWallet.getnewaddress(request.user.username)
+        
+        accountAddresses = accountAddresses[0]
+        
+        user = UserProxy.objects.get(id=request.user.id)
+        cryptocurrency = Cryptocurrency.objects.filter(name=wallet)
+        walletUser = UserWallet.objects.filter(user=request.user,cryptocurrency=cryptocurrency)
+        
+        
+        if wallet == "LTC":
+            minconf = walletUser[0].code
+            amount = float(bitMarketWallet.getreceivedbyaccount(request.user.username,minconf))
+            amountHistory = user.getDepositSum(walletUser[0])
+            summary = amount - float(amountHistory)
+            if summary > 0:
+                user.deposit(wallet=walletUser[0],wallet_address=accountAddresses,amount=amount)
+            
+            amount = float(bitMarketWallet.getreceivedbyaccount(request.user.username,minconf))
+            amountHistory = user.getDepositSum(walletUser[0])
+            summary = amount - float(amountHistory)
+            if summary <= 0:
+                amount = 0.0
+                
+        if wallet == "BTC":
+            minconf = walletUser[0].code
+            amount = float(bitMarketWallet.getreceivedbyaccount(request.user.username,minconf))
+            amountHistory = user.getDepositSum(walletUser[0])
+            summary = amount - amountHistory
+            if summary > 0:
+                user.deposit(wallet=walletUser[0],wallet_address=accountAddresses,amount=amount)
+        
+            amount = float(bitMarketWallet.getreceivedbyaccount(request.user.username,minconf))
+            amountHistory = user.getDepositSum(walletUser[0])
+            summary = amount - float(amountHistory)
+            if summary <= 0:
+                amount = 0.0
+        # pobieram amount z portfela i odejmuje od niego sume depozytów z historii, jezeli wieksze od zera to dodaje kase
+        
+        
+        
         local = locals()
-        return render_to_response('user/withdraw.html', {'local': local,'wallet': wallet})
+        return render_to_response('user/deposit.html', {'local': local})
+    
+def withdraw(request,wallet):
+        
+        #polaczene z portfelem ltc
+        if wallet == "LTC":
+            bitMarketWallet = AuthServiceProxy("http://litecoinrpc:pythonPassword@localhost:8332")
+        if wallet == "BTC":
+            bitMarketWallet = AuthServiceProxy("http://bitcoinrpc:pythonPassword@localhost:8221")
+        
+        accountAddresses = bitMarketWallet.getaddressesbyaccount(request.user.username)
+        if len(accountAddresses) == 0:
+            accountAddresses = bitMarketWallet.getnewaddress(request.user.username)
+        
+        accountAddresses = accountAddresses[0]
+        
+        user = UserProxy.objects.get(id=request.user.id)
+        cryptocurrency = Cryptocurrency.objects.filter(name=wallet)
+        walletUser = UserWallet.objects.filter(user=request.user,cryptocurrency=cryptocurrency)
+        
+        if wallet == "LTC":
+            balance = walletUser[0].account_balance
+        if wallet == "BTC":
+            balance = walletUser[0].account_balance
+        
+        
+        #confirm = WithdrawCodes.objects.filter(code=code)
+        user.withdraw(wallet=walletUser[0])
+        
+        local = locals()
+        return render_to_response('user/withdraw.html', {'local': local})
+    
+def withdrawConfirm(request,wallet):
+        
+        if request.method == 'POST':
+                    adresPortfela = request.POST['adresPortfela']
+                    kwota = request.POST['kwota']
+                    if wallet == "LTC":
+                        bitMarketWallet = AuthServiceProxy("http://litecoinrpc:pythonPassword@localhost:8332")
+                        user = UserProxy.objects.get(id=request.user.id)
+                        cryptocurrency = Cryptocurrency.objects.filter(name=wallet)
+                        walletUser = UserWallet.objects.filter(user=request.user,cryptocurrency=cryptocurrency)
+                        balance = Decimal(walletUser[1].account_balance)
+                        kwota = Decimal(kwota)
+                        withdrawBalance = kwota - balance
+                        if withdrawBalance > 0:
+                            withdrawBalance = 0
+                    if wallet == "BTC":
+                        bitMarketWallet = AuthServiceProxy("http://bitcoinrpc:pythonPassword@localhost:8221")
+                    
+        
+        local = locals()
+        return render_to_response('user/withdraw.html', {'local': local})
     
 def market(request):
         local = locals()
