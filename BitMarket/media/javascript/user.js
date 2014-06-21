@@ -54,7 +54,7 @@ function emailSuccess(){
 
 function passSuccess(){
 	$('#pass_msg').css('color', 'green');
-	$('#pass_msg').html('hasło zmienione');
+	$('#pass_msg').html('Hasło zmienione');
 	$('#pass_msg').slideDown();
 	resetPass();
 	setTimeout(function(){$('#pass_msg').slideUp();}, 3000);	

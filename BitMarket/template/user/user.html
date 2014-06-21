@@ -25,10 +25,9 @@
 <p id="userImage"></p>
 <hr />
 
-<div align="center">
-	<table>
+<div id="portfele">
 		<tr>
-			<td style="vertical-align: baseline;" align="center" >
+			<td>
 			<table class="konto">
 				<tr>
 					<th>Portfel</th>
@@ -43,7 +42,9 @@
 					<td><a class="various" data-fancybox-type="iframe" href="/user/deposit/{{wallet.cryptocurrency.name}}">Wpłać</a><a class="various" data-fancybox-type="iframe" href="/user/withdraw/{{wallet.cryptocurrency.name}}">Wypłać</a></td>
 				</tr>
 				{%endfor%}
-			</table></td>
+			</table></td></tr>
+</div>
+<div id="zmianaDanych">
 			<td style="vertical-align: baseline; " align="center">
 				<label id="email_msg"></label><br/>
 				<table class="changeTable" >

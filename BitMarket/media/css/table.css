@@ -204,7 +204,7 @@ em {
 }
 /* konto */
 .konto{
-	background: #f5f5f5;
+	background: #ffffff;
 	border-collapse: separate;
 	box-shadow: inset 0 1px 0 #fff;
 	font-size: 12px;
@@ -239,8 +239,8 @@ em {
 	text-shadow: 0 1px 0 #000;	
 	padding: 10px 15px;
 	transition: all 300ms;
-	max-width: 33%;
-	min-width: 33%;
+	max-width: 43%;
+	min-width: 43%;
 	text-align: center;
 }
 
@@ -274,8 +274,8 @@ em {
 	padding: 10px 15px;
 	position: relative;
 	transition: all 300ms;
-	max-width: 40%;
-	min-width: 40%;
+	max-width: 50%;
+	min-width: 50%;
 	text-align: center;
 }
 
@@ -492,24 +492,3 @@ em {
 	background: #777777;
 }
 
-.changeTable{
-	margin-left: 100px;
-}
-
-.changeTable label{
-	padding-left: 11px;
-	padding-right: 11px;
-	
-	color: #333366; 
-	font: 1.3em tahoma,verdana, arial, sans-serif;
-	text-decoration: none;
-}
-
-.changeTable th{
-	padding: 11px 20px 10px; 
-	color: #3399cc; 
-	font: bold 2em tahoma,verdana, arial, sans-serif;
-	text-decoration: none;
-	
-	
-}
