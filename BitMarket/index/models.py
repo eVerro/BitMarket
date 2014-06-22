@@ -43,4 +43,17 @@ class Newss(models.Model):
     def was_published_today(self):
         return self.pub_date.date() == datetime.date.today()
     
+class Kryptowaluty(models.Model):
+    tytul = models.CharField(max_length=200)
+    pub_date = models.DateTimeField('data publikacji')
+    text = models.CharField(max_length=2000)
+    link = models.CharField(max_length=1000)
+    autor = models.CharField(max_length=20)
+    obrazek = models.ImageField(upload_to='image')
+    def __unicode__(self):
+        return self.tytul
+    def was_published_today(self):
+        return self.pub_date.date() == datetime.date.today()
+    
 admin.site.register(Newss)
+admin.site.register(Kryptowaluty)

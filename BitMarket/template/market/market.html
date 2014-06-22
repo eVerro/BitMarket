@@ -5,8 +5,24 @@
 <p id="marketImage"></p>
 <hr />
 
-<p class="tresc">
-	Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-</p>
+					{% if local.latest_crypto_list %}
+					{% for news in local.latest_crypto_list %}
+					<h2 class="tytul">{{ news.tytul }}</h2>
+					<p class="kategoria">
+					dodano: <strong class="niebieski">{{ news.pub_date }} </strong>przez: <strong class="niebieski">{{ news.autor }}</strong>
+					</p>
+					
+					<p class="trescKrypto">
+						<img class="obrazekKrypto" src="{{ STATIC_URL }}/../{{ news.obrazek }}"/>
+						{{ news.text }}
+					</p>
+					<p class="link"><a href="{{ news.link }}">Pobierz portfel {{ news.tytul }}.</a></p>
+					<br/>
+
+					<hr />
+					{% endfor %}
+					{% else %}
+					<h2 class="tytul">Brak kryptowalut.</h2>
+					{% endif %}
 
 {% endblock %}

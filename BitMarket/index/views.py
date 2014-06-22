@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 # Create your views here.
 from BitMarket.index.mailsender import MailSender
-from BitMarket.index.models import Newss, UserProfile
+from BitMarket.index.models import Newss, UserProfile, Kryptowaluty
 from BitMarket.index.smsapi import Smsapi
 from django.contrib.auth import logout
 from django.contrib.auth.models import User, auth
@@ -155,6 +155,7 @@ def withdrawConfirm(request,wallet):
         return render_to_response('user/withdraw.html', {'local': local})
     
 def market(request):
+        latest_crypto_list = Kryptowaluty.objects.all().order_by('-pub_date')
         local = locals()
         return render_to_response('market/market.html', {'local': local})
     
