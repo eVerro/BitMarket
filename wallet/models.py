@@ -677,7 +677,8 @@ class UserWallet(models.Model):
             self.account_balance = Decimal(self.account_balance) - Decimal(purchased_offer.destination_amount)
         else:
             raise Exception("Błąd w metodzie purchase sell")
-        
+        print purchased_offer.id
+        print "cipa"
         history = History.objects.filter(commission_id=purchased_offer.id)
         history = history[0]
         history.purchaser = self.user
@@ -753,6 +754,9 @@ class Provisions(models.Model):
     commission = models.ForeignKey(Commission, blank=False, unique=False)
     provision = models.DecimalField(max_digits=32, decimal_places=16, blank=False, null=False)
     
+    def __unicode__(self):
+        return "%s - prowizja %s" % (self.commission, self.provision) 
+    
 class AdminWallets():
     
     @staticmethod
@@ -760,7 +764,7 @@ class AdminWallets():
         """
         Przesyla pieniadze dla administratora.
         """
-        provision=Decimal('0.25')
+        provision=Decimal('0.0025')
         if(commission.source_wallet.cryptocurrency.name=='BTC'):
             prov = commission.source_amount * Decimal(provision) 
             commission.source_amount += prov 
@@ -783,8 +787,9 @@ class AdminWallets():
         elif (commission.destination_wallet.cryptocurrency.name=='BTC'):
             commission.destination_amount -= provision.provision
         user = UserProxy.objects.filter(username='admin')[0]
-        btc_wallet = UserWallet.objects.filter(user=user, cryptocurrency=Cryptocurrency.objects.filter(name='BTC'))
+        btc_wallet = UserWallet.objects.filter(user=user, cryptocurrency=Cryptocurrency.objects.filter(name='BTC'))[0]
         btc_wallet.account_balance+=provision.provision
+        btc_wallet.save()
         return 0
 
 
