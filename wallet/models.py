@@ -37,7 +37,7 @@ class UserProxy(User):
     class Meta:
         proxy = True
 
-    def newCommission(self, source_amount, destination_amount, source_wallet, destination_wallet, dead_line, provision, source_provision):
+    def newCommission(self, source_amount, destination_amount, source_wallet, destination_wallet, dead_line):
         """
         @param String : source_amount kwota pobierana z konta użytkownika
         @param String : destination_amount kwota, którą dostanie użytkownik w razie wykonania transakcji
@@ -334,7 +334,6 @@ class Commission(models.Model):
     time_limit = models.DateTimeField()
     source_price = models.DecimalField(max_digits=64, decimal_places=32, blank=True,null=False)
     destination_price = models.DecimalField(max_digits=64, decimal_places=32, blank=True,null=False)
-    provision = models.DecimalField(max_digits=64, decimal_places=32, blank=True,null=False)
     
     
     def save(self):
@@ -479,7 +478,7 @@ class History(models.Model):
         jeżeli source_price = 0 to cena cryptocurrency_sold w innym przypadku cryptocurrency_bought
         """
         coms = History.objects.extra(where=["cryptocurrency_sold_id = %s and cryptocurrency_bought_id %s and executed_time > %s and executed_time < %s"], params=[cryptocurrency_sold.id, cryptocurrency_bought.id, date_start, date_end])
-        i = coms.entry__count()
+        i = coms.count()
         sum=0
         if source_price == 1:
             for com in coms:
@@ -497,14 +496,20 @@ class History(models.Model):
         jeżeli source_price = 0 to cena cryptocurrency_sold w innym przypadku cryptocurrency_bought
         """
         coms = History.objects.extra(where=["(cryptocurrency_sold_id = %s and cryptocurrency_bought_id = %s) or (cryptocurrency_bought_id = %s and cryptocurrency_sold_id = %s) and (executed_time > %s and executed_time < %s)"], params=[cryptocurrency_first.id, cryptocurrency_second.id,cryptocurrency_first.id, cryptocurrency_second.id, date_start, date_end])
-        i = coms.entry__count()
+        i = coms.count()
         sum=0
         if source_price == 1:
             for com in coms:
-                sum+=com.sold_price
+                if com.cryptocurrency.id == cryptocurrency_first.id: 
+                    sum+=com.sold_price
+                else: 
+                    sum+=com.bought_price
         else:
             for com in coms:
-                sum+=com.sold_price
+                if com.cryptocurrency.id == cryptocurrency_first.id: 
+                    sum+=com.bought_price
+                else: 
+                    sum+=com.sold_price
         return sum/i
     
 class DepositHistory(models.Model):
