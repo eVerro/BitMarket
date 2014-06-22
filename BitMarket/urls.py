@@ -35,6 +35,7 @@ urlpatterns = patterns('',
     (r'^user/confirm/(?P<code>\d+)/$','BitMarket.index.register.checkConfirmLink'),
     (r'^registrationconfirm/(?P<code>\d+)/$','BitMarket.index.register.checkConfirmLink'),
     (r'^ajax/ajaxTest/$','BitMarket.index.views.ajaxTest'),
+    (r'^chart_data/$','BitMarket.index.views.chart_data'),
     (dajaxice_config.dajaxice_url, include('dajaxice.urls')),
     (r'^image/(?P<path>.*)$', 'django.views.static.serve',{'document_root': ROOT_PATH + '/media/image/'}),
     # Uncomment the admin/doc line below to enable admin documentation:

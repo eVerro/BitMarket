@@ -3,15 +3,18 @@
 from BitMarket.index.mailsender import MailSender
 from BitMarket.index.models import Newss, UserProfile, Kryptowaluty
 from BitMarket.index.smsapi import Smsapi
+from decimal import Decimal, getcontext
 from django.contrib.auth import logout
 from django.contrib.auth.models import User, auth
+from django.http.response import HttpResponse
 from django.shortcuts import render_to_response, redirect
 from django.utils.timezone import utc
 from wallet.models import UserProxy, UserWallet, Commission, WithdrawCodes, \
     History, Cryptocurrency
 import datetime
+import datetime
 import hashlib
-
+import json
 
 
 def index(request):
@@ -79,6 +82,27 @@ def trade_history(request):
     userhistories = UserProxy.getCommissionHistory( userproxy, sort=None)
     local = locals()
     return render_to_response('user/trade_history.html', {'local': local})
+
+def chart_data(request):
+    data = {}
+    left_currency = Cryptocurrency.objects.get(name = str(request.GET['leftCurr']))
+    right_currency = Cryptocurrency.objects.get(name = str(request.GET['rightCurr']))
+    date_range = request.GET['dateRange']
+    date = datetime.datetime.now()- datetime.timedelta(days=int(date_range))
+    json_data = {'dates': [], 'values': []}
+    last_value = float()
+    for i in range(0,int(date_range)):
+        date = date + datetime.timedelta(days=1)
+        getcontext().prec = 6
+        value = Decimal(History.getAverageExchangePriceOfDay(left_currency, right_currency, date))
+        json_data['dates'].append(date.strftime("%m-%d"))
+        if value != 0:
+            json_data['values'].append(float(value))
+            last_value = float(value)
+        else:
+            json_data['values'].append(last_value)
+    data['chart_data'] = json_data
+    return HttpResponse(json.dumps(data), content_type='application/json')
 
 def login(request):
             if request.method == 'POST':
