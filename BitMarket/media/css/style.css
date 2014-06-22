@@ -420,10 +420,20 @@ a img { border: none;}
 	text-decoration: none;
 }
 
-#main2 #news img {
+#main2 #news .obrazekNews {
 	margin-left: 20px;
 	width: 863px;
 	height: 150px;
+	padding:3px;
+	background: #FFFFFF;
+	border: 1px solid #CCCCCC;
+}
+
+#main2 #news .obrazekKrypto {
+	float: left;
+	margin-right: 10px;
+	width: 163px;
+	height: 163px;
 	padding:3px;
 	background: #FFFFFF;
 	border: 1px solid #CCCCCC;
@@ -437,6 +447,32 @@ a img { border: none;}
 	font: 1.3em tahoma,verdana, arial, sans-serif;
 	text-decoration: none;
 }
+
+#main2 #news .trescKrypto {
+	padding-left: 11px;
+	padding-right: 11px;
+	clear: both;
+	color: #333366; 
+	font: 1.3em tahoma,verdana, arial, sans-serif;
+	text-decoration: none;
+	min-height: 180px;
+}
+
+#main2 #news .link a{
+	padding-left: 11px;
+	padding-right: 11px;
+	color: #4d5467; 
+	font: 1.3em tahoma,verdana, arial, sans-serif;
+	text-decoration: none;
+	text-decoration: underline;
+}
+
+#main2 #news .link a:hover{
+	
+	color: #1b1e26; 
+	
+}
+
 
 .niebieski {
 	color: #4d5467; 
