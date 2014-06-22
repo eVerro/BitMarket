@@ -477,15 +477,22 @@ class History(models.Model):
         source_price decyduje o tym, która cena kryptowaluty jest zwracana
         jeżeli source_price = 0 to cena cryptocurrency_sold w innym przypadku cryptocurrency_bought
         """
-        coms = History.objects.extra(where=["cryptocurrency_sold_id = %s and cryptocurrency_bought_id %s and executed_time > %s and executed_time < %s"], params=[cryptocurrency_sold.id, cryptocurrency_bought.id, date_start, date_end])
+        if(not hasattr(cryptocurrency_sold, 'id')):
+            cryptocurrency_sold = Cryptocurrency.objects.filter(name=cryptocurrency_sold)[0]
+        if(not hasattr(cryptocurrency_bought, 'id')):
+            cryptocurrency_bought = Cryptocurrency.objects.filter(name=cryptocurrency_bought)[0]
+        
+        coms = History.objects.extra(where=["purchaser_id is not null and cryptocurrency_sold_id = %s and cryptocurrency_bought_id %s and executed_time > %s and executed_time < %s"], params=[cryptocurrency_sold.id, cryptocurrency_bought.id, date_start, date_end])
         i = coms.count()
         sum=0
-        if source_price == 1:
+        if source_price == 0:
             for com in coms:
                 sum+=com.sold_price
         else:
             for com in coms:
-                sum+=com.sold_price
+                sum+=com.bought_price
+        if(i==0):
+            return 0
         return sum/i
 
     @staticmethod
@@ -495,22 +502,46 @@ class History(models.Model):
         source_price decyduje o tym, która cena kryptowaluty jest zwracana
         jeżeli source_price = 0 to cena cryptocurrency_sold w innym przypadku cryptocurrency_bought
         """
-        coms = History.objects.extra(where=["(cryptocurrency_sold_id = %s and cryptocurrency_bought_id = %s) or (cryptocurrency_bought_id = %s and cryptocurrency_sold_id = %s) and (executed_time > %s and executed_time < %s)"], params=[cryptocurrency_first.id, cryptocurrency_second.id,cryptocurrency_first.id, cryptocurrency_second.id, date_start, date_end])
+        if(not hasattr(cryptocurrency_first, 'id')):
+            cryptocurrency_first = Cryptocurrency.objects.filter(name=cryptocurrency_first)[0]
+        if(not hasattr(cryptocurrency_second, 'id')):
+            cryptocurrency_second = Cryptocurrency.objects.filter(name=cryptocurrency_second)[0]
+            
+        coms = History.objects.extra(where=["((purchaser_id is not null and cryptocurrency_sold_id = %s and cryptocurrency_bought_id = %s) or (cryptocurrency_bought_id = %s and cryptocurrency_sold_id = %s)) and (executed_time > %s and executed_time < %s)"], params=[cryptocurrency_first.id, cryptocurrency_second.id,cryptocurrency_first.id, cryptocurrency_second.id, date_start, date_end])
         i = coms.count()
         sum=0
-        if source_price == 1:
+        if source_price == 0:
             for com in coms:
-                if com.cryptocurrency.id == cryptocurrency_first.id: 
+                if com.cryptocurrency_sold.id == cryptocurrency_first.id:
+                    print 1
                     sum+=com.sold_price
                 else: 
+                    print 2
                     sum+=com.bought_price
         else:
             for com in coms:
-                if com.cryptocurrency.id == cryptocurrency_first.id: 
+                if com.cryptocurrency_sold.id == cryptocurrency_first.id:
+                    print 3 
                     sum+=com.bought_price
                 else: 
+                    print 4
                     sum+=com.sold_price
+                print com.executed_time
+        if(i==0):
+            return 0
         return sum/i
+    
+    
+    @staticmethod
+    def getAverageExchangePriceOfDay(cryptocurrency_first, cryptocurrency_second, date, source_price=0):
+        """
+        Zwraca średnią cenę z okresu date_start - date_end dla wymienionej kryptowaluty cryptocurrency_first za cryptocurrency_second bądź odwrotnie.
+        source_price decyduje o tym, która cena kryptowaluty jest zwracana
+        jeżeli source_price = 0 to cena cryptocurrency_sold w innym przypadku cryptocurrency_bought
+        """
+        date_start = datetime.datetime(date.year,date.month, date.day, 0,0,0)
+        date_end = date_start+ datetime.timedelta(days=1)
+        return History.getAverageExchangePrice(cryptocurrency_first=cryptocurrency_first, cryptocurrency_second=cryptocurrency_second, date_start=date_start, date_end=date_end, source_price=source_price)
     
 class DepositHistory(models.Model):
     """

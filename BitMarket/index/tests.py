@@ -1,6 +1,7 @@
 from django.shortcuts import render_to_response
-from wallet.models import Commission
+from wallet.models import Commission, History
+import datetime
 def getCommissions(request):
-    for commission in Commission.getCommissions(cryptocurrency_sold='BTC',cryptocurrency_bought='GLDC', sort='source_amount'):
-        print commission
+    for x in range(1,31):
+        print History.getAverageExchangePriceOfDay(cryptocurrency_first="BTC", cryptocurrency_second="GLD", date=datetime.datetime(year=2014,month=6,day=x), source_price=0)
     return render_to_response('master/index.html', {'local': locals()})
