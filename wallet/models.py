@@ -57,6 +57,7 @@ class UserProxy(User):
         destination_amount = Decimal(str(destination_amount))
         # sprawdzenie danych wejściowych
         # czy portfele należą do osoby wywołującej funkcje
+        
         if(self.id is not source_wallet.user.id):
             raise Exception('Portfel source jest przypisany do innego użytkownika.')
         if(self.id is not destination_wallet.user.id):
@@ -72,6 +73,7 @@ class UserProxy(User):
             raise Exception('Podana data jest z przeszłości.')
         commission = Commission(source_amount=source_amount, destination_amount=destination_amount, source_wallet=source_wallet, destination_wallet=destination_wallet, time_limit=dead_line)
         commission.save()
+        AdminWallets.addProvisionToCommission(commission)
         source_wallet.newPurchaseOffer(commission)
         return 0
 
@@ -93,8 +95,12 @@ class UserProxy(User):
             raise Exception("Nie istnieje odpowiedni portfel u kupca: %s" % (purchased_commission.source_wallet.cryptocurrency))
         # wywołanie metod do kupna i sprzedaży u kupującego
         
+        
         purchasersource_walllet[0].purchaseSell(purchased_commission)
         purchasersource_walllet[0].save()
+        
+        AdminWallets.takeProvision(purchased_commission)
+        
         purchaserdestination_wallet[0].purchase(purchased_commission)
         purchaserdestination_wallet[0].save()
         
@@ -551,7 +557,6 @@ class DepositHistory(models.Model):
     Cryptocurrency cryptocurrency waluta
     String wallet_address adres na który, bądź z którego została pobrana waluta
     bool deposit określa czy skłądano depozyt czy pobierano walute z konta
-    bool confirmed, w przypadku gdy jest to pobieranie pieniędzy (deposit=false) pole te określa czy to jest potwierdzenie czy nie
     """
     user = models.ForeignKey(User, blank=False, unique=False)
     wallet_address = models.CharField(max_length="64", blank=False, unique=False)
@@ -559,44 +564,42 @@ class DepositHistory(models.Model):
     amount = models.DecimalField(max_digits=32, decimal_places=16, blank=False, unique=False)
     executed_time = models.DateTimeField()
     deposit = models.BooleanField(blank=False, unique=False)
-    confirmed = models.BooleanField(blank=True, unique=False)
     
     def __unicode__(self):
         if(self.deposit is True):
             return 'Użytkownik %s złożył na portfel %s z adresu %s taką kwotą %s. Data: %s' % (self.user.username, self.cryptocurrency, self.wallet_address, self.amount, self.executed_time)
-        if(self.confirmed is False):
-            return 'Użytkownik %s złożył zlecenie pobrania z portfela %s na adress %s taką kwotą %s. Data: %s' % (self.user.username, self.cryptocurrency, self.wallet_address, self.amount, self.executed_time)
-        if(self.confirmed is True):
-            return 'Użytkownik %s potwierdził pobranie z portfela %s na adress %s taką kwotą %s. Data: %s' % (self.user.username, self.cryptocurrency, self.wallet_address, self.amount, self.executed_time)
+        if(self.deposit is False):
+            return 'Użytkownik %s pobrał z portfela %s na adress %s taką kwotą %s. Data: %s' % (self.user.username, self.cryptocurrency, self.wallet_address, self.amount, self.executed_time)
 
 class WithdrawCodes(models.Model):
-    commission = models.ForeignKey("DepositHistory", blank=False, unique=False)
+    wallet = models.ForeignKey('UserWallet', blank=False, unique=False)
     code = models.CharField(max_length="32", blank=False, unique=True)
 
     @staticmethod
-    def confirm(self, user, code):
-        if(self.commission.user.id is not user.id):
-            raise Exception("Użytkownik %s nie jest zalogowany." % (self.commission.user))
+    def confirm(user, code, wallet_address, amount):
         hashs = hashlib.md5()
         hashs.update(code)
         code = hashs.hexdigest()
-        return WithdrawCodes.objects.filter(code=code).exist()
-        
+        if WithdrawCodes.objects.filter(code=code).exists():
+            code = WithdrawCodes.objects.filter(code=code)
+            if(code.wallet.user.id is not user.id):
+                raise Exception("Użytkownik %s nie jest zalogowany." % (code.user))
+            wallet = UserWallet.objects.get(id = wallet.id)
+            if(wallet.account_balance-Decimal(amount) < 0):
+                raise Exception("Brakuje środków na portfelu %s. Na portfelu posiadasz jedynie %s, a chcesz wypłacić %s" % (wallet.cryptocurrency, wallet.account_balance, amount))
+            wallet.account_balance = wallet.account_balance-Decimal(amount)
+            wallet.save()
+            wallet.withdraw(amount=code.commission.amount, wallet_address=code.commission.wallet_address)
+            code.delete()
+            now = datetime.datetime.utcnow().replace(tzinfo=utc)
+            deposit_history = DepositHistory(user=wallet.user, wallet_address=wallet_address, cryptocurrency=wallet.cryptocurrency, amount=amount, executed_time=now, deposit=False)
+            deposit_history.save()
+            return True
+        else: 
+            return False
         return 0
         
-        if(self.commission.user.id is not user.id):
-            raise Exception("Użytkownik %s nie jest zalogowany." % (self.commission.user))
-        wallet = UserWallet.objects.get(user=self.commission.user, cryptocurrency=self.commission.cryptocurrency)
-        if(wallet.account_balance-Decimal(self.commission.amount) < 0):
-            raise Exception("Brakuje środków na portfelu %s. Na portfelu posiadasz jedynie %s, a chcesz wypłacić %s" % (wallet.cryptocurrency, wallet.account_balance, self.commission.amount))
-        walletType = self.commission.cryptocurrency.name
-        walletType = "%sWallet" % walletType
-        wallet_proxy = getattr(sys.modules[__name__],walletType)
-        wallet_proxy = wallet_proxy.objects.filter(id=wallet.id)[0]
-        wallet.withdraw(amount=self.commission.amount, wallet_address=self.commission.wallet_address)
-        wallet_proxy.withdraw(amount=self.commission.amount, wallet_address=self.commission.wallet_address)
-        self.delete()
-
+        
     def __unicode__(self):
         return 'Niepotwierdzone: %s' % (self.commission)
         
@@ -709,42 +712,22 @@ class UserWallet(models.Model):
         """
         Wysyła maila potwierdzającego.
         """
-        now = datetime.datetime.utcnow().replace(tzinfo=utc)
-        deposit_history = DepositHistory(user=self.user, wallet_address="x", cryptocurrency=self.cryptocurrency, amount=Decimal("0.0"), executed_time=now, deposit=False, confirmed=False)
-        deposit_history.save()
         code=""
         for x in range(0,5):
             code+=str(random.randint(0,9))
 
-        sender = Smsapi("chrystian.kislo@gmail.com", "123sd890")
-        sender.sendConfirmationOfWithdraw(number=self.user.phone_number,code=code,id=deposit_history.id)
+        #sender = Smsapi("chrystian.kislo@gmail.com", "123sd890")
+        #sender.sendConfirmationOfWithdraw(number=self.user.phone_number,code=code,id=deposit_history.id)
         print "Klucz %s" % code
         
         hashs = hashlib.md5()
         hashs.update(code)
         code = hashs.hexdigest()
         
-        withdraw_codes = WithdrawCodes(commission=deposit_history,code=code)
+        withdraw_codes = WithdrawCodes(wallet=self,code=code)
         withdraw_codes.save()
         return 0;
         
-    def withdraw(self, amount, wallet_address):
-        """
-        Zapisuje w historii.
-        """
-        
-        if(Decimal(self.account_balance) - Decimal(amount) < 0):
-            raise Exception("Brakuje środków na koncie. Na koncie posiadasz jedynie %s, a chcesz wypłacić %s" % (self.account_balance, amount))
-        
-        now = datetime.datetime.utcnow().replace(tzinfo=utc)
-        self.account_balance = UserWallet.objects.filter(id=self.id)[0].account_balance
-        self.account_balance = self.account_balance - Decimal(amount)
-        self.save()
-        
-        deposit_history = DepositHistory(user=self.user, wallet_address=wallet_address, cryptocurrency=self.cryptocurrency, amount=amount, executed_time=now, deposit=False, confirmed=True)
-        deposit_history.save()
-        return 9;
-     
     def deposit(self, amount, wallet_address):
         """
         Zapisuje w historii.
@@ -765,73 +748,43 @@ class UserWallet(models.Model):
 #        @note: Ustawia klasę UserWallet jako klasa abstrakcyjna
 #        """
 #        abstract = True
-class AdminWallets():
-    def newCommissionSourceProvision(self, commission):
-        """
-        Przesyla pieniadze dla administratora.
-        """
-        
-    def newCommissionDestinationProvision(self, commission):
-        """
-        Przesyla pieniadze dla administratora.
-        """
+
+class Provisions(models.Model):
+    commission = models.ForeignKey(Commission, blank=False, unique=False)
+    provision = models.DecimalField(max_digits=32, decimal_places=16, blank=False, null=False)
     
-    def takeProvision(self, commission):
+class AdminWallets():
+    
+    @staticmethod
+    def addProvisionToCommission(commission):
         """
         Przesyla pieniadze dla administratora.
         """
-        
-    def backProvision(self, commission):
-        """
-        Przesyla pieniadze dla administratora.
-        """
-        
-
-class PLNWallet(UserWallet):
-    """
-    Klasa proxy UserWallet
-    udostępiania metody do pobierania pieniędzy oraz składania depozytu
-    na konta, które znajdują się poza serwerem
-    Udostępnione metody działają na portfelach PLNC
-    """
-
-    def __unicode__(self):
-        return '%s' % (self.cryptocurrency.name)
-
-    class Meta:
-        proxy = True
-
-    def withdraw(self, amount, wallet_address):
-        """
-        @param Decimal : amount
-        @param String : wallet_address
-        pobiera kwotę amount z konta i wysyłą ją na adres wallet_address
-        zapisuje użycie metody w historii
-        """
+        provision=Decimal('0.25')
+        if(commission.source_wallet.cryptocurrency.name=='BTC'):
+            prov = commission.source_amount * Decimal(provision) 
+            commission.source_amount += prov 
+        elif (commission.destination_wallet.cryptocurrency.name=='BTC'):
+            prov = commission.destination_amount * Decimal(provision)
+            commission.destination_amount += prov
+        commission.save()
+        provision = Provisions(commission=commission, provision=prov)
+        provision.save()
         return 0
-
-
-class LiteWallet(UserWallet):
-    """
-    Klasa proxy UserWallet
-    udostępiania metody do pobierania pieniędzy oraz składania depozytu
-    na konta, które znajdują się poza serwerem
-    Udostępnione metody działają na portfelach LiteCoin
-    """
-
-    def __unicode__(self):
-        return '%s' % (self.cryptocurrency.name)
-
-    class Meta:
-        proxy = True
-
-    def withdraw(self, amount, wallet_address):
+    
+    @staticmethod
+    def takeProvision(commission):
         """
-        @param Decimal : amount
-        @param String : wallet_address
-        pobiera kwotę amount z konta i wysyłą ją na adres wallet_address
-        zapisuje użycie metody w historii
+        Przesyla pieniadze dla administratora.
         """
+        provision = Provisions.objects.filter(commission=commission)[0]
+        if(commission.source_wallet.cryptocurrency.name=='BTC'):
+            commission.source_amount -= provision.provision 
+        elif (commission.destination_wallet.cryptocurrency.name=='BTC'):
+            commission.destination_amount -= provision.provision
+        user = UserProxy.objects.filter(username='admin')[0]
+        btc_wallet = UserWallet.objects.filter(user=user, cryptocurrency=Cryptocurrency.objects.filter(name='BTC'))
+        btc_wallet.account_balance+=provision.provision
         return 0
 
 
@@ -842,3 +795,4 @@ admin.site.register(DepositHistory)
 admin.site.register(Cryptocurrency)
 admin.site.register(WithdrawCodes)
 admin.site.register(UserWallet)
+admin.site.register(Provisions)
