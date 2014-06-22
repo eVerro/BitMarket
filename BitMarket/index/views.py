@@ -60,7 +60,11 @@ def ltc_view(request):
     return render_to_response('currency/BTC_LTC.html', {'local': local})
 
 def user(request):
+    user = UserProxy.objects.get(id=request.user.id)
     wallets = UserWallet.objects.filter(user=request.user)
+    for wallet in wallets:
+        wallet.deposit_sum = user.getDepositSum(wallet.id)
+        wallet.withdraw_sum = user.getWithdrawSum(wallet.id)
     local = locals()
     return render_to_response('user/user.html', {'local': local})
 

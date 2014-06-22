@@ -9,7 +9,7 @@ function CreateCharts(leftCurrency, rightCurrency, dateRange) {
 			enabled : false
 		},
 		title : {
-			text : 'Średnie ceny '+ rightCurrency +' w '+ leftCurrency
+			text : 'Średnie ceny 1 '+ rightCurrency +' w '+ leftCurrency
 		},
 		subtitle : {
 			text : 'Ostatni miesiąc'
