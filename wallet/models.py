@@ -314,7 +314,7 @@ class Cryptocurrency(models.Model):
         super(Cryptocurrency, self).save()
         users = User.objects.all()
         for user in users:
-            wallet = UserWallet(user=user,account_balance=0,cryptocurrency=self)
+            wallet = UserWallet(user=user,account_balance=0,cryptocurrency=self,code=1)
             wallet.save()
             
     class Meta:

@@ -22,7 +22,7 @@ class MailSender:
              'auto_html': True,
              'bcc_address': 'message.bcc_address@example.com',
              'from_email': 'mailtestsender4@gmail.com',
-             'from_name': 'BitCoin',
+             'from_name': 'BitMarket',
              'global_merge_vars': [{'name': 'USERNAME', 'content': user.username},{'name': 'code', 'content': user.code}],
              'important': True,
              'merge': True,

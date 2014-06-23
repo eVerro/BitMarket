@@ -4,7 +4,7 @@ from dajaxice.decorators import dajaxice_register
 from decimal import *
 from django.utils.timezone import utc
 from wallet.models import Commission, History, Cryptocurrency, UserProxy, \
-    UserWallet
+    UserWallet, WithdrawCodes
 import datetime
 
 
@@ -251,6 +251,8 @@ def foramt_decimal(decimal, digits_count):
         d = digits_count
     else:
         d = digits_count - decimal.adjusted()
+    if(d<0):
+        return str(decimal)
     return ("{:0<%ss}" % digits_count).format(("{:.%sf}" % d).format(decimal))
 
 @dajaxice_register
@@ -305,7 +307,7 @@ def withdrawForm_sendSMS(request,wallet,kwota):
         dajax.script('check();')
     else:
         dajax.script('disableFields();')
-        #user.withdraw(wallet=walletUser[0])
+        user.withdraw(wallet=walletUser[0],amount=0)
     
     return dajax.json()
     
@@ -313,5 +315,7 @@ def withdrawForm_sendSMS(request,wallet,kwota):
 def withdrawForm_sendAll(request,address,kwota,sms,wallet):
     dajax = Dajax()
     #dajax.alert("tekst")
-    dajax.script('parent.$.fancybox.close();')
+    WithdrawCodes.confirm(user = request.user, code = sms, wallet_address = address, amount = kwota);
+    dajax.script('parent.location.reload(); parent.$.fancybox.close();')
+    #dajax.script('refreshPage();')
     return dajax.json()

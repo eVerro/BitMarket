@@ -13,9 +13,9 @@ from wallet.models import UserProxy, UserWallet, Commission, WithdrawCodes, \
     History, Cryptocurrency
 from bitcoinrpc.authproxy import AuthServiceProxy
 import datetime
-import datetime
 import hashlib
 import json
+from BitMarket.index.ajax import foramt_decimal
 
 
 def index(request):
@@ -49,14 +49,14 @@ def deposit(request,wallet):
         walletUser = UserWallet.objects.filter(user=request.user,cryptocurrency=cryptocurrency)
         
         
-        minconf = walletUser[0].code
-        if minconf == 1:
-            walletUser[0].incrementCode()
-            walletUser[0].incrementCode()
-            walletUser[0].incrementCode()
-        amount = float(bitMarketWallet.getreceivedbyaccount(request.user.username,minconf))
-        amountHistory = user.getDepositSum(walletUser[0])
-        summary = amount - float(amountHistory)
+#         minconf = walletUser[0].code
+#         if minconf == 1:
+#             walletUser[0].incrementCode()
+#             walletUser[0].incrementCode()
+#             walletUser[0].incrementCode()
+        amount = foramt_decimal(Decimal(bitMarketWallet.getreceivedbyaccount(request.user.username,3)),8)
+        amountHistory = foramt_decimal(Decimal(user.getDepositSum(walletUser[0])),8)
+        summary = Decimal(amount) - Decimal(amountHistory)
         if summary <= 0:
             amount = 0.0
         else:
@@ -86,16 +86,16 @@ def depositConfirm(request,wallet):
         walletUser = UserWallet.objects.filter(user=request.user,cryptocurrency=cryptocurrency)
         
         
-        minconf = walletUser[0].code
-        amount = float(bitMarketWallet.getreceivedbyaccount(request.user.username,minconf))
-        amountHistory = user.getDepositSum(walletUser[0])
-        summary = amount - float(amountHistory)
+        #minconf = walletUser[0].code
+        amount = foramt_decimal(Decimal(bitMarketWallet.getreceivedbyaccount(request.user.username,3)),8)
+        amountHistory = foramt_decimal(Decimal(user.getDepositSum(walletUser[0])),8)
+        summary = Decimal(amount) - Decimal(amountHistory)
         if summary > 0:
             user.deposit(wallet=walletUser[0],wallet_address=accountAddresses,amount=amount)
             
-        amount = float(bitMarketWallet.getreceivedbyaccount(request.user.username,minconf))
-        amountHistory = user.getDepositSum(walletUser[0])
-        summary = amount - float(amountHistory)
+        amount = foramt_decimal(Decimal(bitMarketWallet.getreceivedbyaccount(request.user.username,3)),8)
+        amountHistory = foramt_decimal(Decimal(user.getDepositSum(walletUser[0])),8)
+        summary = Decimal(amount) - Decimal(amountHistory)
         if summary <= 0:
             amount = 0.0
             
@@ -125,7 +125,7 @@ def withdraw(request,wallet):
         walletUser = UserWallet.objects.filter(user=request.user,cryptocurrency=cryptocurrency)
         
         
-        balance = walletUser[0].account_balance
+        balance = foramt_decimal(Decimal(walletUser[0].account_balance),8)
         
         #confirm = WithdrawCodes.objects.filter(code=code)
         
@@ -213,8 +213,9 @@ def user(request):
     user = UserProxy.objects.get(id=request.user.id)
     wallets = UserWallet.objects.filter(user=request.user)
     for wallet in wallets:
-        wallet.deposit_sum = user.getDepositSum(wallet.id)
-        wallet.withdraw_sum = user.getWithdrawSum(wallet.id)
+        wallet.deposit_sum = foramt_decimal(Decimal(user.getDepositSum(wallet.id)),8)
+        wallet.withdraw_sum = foramt_decimal(Decimal(user.getWithdrawSum(wallet.id)),8)
+        wallet.account_balance = foramt_decimal(Decimal(wallet.account_balance),8)
     local = locals()
     return render_to_response('user/user.html', {'local': local})
 
@@ -269,7 +270,7 @@ def login(request):
                             return redirect("/")
                     else:
                             request.session['bad_login'] = 1
-                            return render_to_response('/')
+                            return render_to_response('aboutus/aboutus.html')
 
 
 def register(request):
