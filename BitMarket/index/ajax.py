@@ -290,3 +290,28 @@ def changePass(request,old_password,password,sec_password):
     else:
         dajax.script('passErr();')
     return dajax.json()
+
+@dajaxice_register
+def withdrawForm_sendSMS(request,wallet,kwota):
+    dajax = Dajax()
+    user = UserProxy.objects.get(id=request.user.id)
+    cryptocurrency = Cryptocurrency.objects.filter(name=wallet)
+    walletUser = UserWallet.objects.filter(user=request.user,cryptocurrency=cryptocurrency)
+    
+    balance = Decimal(walletUser[0].account_balance)
+    kwota = Decimal(kwota)
+    withdrawBalance = kwota - balance
+    if withdrawBalance > 0:
+        dajax.script('check();')
+    else:
+        dajax.script('disableFields();')
+        #user.withdraw(wallet=walletUser[0])
+    
+    return dajax.json()
+    
+@dajaxice_register
+def withdrawForm_sendAll(request,address,kwota,sms,wallet):
+    dajax = Dajax()
+    #dajax.alert("tekst")
+    dajax.script('parent.$.fancybox.close();')
+    return dajax.json()

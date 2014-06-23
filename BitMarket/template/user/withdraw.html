@@ -1,4 +1,6 @@
 {% if local.request.user.is_authenticated %}
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/jquery.dajax.core.js"></script>
 <style>
 #depositWithdraw {
 	padding-left: 11px;
@@ -35,23 +37,110 @@
 	text-decoration: none;
 }
 
-#depositWithdraw #withdraw_form #adres{
+#depositWithdraw #adres{
 	
-	width: 600px;
+	width: 400px;
 }
+
+.sub_buttonWith{
+	background: url(http://jackrugile.com/images/misc/noise-diagonal.png), linear-gradient(#777, #444);
+	color: aliceblue;
+	border-right: 1px solid #777;
+	border-top: 1px solid #555;
+	border-bottom: 1px solid #333;
+	border-left: 1px solid #555;
+}
+
 
 
 </style>
 
+{% load dajaxice_templatetags %}
+{% dajaxice_js_import %}
+
+<script type="text/javascript">
+
+	var wallett;
+	
+	function sendSMS(wallet){
+		if ($('#adres').val().length < 32){
+			check2();
+		}else if ( $('#kwota').val() == ''){
+			check();	
+		}
+		else{
+			
+		
+		    Dajaxice.BitMarket.index.withdrawForm_sendSMS(Dajax.process,{
+		    	'wallet' : wallet,
+		    	'kwota' : $("#kwota").val()
+		    });
+		    wallett = wallet;
+		   }
+	}
+
+
+	function confirm(){
+		
+		if ($('#kod').val() == ''){
+			checkSMS();
+		}else{
+	    Dajaxice.BitMarket.index.withdrawForm_sendAll(Dajax.process, {
+	        'address' : $('#adres').val(),
+	        'kwota' : $('#kwota').val(),
+	        'sms' : $('#kod').val(),
+	        'wallet' : wallett
+	    });
+	}
+	}
+
+	function disableFields(){
+		$('#adres').prop('disabled', true);
+		$('#kwota').prop('disabled', true);
+		$('#kod').prop('disabled', false);
+	}
+	
+	function check(){
+	$('#balanceValid').css('color', 'red');
+	$('#balanceValid').html('Niepoprawna kwota!');
+	$('#balanceValid').slideDown();
+	setTimeout(function(){$('#balanceValid').slideUp();}, 3000);
+	
+	}
+	function check2(){
+	$('#adresValid').css('color', 'red');
+	$('#adresValid').html('Niepoprawny adres!');
+	$('#adresValid').slideDown();
+	setTimeout(function(){$('#adresValid').slideUp();}, 3000);
+}
+
+function checkSMS(){
+	$('#smsValid').css('color', 'red');
+	$('#smsValid').html('Wprowadź kod SMS!');
+	$('#smsValid').slideDown();
+	setTimeout(function(){$('#smsValid').slideUp();}, 3000);
+}
+
+
+function isNumberKey(evt) {
+    var charCode = (evt.which) ? evt.which : event.keyCode;
+    if (charCode > 31 && (charCode != 46 && (charCode < 48 || charCode > 57)))
+        return false;
+    return true;
+   }
+
+</script>
+
 
 <div id="depositWithdraw">
 	<p>Jezeli chcesz wyplacic <strong class="wallet">{{local.wallet}}</strong> na swój portfel, podaj swój adres i kwote:</p>
-	<form method="post" action="/user/withdraw/{{local.wallet}}/confirm" id="withdraw_form">
-	Adres portfela: <input id="adres" name="adresPortfela" type="text">
-	<p>Kwota: <input name="kwota" type="text"> Dostepne {{local.wallet}} <strong class="amount">{{local.balance}}</strong></p>
-	<p>Kod SMS: <input name="kod" type="text"></p>
-	</form>
-	<p>Jesli wpisales dane, kliknij <a href="/user/withdraw/{{local.wallet}}/confirm">Wyslij srodki na portfel</a></p>
+	
+	Adres portfela: <input id="adres" name="adresPortfela" type="text"> <label id="adresValid"></label>
+	<p>Kwota: <input onkeypress="return isNumberKey(event);" id="kwota" name="kwota" type="text"> Dostepne {{local.wallet}} <strong class="amount">{{local.balance}}</strong> <label id="balanceValid"></label></p>
+	<p>Jesli wpisales dane, kliknij <button class="sub_buttonWith" value="click" name="click" onclick="sendSMS('{{local.wallet}}')">Wyślij SMS</button></p>
+	<p>kod SMS: <input disabled id="kod" name="kod" type="text"> <label id="smsValid"></label></p>
+
+	<p>Jesli wpisales kod, kliknij <button class="sub_buttonWith" value="click" name="click" onclick="confirm()">Wyślij środki na portfel</button></p>
 	<p>Operacja moze potrwac kilka minut, w zaleznosci od kryptowaluty.</p>
 </div>
 

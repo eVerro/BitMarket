@@ -12,6 +12,7 @@ from wallet.models import UserProxy, UserWallet, Commission, WithdrawCodes, \
 from bitcoinrpc.authproxy import AuthServiceProxy
 import datetime
 import hashlib
+from decimal import Decimal
 
 
 
@@ -154,6 +155,34 @@ def withdrawConfirm(request,wallet):
         local = locals()
         return render_to_response('user/withdraw.html', {'local': local})
     
+def withdrawConfirmSMS(request,wallet):
+        
+        if request.method == 'POST':
+            
+            
+            adres = request.POST['adresPortfela']
+            kwota = request.POST['kwota']
+            
+            #walidacja danych POTRZEBNA!
+            
+            
+            user = UserProxy.objects.get(id=request.user.id)
+            cryptocurrency = Cryptocurrency.objects.filter(name=wallet)
+            walletUser = UserWallet.objects.filter(user=request.user,cryptocurrency=cryptocurrency)
+           
+            balance = walletUser[0].account_balance
+            kwota = Decimal(kwota)
+            withdrawBalance = kwota - balance
+            if withdrawBalance > 0:
+                withdrawBalance = 0 
+                
+            
+        
+        
+        
+        local = locals()
+        return render_to_response('user/withdraw.html', {'local': local})
+    
 def market(request):
         latest_crypto_list = Kryptowaluty.objects.all().order_by('-pub_date')
         local = locals()
@@ -213,7 +242,7 @@ def login(request):
                             return redirect("/")
                     else:
                             request.session['bad_login'] = 1
-                            return render_to_response('aboutus/aboutus.html')
+                            return render_to_response('/')
 
 
 def register(request):
