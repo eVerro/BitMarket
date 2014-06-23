@@ -9,20 +9,26 @@
 <script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/decimal.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/datepicker/zebra_datepicker.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/jquery.timepicker.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/HighCharts/highcharts.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/HighCharts/modules/exporting.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }} /static/javascript/Charts.js"></script>
 <script type="text/javascript">
-	$(document).ready(function() {
-		AutoRefreshWallet('BTC', 'GLD');
-		$('#datepicker_L').Zebra_DatePicker();
-		$('#datepicker_R').Zebra_DatePicker();
-		$('#timepicker_L').timepicker({
-			'timeFormat' : 'H:i:s',
-			'step' : 5
-		});
-		$('#timepicker_R').timepicker({
-			'timeFormat' : 'H:i:s',
-			'step' : 5
-		});
-	}); 
+$(document).ready(function() {
+	AutoRefreshWallet('BTC', 'GLD');
+	CreateCharts('BTC', 'GLD',30);
+	$('#datepicker_L').Zebra_DatePicker();
+	$('#datepicker_R').Zebra_DatePicker();
+	$('#timepicker_L').timepicker({
+		'timeFormat' : 'H:i:s',
+		'step' : 5
+	});
+	$('#timepicker_R').timepicker({
+		'timeFormat' : 'H:i:s',
+		'step' : 5
+	});      
+	
+	
+}); 
 </script>
 
 <p id="btcGldImage"></p>
@@ -30,6 +36,12 @@
 
 <div id="tables">
 	<table class="form_table">
+		<tr>
+			<td colspan="2" align="center" >
+				<div id="chart_panel" class="panel-body" style="width:100%; height:400px;">chart panel</div>
+			</td>
+		</tr>
+		
 		{% if local.request.user.is_authenticated %}
 		<tr>
 			<td align="center" colspan="2"><label id="msg_label"></label></td>

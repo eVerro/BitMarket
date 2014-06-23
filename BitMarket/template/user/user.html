@@ -25,27 +25,37 @@
 <p id="userImage"></p>
 <hr />
 
-<div id="portfele">
+<div id="portfele" align="center">
 		<tr>
 			<td>
 			<table class="konto">
 				<tr>
 					<th>Portfel</th>
-					<th>Wartość</th>
+					<th class="large">Wartość</th>
+					<th class="large">Ilość wpłacona</th>
+					<th class="large">Ilość wypłacona</th>
 					<th>Zlecenie</th>
 				</tr>
 				{% for wallet in local.wallets %}
 				<tr>
 					<td>{{wallet.cryptocurrency.name}}:</td>
-					<td>{{wallet.account_balance}}</td>
+					<td class="large">{{wallet.account_balance}}</td>
 					<!-- <td><input type="submit" value="wpłać na giełdę" id="wp" /> <input type="submit" value="wypłać z giełdy" id="wyp"/></td> -->
-					<td><a class="various" data-fancybox-type="iframe" href="/user/deposit/{{wallet.cryptocurrency.name}}">Wpłać</a><a class="various" data-fancybox-type="iframe" href="/user/withdraw/{{wallet.cryptocurrency.name}}">Wypłać</a></td>
+					<td class="large">{{wallet.deposit_sum}}</td>
+					<td class="large">{{wallet.withdraw_sum}}</td>
+					<td>
+						<a class="various" data-fancybox-type="iframe" href="/user/deposit/{{wallet.cryptocurrency.name}}">Wpłać</a>
+						<a class="various" data-fancybox-type="iframe" href="/user/withdraw/{{wallet.cryptocurrency.name}}">Wypłać</a>
+					</td>
+					
 				</tr>
 				{%endfor%}
 			</table></td></tr>
 </div>
-<div id="zmianaDanych">
-			<td style="vertical-align: baseline; " align="center">
+<div id="zmianaDanych" align="center" >
+	<table >
+		<tr >
+			<td>
 				<label id="email_msg"></label><br/>
 				<table class="changeTable" >
 					<tr >
@@ -70,6 +80,10 @@
 						
 					</tr>
 				</table><br/>
+				
+				
+			</td>
+			<td>
 				<label id="pass_msg"></label><br/>
 				<table class="changeTable" >
 					<tr >
@@ -98,7 +112,7 @@
 				
 			</td>
 		</tr>
-	</table>
+</table>
 </div>
 {% endif %}
 {% endblock %}

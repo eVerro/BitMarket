@@ -590,13 +590,13 @@ a img { border: none;}
 
 #main2 #news #portfele table{
 	display:block;
-	width: 400px;
+	width: 100%;
 }
 
 #main2 #news #zmianaDanych{
 	display:block;
-	margin-left: 180px;
-	margin-bottom: 100px;
+	/*margin-left: 180px;
+	margin-bottom: 100px;*/
 }
 
 #main2 #news #zmianaDanych #email_msg{
@@ -611,8 +611,14 @@ a img { border: none;}
 	display:block;
 }
 
+#main2 #news #zmianaDanych table td{
+	vertical-align: baseline;
+	
+}
+
 .changeTable{
-	margin-left: 100px;
+	margin-left: 60px;
+	margin-right: 60px;
 }
 
 .changeTable label{
