@@ -581,15 +581,14 @@ class WithdrawCodes(models.Model):
         hashs.update(code)
         code = hashs.hexdigest()
         if WithdrawCodes.objects.filter(code=code).exists():
-            code = WithdrawCodes.objects.filter(code=code)
+            code = WithdrawCodes.objects.filter(code=code)[0]
             if(code.wallet.user.id is not user.id):
                 raise Exception("Użytkownik %s nie jest zalogowany." % (code.user))
-            wallet = UserWallet.objects.get(id = wallet.id)
+            wallet = UserWallet.objects.get(id = code.wallet.id)
             if(wallet.account_balance-Decimal(amount) < 0):
                 raise Exception("Brakuje środków na portfelu %s. Na portfelu posiadasz jedynie %s, a chcesz wypłacić %s" % (wallet.cryptocurrency, wallet.account_balance, amount))
             wallet.account_balance = wallet.account_balance-Decimal(amount)
             wallet.save()
-            wallet.withdraw(amount=code.commission.amount, wallet_address=code.commission.wallet_address)
             code.delete()
             now = datetime.datetime.utcnow().replace(tzinfo=utc)
             deposit_history = DepositHistory(user=wallet.user, wallet_address=wallet_address, cryptocurrency=wallet.cryptocurrency, amount=amount, executed_time=now, deposit=False)
