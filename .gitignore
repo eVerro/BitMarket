@@ -59,3 +59,11 @@ docs/_build/
 *.pyc
 BitMarket/index/models.pyc
 BitMarket/settings.pyc
+
+# OSX
+.DS_Store
+.DS_Store?
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
